@@ -8,7 +8,9 @@ lifecycle behavior, and the direct in-memory test.
 Controller application APIs use `namespace xwalk::ctrl`. Agent service
 objects used by the hardware composition remain in `namespace xwalk::agent`.
 
-Application code is grouped under `cli`, `parse`, `boot`, and `activate`. The
+Application code is grouped under `cli`, `parse`, `boot`, `activate`, and
+`server`. The `server` directory reserves the transport-adapter boundary and
+does not currently build a runtime server or add network dependencies. The
 `cli/host` and `cli/hardware` entry behavior stays separate while both use
 the same parsing, boot-support, and typed command-activation contracts. Command
 dispatch converts CLI text into the typed request structures from

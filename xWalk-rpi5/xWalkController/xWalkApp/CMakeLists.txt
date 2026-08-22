@@ -17,6 +17,8 @@ if(NOT TARGET xWalkScheduler)
         ${CMAKE_CURRENT_BINARY_DIR}/xWalkScheduler)
 endif()
 
+add_subdirectory(server)
+
 set(XWALK_CONTROLLER_HELP_JSON
     "${CMAKE_CURRENT_SOURCE_DIR}/activate/resources/help.json")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
