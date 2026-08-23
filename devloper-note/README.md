@@ -1,6 +1,6 @@
 # xWalk Developer Notes Wiki
 
-`xWalkTool/doc-tool/wiki.sh` builds these Markdown collections as a searchable Material for MkDocs website. It
+`xWalk-rpi5-tool/doc-tool/wiki.sh` builds these Markdown collections as a searchable Material for MkDocs website. It
 provides local-development, college-server, and GitHub Pages profiles.
 
 Run the examples from the repository root. Generated dependencies and HTML remain under the ignored
@@ -11,7 +11,7 @@ Run the examples from the repository root. Generated dependencies and HTML remai
 Build the wiki, bind it only to the current computer, and open the default browser:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh local
+xWalk-rpi5-tool/doc-tool/wiki.sh local
 ```
 
 The default URL is `http://127.0.0.1:8000/`. Press Ctrl-C to stop the local server.
@@ -19,13 +19,13 @@ The default URL is `http://127.0.0.1:8000/`. Press Ctrl-C to stop the local serv
 Serve locally without opening a browser:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh local --no-open
+xWalk-rpi5-tool/doc-tool/wiki.sh local --no-open
 ```
 
 Choose another loopback port:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh local --port 8001
+xWalk-rpi5-tool/doc-tool/wiki.sh local --port 8001
 ```
 
 The local profile rejects non-loopback bind addresses.
@@ -35,7 +35,7 @@ The local profile rejects non-loopback bind addresses.
 Run this command on the college server:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh server
+xWalk-rpi5-tool/doc-tool/wiki.sh server
 ```
 
 It builds production-style static HTML under `build-devloper-note-wiki/server-site`, binds to
@@ -44,13 +44,13 @@ It builds production-style static HTML under `build-devloper-note-wiki/server-si
 When the college provides a public HTTPS address, include it in the build:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh server --site-url https://docs.example.edu/xwalk/
+xWalk-rpi5-tool/doc-tool/wiki.sh server --site-url https://docs.example.edu/xwalk/
 ```
 
 Use another approved port when required:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh server --port 9000 --site-url https://docs.example.edu/xwalk/
+xWalk-rpi5-tool/doc-tool/wiki.sh server --port 9000 --site-url https://docs.example.edu/xwalk/
 ```
 
 Binding to `0.0.0.0` listens on every server interface. Worldwide access additionally requires:
@@ -69,7 +69,7 @@ server for production access and point its document root at the generated `serve
 Build a GitHub Pages-compatible artifact locally:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh github
+xWalk-rpi5-tool/doc-tool/wiki.sh github
 ```
 
 The default public URL is:
@@ -81,13 +81,13 @@ https://jochuuu.github.io/xWalkPiCarAI/
 Open the currently deployed public URL after building:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh github --open
+xWalk-rpi5-tool/doc-tool/wiki.sh github --open
 ```
 
 Override the URL when the repository or custom domain changes:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh github --site-url https://docs.example.org/xwalk/
+xWalk-rpi5-tool/doc-tool/wiki.sh github --site-url https://docs.example.org/xwalk/
 ```
 
 The `github` profile only creates `build-devloper-note-wiki/github-site`; it never pushes. The
@@ -105,7 +105,7 @@ Validate wiki-owned local links, strictly build the GitHub Pages artifact, and v
 search-index JSON, and public URL:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh verify
+xWalk-rpi5-tool/doc-tool/wiki.sh verify
 ```
 
 This non-serving command is used by Gerrit component CI, integrated Host Quality, and GitHub Host Quality. It
@@ -116,16 +116,16 @@ does not open a browser, bind a port, or publish the generated artifact.
 Every profile creates an isolated Python environment when needed. Prepare it without starting a site:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh setup
+xWalk-rpi5-tool/doc-tool/wiki.sh setup
 ```
 
-The package pin is in `xWalkTool/doc-tool/requirements-wiki.txt`. First-time installation requires Python 3,
+The package pin is in `xWalk-rpi5-tool/doc-tool/requirements-wiki.txt`. First-time installation requires Python 3,
 the Python `venv` module, and package-index access.
 
 ## Remove generated files
 
 ```bash
-xWalkTool/doc-tool/wiki.sh clean
+xWalk-rpi5-tool/doc-tool/wiki.sh clean
 ```
 
 This removes only the validated `build-devloper-note-wiki` directory. It does not remove source notes.

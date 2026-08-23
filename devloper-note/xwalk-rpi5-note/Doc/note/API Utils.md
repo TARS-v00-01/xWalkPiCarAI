@@ -1,6 +1,6 @@
 # C++ utility interfaces
 
-The [xWalkUtils](../../../../xWalk-rpi5/xWalkHal/interface/xWalkUtils/README.md) module contains:
+The [xWalkUtils](../../../../xWalk-rpi5-hw/xWalkHal/interface/xWalkUtils/README.md) module contains:
 
 - `XWalkUtils` for injected platform utility and output operations;
 - `XWalkLazyReader<ValueType>` for bounded-rate callback value caching;

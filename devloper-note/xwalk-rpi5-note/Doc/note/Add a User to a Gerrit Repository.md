@@ -10,9 +10,9 @@ Collect these values before making changes:
 
 | Value | Source |
 |---|---|
-| `GERRIT_SERVER_HOST` | `xWalkTool/py-agent/gerrit-tool/config/gerrit-setup.conf` |
-| `GERRIT_SSH_PORT` | `xWalkTool/py-agent/gerrit-tool/config/gerrit-setup.conf` |
-| `GERRIT_ADMIN_USER` | `xWalkTool/py-agent/gerrit-tool/config/gerrit-setup.conf` |
+| `GERRIT_SERVER_HOST` | `xWalk-rpi5-tool/py-agent/gerrit-tool/config/gerrit-setup.conf` |
+| `GERRIT_SSH_PORT` | `xWalk-rpi5-tool/py-agent/gerrit-tool/config/gerrit-setup.conf` |
+| `GERRIT_ADMIN_USER` | `xWalk-rpi5-tool/py-agent/gerrit-tool/config/gerrit-setup.conf` |
 | `PROJECT_NAME` | Gerrit project list or the installer configuration |
 | `PROJECT_BRANCH` | Protected review branch, normally `master` |
 | `USERNAME` | Unique lowercase login selected for the person |
@@ -28,7 +28,7 @@ Replace every uppercase token in the examples. Do not paste unresolved tokens in
 
 ## Create the web login
 
-Run the installed xWalkTool account helper on the Gerrit server:
+Run the installed xWalk-rpi5-tool account helper on the Gerrit server:
 
 ```bash
 $HOME/bin/gerrit-user-add USERNAME

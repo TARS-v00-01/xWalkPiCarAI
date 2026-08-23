@@ -3,7 +3,7 @@
 This guide explains how to create a new non-root Gerrit service and connect the repository-managed xWalk CI
 worker. It applies to a new, empty Gerrit destination. It is not an in-place upgrade or restore procedure.
 
-The supported implementation is under `xWalkTool/py-agent/gerrit-tool`. It installs Gerrit, Caddy, management
+The supported implementation is under `xWalk-rpi5-tool/py-agent/gerrit-tool`. It installs Gerrit, Caddy, management
 commands, CI programs, configuration templates, and rendered administrator guides without `sudo`.
 
 ## Safety boundaries
@@ -21,13 +21,13 @@ Clone the integrated MyPiCarX repository on the future Gerrit server and enter i
 assessment:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh assess
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh assess
 ```
 
 Confirm persistent storage, free space, Java support, the physical network address, and availability of the
 configured HTTPS, SSH, and loopback HTTP ports.
 
-Edit `xWalkTool/py-agent/gerrit-tool/config/gerrit-setup.conf`. At minimum, replace the server address and the
+Edit `xWalk-rpi5-tool/py-agent/gerrit-tool/config/gerrit-setup.conf`. At minimum, replace the server address and the
 official Gerrit WAR checksum, then review the administrator identity, project, branch, ports, storage path, and
 process manager:
 
@@ -35,7 +35,7 @@ process manager:
 export EDUVPN_SERVER_IP="SERVER_IP_FROM_ASSESSMENT"
 export GERRIT_STORAGE_PATH=""
 export GERRIT_SHA256="OFFICIAL_GERRIT_WAR_SHA256"
-export GERRIT_PROJECT="xWalk-rpi5"
+export GERRIT_PROJECT="xWalk-rpi5-hw"
 export GERRIT_BRANCH="master"
 ```
 
@@ -43,7 +43,7 @@ An empty `GERRIT_STORAGE_PATH` selects `$HOME/gerrit-site`. If an administrator 
 location, set its absolute path and validate it before installation:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-storage-check.sh
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-storage-check.sh
 ```
 
 ## Install Gerrit
@@ -51,7 +51,7 @@ xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-storage-check.sh
 Run the installer from the repository root:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh install
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh install
 ```
 
 The script requests the initial administrator password without echoing it. It verifies downloaded artifacts,
@@ -75,7 +75,7 @@ $HOME/bin/gerrit-logs
 After a logout or reboot, start and validate the existing site with:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh start
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh start
 ```
 
 ## Initialize the administrator and project
@@ -139,7 +139,7 @@ For the repository's fixed multi-repository architecture, use the reviewed provi
 of recreating the complete matrix manually:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-multi-repo-provision.sh --dry-run
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-multi-repo-provision.sh --dry-run
 ```
 
 Apply that workflow only after reviewing
@@ -256,7 +256,7 @@ and applies exactly one final `Verified +1` or `Verified -1` vote. The worker ne
 - Never execute hardware tests from automatic Gerrit CI.
 
 See [Add a User to a Gerrit Repository](Add%20a%20User%20to%20a%20Gerrit%20Repository.md) for contributor
-onboarding and [xWalkTool Overview](xWalkTool%20Overview.md) for the complete tooling inventory.
+onboarding and [xWalk-rpi5-tool Overview](xWalk-rpi5-tool%20Overview.md) for the complete tooling inventory.
 
 The command forms follow Gerrit's official `create-account`, `set-members`, and `create-project` SSH command
 references. Review the documentation matching the installed Gerrit version before changing server policy.

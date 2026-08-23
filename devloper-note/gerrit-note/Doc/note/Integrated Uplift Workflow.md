@@ -15,22 +15,22 @@ Component Gerrit merge
     -> exact merged-commit GitHub synchronization
 ```
 
-The final gitlink superproject remains `xWalk-rpi5/master`. Repository and branch names are configuration values so
+The final gitlink superproject remains `xWalk-rpi5-hw/master`. Repository and branch names are configuration values so
 the migration can complete without rewriting the safety policy.
 
 ## Repository mapping
 
 | Source Gerrit repository | Source branch | Integrated path |
 |---|---|---|
-| `xWalkAgent` | `master` | `xWalk-rpi5/xWalkAgent` |
-| `xWalkAudioResources` | `master` | `xWalk-rpi5/xWalkAudioResources` |
-| `xWalkController` | `master` | `xWalk-rpi5/xWalkController` |
-| `xWalkHal` | `master` | `xWalk-rpi5/xWalkHal` |
-| `xWalkIW` | `master` | `xWalk-rpi5/xWalkIW` |
-| `xWalkLibrary` | `master` | `xWalk-rpi5/xWalkLibrary` |
-| `xWalkTool` | `master` | `xWalkTool` |
+| `xWalkAgent` | `master` | `xWalk-rpi5-hw/xWalkAgent` |
+| `xWalkAudioResources` | `master` | `xWalk-rpi5-hw/xWalkAudioResources` |
+| `xWalkController` | `master` | `xWalk-rpi5-hw/xWalkController` |
+| `xWalkHal` | `master` | `xWalk-rpi5-hw/xWalkHal` |
+| `xWalk-rpi5-iw` | `master` | `xWalk-rpi5-iw` |
+| `xWalkLibrary` | `master` | `xWalk-rpi5-hw/xWalkLibrary` |
+| `xWalk-rpi5-tool` | `master` | `xWalk-rpi5-tool` |
 | `DevloperNote` | `master` | `devloper-note` |
-| `xWalkTrace` | `master` | `xWalk-rpi5/xWalkTrace` |
+| `xWalkTrace` | `master` | `xWalk-rpi5-hw/xWalkTrace` |
 
 The nine components replace only their mapped integrated source trees.
 
@@ -125,7 +125,7 @@ are:
 |---|---|
 | `GERRIT_INTEGRATION_PROJECT` | `xWalkPiCarAI` |
 | `GERRIT_INTEGRATION_BRANCH` | `master` |
-| `GERRIT_INTEGRATION_SOURCE_ROOT` | `xWalk-rpi5` |
+| `GERRIT_INTEGRATION_SOURCE_ROOT` | `xWalk-rpi5-hw` |
 | `GERRIT_UPLIFT_ENABLED` | `true` after ACL installation |
 | `GERRIT_UPLIFT_AUTO_SUBMIT` | `false` until submit permission and policy are verified |
 | `GERRIT_UPLIFT_AUTO_REVIEW` | `false` unless the documented dedicated-account policy is approved |

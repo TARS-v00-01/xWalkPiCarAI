@@ -9,9 +9,9 @@ credentials or the licence decryption key.
 
 ```text
 MyPiCarX/
-├── xWalk-rpi5/xWalkLibrary/
+├── xWalk-rpi5-hw/xWalkLibrary/
 │   └── X_WALK_LICENSE.KEY
-└── xWalkTool/
+└── xWalk-rpi5-tool/
     ├── environment/
     │   └── xWalkLicense.cfg
     └── python/
@@ -20,9 +20,9 @@ MyPiCarX/
 ~/.netrc                         per-developer API credentials, never committed
 ```
 
-`xWalkTool/shell-agent/env-tool/license/xWalkLicense.cfg` is the committed empty model template.
+`xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkLicense.cfg` is the committed empty model template.
 Every key is a model environment-variable name and every value is an empty string.
-Never fill this tracked file in place. `xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY` is the
+Never fill this tracked file in place. `xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY` is the
 only encrypted licence path and is ignored by Git because every generated file
 is deployment-specific. The generated `X_WALK_LICENSE_SERIAL` metadata is not
 an input-template field.
@@ -62,7 +62,7 @@ Copy the empty template to a secure location outside the repository, restrict
 it to its owner, and fill every model value required by the environment loader:
 
 ```sh
-install -m 0600 xWalkTool/shell-agent/env-tool/license/xWalkLicense.cfg /secure/location/xWalkLicense.cfg
+install -m 0600 xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkLicense.cfg /secure/location/xWalkLicense.cfg
 ```
 
 Encryption requires exactly one case-sensitive `[models]` section. It rejects
@@ -131,13 +131,13 @@ protected location; it must never contain credential values itself.
 The preferred command reads the protected external configuration file:
 
 ```sh
-python3 xWalkTool/py-agent/dev-tool/xWalkLicenseTool encrypt --config /secure/location/xWalkLicense.cfg
+python3 xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool encrypt --config /secure/location/xWalkLicense.cfg
 ```
 
 For a small manual model selection, repeat `--env`:
 
 ```sh
-python3 xWalkTool/py-agent/dev-tool/xWalkLicenseTool encrypt --env OPENAI_MODEL=<model-name> --env GEMINI_MODEL=<model-name>
+python3 xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool encrypt --env OPENAI_MODEL=<model-name> --env GEMINI_MODEL=<model-name>
 ```
 
 Values supplied through `--env` can appear in shell history and process
@@ -145,7 +145,7 @@ listings. A protected configuration outside the repository is preferred. API key
 are rejected from both input methods. The two model-input methods are mutually
 exclusive, and duplicate `--env` names are rejected.
 
-Successful encryption writes only `xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY`. It uses a
+Successful encryption writes only `xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY`. It uses a
 new random 256-bit key, a fresh random nonce, the `XWL1` version header, and a
 SecretBox authenticator. It also generates one licence identifier using the
 current UTC year and four cryptographically secure random bytes, stores that
@@ -180,7 +180,7 @@ validation or write failure prints neither the serial nor the key.
 Decrypt to an explicitly selected temporary path outside the source tree:
 
 ```sh
-python3 xWalkTool/py-agent/dev-tool/xWalkLicenseTool decrypt --output /tmp/xWalkLicense.decrypted.json
+python3 xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool decrypt --output /tmp/xWalkLicense.decrypted.json
 ```
 
 The tool requests the key with `getpass`; it has no command-line key option.
@@ -194,7 +194,7 @@ the variables without evaluating their values as shell code, and removes the
 temporary file:
 
 ```sh
-source xWalkTool/shell-agent/env-tool/license/xWalkEnv.sh
+source xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkEnv.sh
 ```
 
 The loader requires every model name in the committed template and every
@@ -209,10 +209,10 @@ export it as an environment variable.
 
 The following files may be committed:
 
-- the empty model-only `xWalkTool/shell-agent/env-tool/license/xWalkLicense.cfg` template;
+- the empty model-only `xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkLicense.cfg` template;
 - the licence tool, loader, tests, and documentation.
 
-Never commit `xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY`, `.netrc`, `*.netrc`, a filled
+Never commit `xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY`, `.netrc`, `*.netrc`, a filled
 JSON copy, decrypted JSON or environment output, the decryption key, shell
 history containing plaintext, or an unencrypted credential. The root
 `.gitignore` excludes the encrypted licence and common private-file patterns
@@ -222,7 +222,7 @@ secret enters Git history, revoke or rotate it and rewrite history through the
 repository's approved incident process. Do not rely on a later deletion.
 
 Installation always includes the tool, loader, and empty template under
-`lib/xwalk` with the same `xWalkTool` subdirectories. The encrypted licence is
+`lib/xwalk` with the same `xWalk-rpi5-tool` subdirectories. The encrypted licence is
 deployment-specific and is omitted by default. A package intended for one
 controlled deployment can explicitly configure
 `-DXWALK_INSTALL_ENCRYPTED_LICENSE=ON`; CMake then requires a provisioned `XWL1`

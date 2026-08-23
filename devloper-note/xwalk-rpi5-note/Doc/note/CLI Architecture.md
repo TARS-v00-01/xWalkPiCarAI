@@ -4,8 +4,8 @@
 
 **Executable:** `xwalk-picarx-control`
 
-**Owning modules:** `xWalk-rpi5/xWalkController/xWalkHandler`, `xWalk-rpi5/xWalkController/xWalkApp`, and
-`xWalk-rpi5/xWalkAgent/xWalkPlatform/xWalkBoot`
+**Owning modules:** `xWalk-rpi5-hw/xWalkController/xWalkHandler`, `xWalk-rpi5-hw/xWalkController/xWalkApp`, and
+`xWalk-rpi5-hw/xWalkAgent/xWalkPlatform/xWalkBoot`
 
 **Document date:** 2026-08-02
 
@@ -22,7 +22,7 @@ CMake wiring, deployment configuration, and safe backend composition are impleme
 ## 2. Source layout
 
 ```text
-xWalk-rpi5/xWalkAgent/xWalkPlatform/xWalkBoot/
+xWalk-rpi5-hw/xWalkAgent/xWalkPlatform/xWalkBoot/
 ├── core/include/                       shared boot lifecycle and service types
 ├── core/src/                           shared one-shot boot lifecycle
 ├── hardware/include/                   Raspberry Pi boot contract
@@ -31,14 +31,14 @@ xWalk-rpi5/xWalkAgent/xWalkPlatform/xWalkBoot/
 ├── stub/src/                           device-free host-stub implementation
 ├── stub/test/include/                  host-only fixture declarations
 └── stub/test/src/                      deterministic host lifecycle coverage
-xWalk-rpi5/xWalkAgent/xWalkVoice/xWalkLocalVoiceChatbot/
+xWalk-rpi5-hw/xWalkAgent/xWalkVoice/xWalkLocalVoiceChatbot/
 ├── include/                            chatbot contract and application callbacks
 ├── src/                                foreground loop and response filtering
 └── test/src/                           deterministic voice-pipeline coverage
-xWalk-rpi5/xWalkAgent/xWalkVoice/xWalkVoiceActiveCar/     sensor, wake-word, speech, response, and action coordination
-xWalk-rpi5/xWalkAgent/xWalkVoice/xWalkVoiceActiveCarGpt/  English Buddy language profile
-xWalk-rpi5/xWalkAgent/xWalkVoice/xWalkGptCar/             upstream JSON GPT-car profile
-xWalk-rpi5/xWalkController/xWalkHandler/
+xWalk-rpi5-hw/xWalkAgent/xWalkVoice/xWalkVoiceActiveCar/     sensor, wake-word, speech, response, and action coordination
+xWalk-rpi5-hw/xWalkAgent/xWalkVoice/xWalkVoiceActiveCarGpt/  English Buddy language profile
+xWalk-rpi5-hw/xWalkAgent/xWalkVoice/xWalkGptCar/             upstream JSON GPT-car profile
+xWalk-rpi5-hw/xWalkController/xWalkHandler/
 ├── include/xController.h         parser and coordinator contract
 ├── include/xControllerTypes.h    callback and sound-operation types
 ├── src/xControllerLifecycle.cpp  dependency and callback binding
@@ -51,7 +51,7 @@ xWalk-rpi5/xWalkController/xWalkHandler/
 ├── src/calibration/                           calibration and verification handlers
 ├── src/platform/                              passive platform handlers
 └── test/src/xControllerTest.cpp  deterministic handler coverage
-xWalk-rpi5/xWalkController/xWalkApp/
+xWalk-rpi5-hw/xWalkController/xWalkApp/
 ├── CMakeLists.txt                              executable targets and CTest registration
 ├── activate/include/                          command-activation declarations
 ├── activate/src/                              validated command routing and usage
@@ -63,7 +63,7 @@ xWalk-rpi5/xWalkController/xWalkApp/
 ├── parse/include/xControllerParsing.h         typed parser declarations
 ├── parse/src/                                 option, command, request, and output parsing
 └── test/src/xControllerAppTest.cpp isolated host-application GoogleTest
-xWalk-rpi5/xWalkController/xWalkConfig/
+xWalk-rpi5-hw/xWalkController/xWalkConfig/
 ├── picar-x.conf                               manifest and mutable overrides
 └── picar-x.d/                                 functional and AI-provider fragments
 ```
@@ -380,17 +380,17 @@ Until approved, focused constructor overloads remain the established pattern.
 Each command handler has one source file, grouped by its owning functionality:
 
 ```text
-xWalk-rpi5/xWalkController/xWalkApp/activate/src/                             command activation and routing
-xWalk-rpi5/xWalkController/xWalkApp/parse/src/                                typed parsing and output formatting
-xWalk-rpi5/xWalkController/xWalkApp/boot/src/                                 boot selection and service composition
-xWalk-rpi5/xWalkController/xWalkHandler/src/common/                                       shared safety support
-xWalk-rpi5/xWalkController/xWalkHandler/src/vehicle/                                      movement and sensing
-xWalk-rpi5/xWalkController/xWalkHandler/src/vision/                                       camera and vision
-xWalk-rpi5/xWalkController/xWalkHandler/src/voice/                                        voice and AI
-xWalk-rpi5/xWalkController/xWalkHandler/src/media/                                        audio operations
-xWalk-rpi5/xWalkController/xWalkHandler/src/connectivity/                                 external control
-xWalk-rpi5/xWalkController/xWalkHandler/src/calibration/                                  calibration operations
-xWalk-rpi5/xWalkController/xWalkHandler/src/platform/                                     platform diagnostics
+xWalk-rpi5-hw/xWalkController/xWalkApp/activate/src/                             command activation and routing
+xWalk-rpi5-hw/xWalkController/xWalkApp/parse/src/                                typed parsing and output formatting
+xWalk-rpi5-hw/xWalkController/xWalkApp/boot/src/                                 boot selection and service composition
+xWalk-rpi5-hw/xWalkController/xWalkHandler/src/common/                                       shared safety support
+xWalk-rpi5-hw/xWalkController/xWalkHandler/src/vehicle/                                      movement and sensing
+xWalk-rpi5-hw/xWalkController/xWalkHandler/src/vision/                                       camera and vision
+xWalk-rpi5-hw/xWalkController/xWalkHandler/src/voice/                                        voice and AI
+xWalk-rpi5-hw/xWalkController/xWalkHandler/src/media/                                        audio operations
+xWalk-rpi5-hw/xWalkController/xWalkHandler/src/connectivity/                                 external control
+xWalk-rpi5-hw/xWalkController/xWalkHandler/src/calibration/                                  calibration operations
+xWalk-rpi5-hw/xWalkController/xWalkHandler/src/platform/                                     platform diagnostics
 ```
 
 Every `XWALK_handler...` method remains isolated in its own translation unit.

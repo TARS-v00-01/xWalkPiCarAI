@@ -7,7 +7,7 @@ testable sinks.
 ## Public interface
 
 The authoritative declarations are in
-[`xWalkTrace`](../../../../xWalk-rpi5/xWalkTrace/README.md).
+[`xWalkTrace`](../../../../xWalk-rpi5-hw/xWalkTrace/README.md).
 
 The application configures the active severity and supplies the callback
 context. The trace object appends accepted records to

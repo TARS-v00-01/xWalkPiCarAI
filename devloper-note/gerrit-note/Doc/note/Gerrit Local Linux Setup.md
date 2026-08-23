@@ -12,7 +12,7 @@ configuration file.
 Run the assessment:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/local-linux/gerrit-local.sh assess
+xWalk-rpi5-tool/py-agent/gerrit-tool/local-linux/gerrit-local.sh assess
 ```
 
 The local configuration requires an assessed Wi-Fi or Ethernet address, HTTPS
@@ -25,7 +25,7 @@ password in this file.
 Install and start Gerrit:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/local-linux/gerrit-local.sh install
+xWalk-rpi5-tool/py-agent/gerrit-tool/local-linux/gerrit-local.sh install
 ```
 
 The script prompts for the password, installs below `$HOME`, starts Gerrit and
@@ -33,7 +33,7 @@ Caddy, starts CI when `$HOME/.xwalk-ci.env` exists, and validates the
 installation. After a reboot, use:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/local-linux/gerrit-local.sh start
+xWalk-rpi5-tool/py-agent/gerrit-tool/local-linux/gerrit-local.sh start
 ```
 
 This command recovers Gerrit, Caddy, and the configured CI worker as one

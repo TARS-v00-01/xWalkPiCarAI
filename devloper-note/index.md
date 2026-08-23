@@ -15,15 +15,15 @@ continuous-integration documentation for the xWalk workspace.
 Run these commands from the repository root:
 
 ```bash
-xWalkTool/doc-tool/wiki.sh local
+xWalk-rpi5-tool/doc-tool/wiki.sh local
 ```
 
 ```bash
-xWalkTool/doc-tool/wiki.sh server --site-url https://docs.example.edu/xwalk/
+xWalk-rpi5-tool/doc-tool/wiki.sh server --site-url https://docs.example.edu/xwalk/
 ```
 
 ```bash
-xWalkTool/doc-tool/wiki.sh github
+xWalk-rpi5-tool/doc-tool/wiki.sh github
 ```
 
 Use `local` on a workstation, `server` on the college host, and `github` for the Pages artifact. See the

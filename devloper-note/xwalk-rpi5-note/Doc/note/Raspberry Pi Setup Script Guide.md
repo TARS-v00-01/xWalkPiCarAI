@@ -1,7 +1,7 @@
 # Raspberry Pi Setup Script Guide
 
 This guide explains how to use
-[Raspberry Pi setup script](../../../../xWalkTool/shell-agent/deploy-tool/setup-rpi.sh) to inspect,
+[Raspberry Pi setup script](../../../../xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh) to inspect,
 plan, validate, and provision a Raspberry Pi for xWalk. The script prepares operating-system dependencies and
 device access. It does not prove that actuators are wired correctly or physically safe.
 
@@ -31,7 +31,7 @@ neither exists.
 Run the source-tree command from the repository root:
 
 ```sh
-xWalkTool/shell-agent/deploy-tool/setup-rpi.sh --help
+xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh --help
 ```
 
 After installation, the equivalent script is normally `/usr/lib/xwalk/setup-rpi.sh`.
@@ -106,7 +106,7 @@ be enabled or available. Do not guess a GPIO controller when more than one is li
 When the target matches all reviewed defaults, preview the plan with:
 
 ```sh
-xWalkTool/shell-agent/deploy-tool/setup-rpi.sh --dry-run
+xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh --dry-run
 ```
 
 The dry run reports:
@@ -126,7 +126,7 @@ Only an administrator should run apply mode. The script uses the current root ac
 individual privileged commands when available:
 
 ```sh
-xWalkTool/shell-agent/deploy-tool/setup-rpi.sh --apply --profile robot_hat_v4 --runtime-user xwalk --gpio-device /dev/gpiochip4
+xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh --apply --profile robot_hat_v4 --runtime-user xwalk --gpio-device /dev/gpiochip4
 ```
 
 Do not add a Robot HAT overlay merely to make profile validation succeed. Robot HAT v5 requires its already
@@ -142,7 +142,7 @@ receives the new supplementary groups.
 Run the same selection in check mode:
 
 ```sh
-xWalkTool/shell-agent/deploy-tool/setup-rpi.sh --check
+xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh --check
 ```
 
 Then inspect identity and permissions:
@@ -234,8 +234,8 @@ Common failures:
 These commands check script syntax and provisioning behavior without accessing Raspberry Pi hardware:
 
 ```sh
-bash -n xWalkTool/shell-agent/deploy-tool/setup-rpi.sh xWalkTool/shell-agent/deploy-tool/provision-hardware.sh
-bash xWalkTool/shell-agent/deploy-tool/test/setup-rpi-test.sh
+bash -n xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh xWalk-rpi5-tool/shell-agent/deploy-tool/provision-hardware.sh
+bash xWalk-rpi5-tool/shell-agent/deploy-tool/test/setup-rpi-test.sh
 ```
 
 Do not run `--apply`, hardware-labelled CTest tests, or actuator commands during ordinary host verification.

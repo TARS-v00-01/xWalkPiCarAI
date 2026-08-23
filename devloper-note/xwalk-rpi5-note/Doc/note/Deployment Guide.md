@@ -16,8 +16,8 @@ option is selected.
 Inspect the target without changing it:
 
 ```sh
-xWalkTool/shell-agent/deploy-tool/setup-rpi.sh --check
-xWalkTool/shell-agent/deploy-tool/setup-rpi.sh --dry-run
+xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh --check
+xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh --dry-run
 ```
 
 The shared defaults are Robot HAT v4, runtime user `xwalk`,
@@ -90,7 +90,7 @@ cmake --build --preset coverage --parallel
 ctest --preset coverage
 ```
 
-Use `xWalkTool/shell-agent/quality-tool/run-host-coverage.sh run` after the coverage test when `gcovr` is
+Use `xWalk-rpi5-tool/shell-agent/quality-tool/run-host-coverage.sh run` after the coverage test when `gcovr` is
 available. ThreadSanitizer has its own `thread-sanitizer` configure, build, and
 test presets and must not be combined with AddressSanitizer.
 
@@ -98,7 +98,7 @@ Run the native Raspberry Pi Release configuration on the target Raspberry Pi
 or in an approved matching ARM build environment:
 
 ```sh
-cmake --fresh -S xWalk-rpi5 --preset rpi-release
+cmake --fresh -S xWalk-rpi5-hw --preset rpi-release
 cmake --build build-rpi/cmake --parallel
 ctest --test-dir build-rpi/cmake -N -L hardware
 ```
@@ -159,7 +159,7 @@ unsafe installed file permissions, and retains a checksum manifest for the stage
 [Host Production Readiness Work](Host%20Production%20Readiness%20Work.md) for local commands and the evidence
 boundary.
 
-Use `xWalkTool/shell-agent/quality-tool/run-host-coverage.sh run` for foreground-only coverage. The script does not create a detached
+Use `xWalk-rpi5-tool/shell-agent/quality-tool/run-host-coverage.sh run` for foreground-only coverage. The script does not create a detached
 process, install packages, or request privileges.
 
 ## Installed layout and staging
@@ -170,9 +170,9 @@ resources rather than separate project shared objects.
 | Path | Purpose |
 | --- | --- |
 | `/usr/bin/xwalk-picarx-control` | CLI executable |
-| `/usr/lib/xwalk/xWalkTool/shell-agent/env-tool/license/xWalkEnv.sh` | Authenticated licence environment loader |
-| `/usr/lib/xwalk/xWalkTool/py-agent/dev-tool/xWalkLicenseTool` | Licence encryption and decryption tool |
-| `/usr/lib/xwalk/xWalkTool/shell-agent/env-tool/license/xWalkLicense.cfg` | Empty model-selection input template |
+| `/usr/lib/xwalk/xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkEnv.sh` | Authenticated licence environment loader |
+| `/usr/lib/xwalk/xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool` | Licence encryption and decryption tool |
+| `/usr/lib/xwalk/xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkLicense.cfg` | Empty model-selection input template |
 | `/etc/xwalk/picar-x.conf` | Administrator-controlled configuration manifest |
 | `/etc/xwalk/picar-x.d/` | Functional defaults and separate AI-provider profiles |
 | `/var/lib/xwalk/picar-x.conf` | Writable active manifest, created once by setup |
@@ -245,7 +245,7 @@ select a reviewed foreground command in `/etc/xwalk/xwalk-service.conf` before e
 The environment file contains only the reviewed service command. AI models and
 credentials are never duplicated there. The package installs `xWalkEnv.sh`,
 `xWalkLicenseTool`, and the empty model configuration under the matching
-`/usr/lib/xwalk/xWalkTool` subdirectories. An explicitly provisioned package may
+`/usr/lib/xwalk/xWalk-rpi5-tool` subdirectories. An explicitly provisioned package may
 also install `X_WALK_LICENSE.KEY` under `/usr/lib/xwalk/xWalkLibrary`; normal
 packages omit the deployment-specific ciphertext. See the
 [licence-key workflow](License%20Key%20Workflow.md).

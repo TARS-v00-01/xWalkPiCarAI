@@ -31,7 +31,7 @@ $XWALK_PICARX_CLI --trace CTRL.024.enable doctor
 
 Use `--deployment-config PATH` to select a different deployment configuration.
 The Raspberry Pi build and provisioning sequence is documented in the
-[Controller README](../../../../xWalk-rpi5/xWalkController/README.md#raspberry-pi-compilation-and-test-discovery).
+[Controller README](../../../../xWalk-rpi5-hw/xWalkController/README.md#raspberry-pi-compilation-and-test-discovery).
 
 ## Basic driving
 
@@ -66,7 +66,7 @@ For a CSI camera, verify the camera stack and xWalk configuration:
 ```bash
 rpicam-hello --list-cameras
 rpicam-hello --nopreview --timeout 1000
-xWalkTool/shell-agent/deploy-tool/setup-rpi-local.sh --check
+xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi-local.sh --check
 $XWALK_PICARX_CLI --print-effective-config | rg '^video_stream_'
 ```
 

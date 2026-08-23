@@ -5,7 +5,7 @@
 
 ## Public interface
 
-See [`xWalkI2c`](../../../../xWalk-rpi5/xWalkHal/interface/xWalkI2c/README.md) and the public headers under
+See [`xWalkI2c`](../../../../xWalk-rpi5-hw/xWalkHal/interface/xWalkI2c/README.md) and the public headers under
 its `core`
 and `hardware` include directories.
 

@@ -5,15 +5,15 @@
 The target architecture has nine Gerrit-only component repositories and one
 private Gerrit integration repository. During migration, `xWalkPiCarAI/master`
 is the active integrated Gerrit and GitHub branch; the final integration target
-is `xWalk-rpi5/master`. The migration tools stage work in new clones so the source
+is `xWalk-rpi5-hw/master`. The migration tools stage work in new clones so the source
 monorepo remains usable until the administrator validates and submits the
 migration. A dry run is a plan, not proof that Gerrit repositories or
 permissions exist.
 
 The component repositories are `DevloperNote`, `xWalkAgent`,
-`xWalkAudioResources`, `xWalkController`, `xWalkHal`, `xWalkIW`,
-`xWalkLibrary`, `xWalkTool`, and `xWalkTrace`.
-`xWalk-rpi5` records the components as exact submodule gitlinks together with
+`xWalkAudioResources`, `xWalkController`, `xWalkHal`, `xWalk-rpi5-iw`,
+`xWalkLibrary`, `xWalk-rpi5-tool`, and `xWalkTrace`.
+`xWalk-rpi5-hw` records the components as exact submodule gitlinks together with
 top-level integration files, CMake entry points, GitHub workflows, and
 integration history. Reproducible builds must use
 `git submodule update --init --recursive`; they must not use uncontrolled
@@ -21,13 +21,13 @@ integration history. Reproducible builds must use
 
 ## Configuration and connectivity
 
-Copy and edit `xWalkTool/py-agent/gerrit-tool/config/multi-repo.conf`. Resolve the Gerrit
+Copy and edit `xWalk-rpi5-tool/py-agent/gerrit-tool/config/multi-repo.conf`. Resolve the Gerrit
 host and administrator placeholders, retain unprivileged ports, and do not
 store passwords, tokens, or private keys in the file. `GERRIT_SSH_PORT` is the
 Gerrit SSH service, not the college login SSH port.
 
 ```bash
-export XWALK_GERRIT_MULTI_REPO_CONFIG="$PWD/xWalkTool/py-agent/gerrit-tool/config/multi-repo.conf"
+export XWALK_GERRIT_MULTI_REPO_CONFIG="$PWD/xWalk-rpi5-tool/py-agent/gerrit-tool/config/multi-repo.conf"
 ```
 
 The tools use three configurable groups: `xWalk-Owners`, `xWalk-Partners`, and
@@ -41,13 +41,13 @@ The optional permission-only parent is `xWalk-Projects`.
 | `DevloperNote` | Read/clone | Develop, review and submit | Full/Owner | Read and Verified |
 | `xWalkHal` | Read/clone | Review push | Full/Owner | Read and Verified |
 | `xWalkController` | No access | Review push | Full/Owner | Read and Verified |
-| `xWalkIW` | No access | Read/clone | Full/Owner | Read and Verified |
+| `xWalk-rpi5-iw` | No access | Read/clone | Full/Owner | Read and Verified |
 | `xWalkAgent` | No access | Read/clone | Full/Owner | Read and Verified |
 | `xWalkLibrary` | Read/clone | Review push | Full/Owner | Read and Verified |
 | `xWalkTrace` | Read/clone | Review push | Full/Owner | Read and Verified |
 | `xWalkAudioResources` | No access | No access | Full/Owner | Read and Verified |
-| `xWalkTool` | No access | No access | Full/Owner | Read and Verified |
-| `xWalk-rpi5` | No access | No access | Full/Owner | Read, uplift review push and Verified |
+| `xWalk-rpi5-tool` | No access | No access | Full/Owner | Read and Verified |
+| `xWalk-rpi5-hw` | No access | No access | Full/Owner | Read, uplift review push and Verified |
 
 Review push means read plus upload to `refs/for/master`; it does not grant direct
 branch push, submit, force push, branch deletion, ACL administration, or
@@ -66,7 +66,7 @@ requirements satisfied and the signed-in user has Submit permission.
 Always review the plan first:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-multi-repo-provision.sh --dry-run
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-multi-repo-provision.sh --dry-run
 ```
 
 Provisioning discovers and preserves existing groups and projects. Apply is
@@ -81,7 +81,7 @@ export XWALK_CONFIRM_ACL="APPLY_XWALK_ACL"
 ```
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-multi-repo-provision.sh --apply
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-multi-repo-provision.sh --apply
 ```
 
 The ACL tool clones and reviews `refs/meta/config`; it never edits
@@ -94,11 +94,20 @@ Install an administrator-approved `git-filter-repo` command before apply. The
 split tool validates the fixed component allowlist, requires a clean source,
 creates independent clones outside the workspace, rewrites only those clones,
 renames their branch to `master`, and leaves the original history unchanged.
-`xWalkTool` is split from its top-level path; product modules are split from
-their paths below `xWalk-rpi5`.
+The integrated workspace is the migration source of truth. The split ignores
+embedded component `.git` directories so a stale nested checkout cannot replace
+the content recorded by the integration commit.
+`xWalk-rpi5-tool` is split from its top-level path; product modules are split from
+their paths below `xWalk-rpi5-hw`.
+Renamed components include both their legacy and current paths so history from
+before the rename remains reachable. New Gerrit projects use an unborn
+`master`: import the parent baseline directly, then upload the renamed tip
+through `refs/for/master`.
+Gerrit's branch listing omits an unborn `master`; provisioning records this as
+the expected pre-import state and sets HEAD after the branch exists.
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-history-split.sh --dry-run
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-history-split.sh --dry-run
 ```
 
 ```bash
@@ -114,7 +123,7 @@ export XWALK_IMPORT_MODE="none"
 ```
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-history-split.sh --apply
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-history-split.sh --apply
 ```
 
 Inspect every split repository before import. Use `XWALK_IMPORT_MODE=review`
@@ -129,11 +138,11 @@ component directories from this workspace. Apply it only after all component
 `master` branches contain the verified split commits.
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-submodule-migrate.sh --dry-run
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-submodule-migrate.sh --dry-run
 ```
 
 ```bash
-export XWALK_INTEGRATION_OUTPUT_DIR="/safe/new/xWalk-rpi5"
+export XWALK_INTEGRATION_OUTPUT_DIR="/safe/new/xWalk-rpi5-hw"
 ```
 
 ```bash
@@ -141,7 +150,7 @@ export XWALK_CONFIRM_SUBMODULES="CREATE_INTEGRATION_CLONE"
 ```
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-submodule-migrate.sh --apply
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-submodule-migrate.sh --apply
 ```
 
 The resulting commit must be reviewed before replacing the monorepo baseline.
@@ -153,7 +162,7 @@ and the absence of component GitHub remotes.
 An authorized user clones the private integration project with:
 
 ```bash
-git clone --recurse-submodules ssh://USER@GERRIT_SERVER_HOST:GERRIT_SSH_PORT/xWalk-rpi5
+git clone --recurse-submodules ssh://USER@GERRIT_SERVER_HOST:GERRIT_SSH_PORT/xWalk-rpi5-hw
 ```
 
 Existing clones update safely with:
@@ -173,7 +182,7 @@ git submodule update --init --recursive
 A module change is committed and reviewed inside that module:
 
 ```bash
-cd xWalk-rpi5/xWalkHal
+cd xWalk-rpi5-hw/xWalkHal
 ```
 
 ```bash
@@ -207,7 +216,7 @@ one repository, full commit, and Gerrit change triple per component. It updates
 all listed gitlinks in one commit and runs integration validation once:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-topic-uplift.sh --dry-run TOPIC_NAME xWalkLibrary LIBRARY_COMMIT LIBRARY_CHANGE xWalkHal HAL_COMMIT HAL_CHANGE
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-topic-uplift.sh --dry-run TOPIC_NAME xWalkLibrary LIBRARY_COMMIT LIBRARY_CHANGE xWalkHal HAL_COMMIT HAL_CHANGE
 ```
 
 The partner documentation workflow is:
@@ -258,7 +267,7 @@ Dependencies come from exact `xWalkLibrary`, `xWalkTrace`, and
 resources and audio consumers; documentation changes validate formatting and
 links. Cross-repository topics test all participating revisions. Until every
 split repository has a self-contained standalone entry point, trusted Gerrit
-CI must validate the patch in an exact `xWalk-rpi5` integration checkout and the
+CI must validate the patch in an exact `xWalk-rpi5-hw` integration checkout and the
 migration must not be declared complete.
 
 ## Automatic uplift and recovery
@@ -268,11 +277,11 @@ with its full commit, source Gerrit change, patch set, and optional source
 topic:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-auto-uplift.sh --dry-run xWalkHal FULL_COMMIT_ID GERRIT_CHANGE PATCHSET TOPIC
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-auto-uplift.sh --dry-run xWalkHal FULL_COMMIT_ID GERRIT_CHANGE PATCHSET TOPIC
 ```
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-auto-uplift.sh --apply xWalkHal FULL_COMMIT_ID GERRIT_CHANGE PATCHSET TOPIC
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-auto-uplift.sh --apply xWalkHal FULL_COMMIT_ID GERRIT_CHANGE PATCHSET TOPIC
 ```
 
 Apply acquires a lock, clones clean `xWalkPiCarAI/master`, and proves the component
@@ -282,14 +291,14 @@ signed-off uplift commit and uploads an active review. The patch-set event runs 
 Automatic review, submission, and GitHub synchronization are disabled until their
 separate service accounts and Gerrit policy are installed and tested. See
 the [integrated uplift workflow](Integrated%20Uplift%20Workflow.md) for the
-current controls and the future `xWalk-rpi5/master` transition.
+current controls and the future `xWalk-rpi5-hw/master` transition.
 
 ## GitHub policy and Actions checkout
 
 Only a submitted and integration-verified branch selected by
 `GITHUB_SYNC_SOURCE_PROJECT` and `GITHUB_SYNC_SOURCE_BRANCH` may synchronize.
 The accepted pairs are the current `xWalkPiCarAI/master` migration branch and
-the final `xWalk-rpi5/master` branch. The GitHub repository name and branch must
+the final `xWalk-rpi5-hw/master` branch. The GitHub repository name and branch must
 match the selected source. Component GitHub repositories, component GitHub
 remotes, `git push --mirror`, `git push --all`, wildcard refspecs, force push,
 and `git submodule foreach git push` are prohibited.
@@ -299,7 +308,7 @@ GitHub Actions and project-owned code outside the two guarded synchronization im
 publication command a Host Quality failure before submission.
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-github-sync.sh --dry-run
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-github-sync.sh --dry-run
 ```
 
 The event-driven service additionally requires `GITHUB_PUSH_ENABLED=true`, an
@@ -352,7 +361,7 @@ source repository.
 Plan all forty identity/repository checks with:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-permission-check.sh --dry-run
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-permission-check.sh --dry-run
 ```
 
 Apply read checks only with dedicated public, partner, owner, and CI test
@@ -361,7 +370,7 @@ Read checks do not prove review upload, label, submit, force-push, branch
 deletion, or ACL administration. Test those negative and positive operations
 with disposable changes and the correct individual accounts, then inspect each
 `refs/meta/config`. The partner must be unable to list or clone
-`xWalkAudioResources` and `xWalk-rpi5`; CI must be unable to administer ACLs or
+`xWalkAudioResources` and `xWalk-rpi5-hw`; CI must be unable to administer ACLs or
 force-push.
 
 ## Adding another module
@@ -377,7 +386,7 @@ repository.
 Create the replacement key on the account or CI secret owner, upload its
 public half, verify read/vote or owner behavior, rotate the protected secret,
 restart only the user-owned CI process, then revoke the old public key. Rotate
-GitHub's least-privilege `xWalk-rpi5` deploy credential separately. Never display
+GitHub's least-privilege `xWalk-rpi5-hw` deploy credential separately. Never display
 or commit private keys, tokens, cookies, authorization headers, or passwords.
 
 ## Administrator actions and limitations

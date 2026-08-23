@@ -62,7 +62,7 @@ Only one installation method is required. The repository never installs this too
 terminal, detailed HTML, and Cobertura XML reports with:
 
 ```sh
-xWalkTool/shell-agent/quality-tool/run-host-coverage.sh run
+xWalk-rpi5-tool/shell-agent/quality-tool/run-host-coverage.sh run
 ```
 
 The foreground-only runner uses a system `gcovr` executable or

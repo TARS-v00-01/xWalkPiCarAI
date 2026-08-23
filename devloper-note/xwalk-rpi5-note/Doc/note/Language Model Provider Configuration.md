@@ -7,7 +7,7 @@ The three voice Agents remain provider-neutral:
 - `xWalkVoiceActiveCarGpt` supplies the Buddy English behavior profile.
 
 `xWalkBootRpi` selects the HTTP backend from the layered deployment
-configuration. The tracked `xWalk-rpi5/xWalkController/xWalkConfig/picar-x.conf` manifest
+configuration. The tracked `xWalk-rpi5-hw/xWalkController/xWalkConfig/picar-x.conf` manifest
 includes functional fragments below `picar-x.d`. An installed deployment
 normally uses `/var/lib/xwalk/picar-x.conf` and `/var/lib/xwalk/picar-x.d`;
 `/etc/xwalk` contains the administrator-controlled templates.
@@ -40,16 +40,16 @@ Neither value is added to conversation history or Doctor output. Calibration
 writes remain in the primary file; included defaults are never rewritten by
 `XWalkConfigStore`.
 
-`xWalkTool/shell-agent/env-tool/license/xWalkEnv.sh` is the reviewed environment-loader boundary. It
-uses `xWalkTool/py-agent/dev-tool/xWalkLicenseTool` to authenticate and decrypt the
-fixed `xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY` model settings, then reads API
+`xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkEnv.sh` is the reviewed environment-loader boundary. It
+uses `xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool` to authenticate and decrypt the
+fixed `xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY` model settings, then reads API
 credentials from the developer's mode-`0600` `~/.netrc`. It validates every
 supported model and credential name before exporting anything, never evaluates
 values as shell syntax, and removes its mode-`0600` temporary JSON file. Source
 the loader so the variables remain in the calling shell:
 
 ```sh
-source xWalkTool/shell-agent/env-tool/license/xWalkEnv.sh
+source xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkEnv.sh
 ```
 
 Create the encrypted model file from the committed empty template or repeated
@@ -61,8 +61,8 @@ rejects an unprovisioned, modified, incomplete, or group/world-readable file.
 For development, create the already-ignored local file and restrict its mode:
 
 ```sh
-cp xWalk-rpi5/xWalkController/xWalkConfig/picar-x.conf xWalk-rpi5/xWalkController/xWalkConfig/picar-x.local.conf
-chmod 0600 xWalk-rpi5/xWalkController/xWalkConfig/picar-x.local.conf
+cp xWalk-rpi5-hw/xWalkController/xWalkConfig/picar-x.conf xWalk-rpi5-hw/xWalkController/xWalkConfig/picar-x.local.conf
+chmod 0600 xWalk-rpi5-hw/xWalkController/xWalkConfig/picar-x.local.conf
 ```
 
 Select a different provider include in `picar-x.local.conf`. Provision the

@@ -27,7 +27,7 @@ machine generativelanguage.googleapis.com
 
 ```bash
 chmod 600 "$HOME/.netrc"
-source xWalkTool/shell-agent/env-tool/license/xWalkEnv.sh
+source xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkEnv.sh
 test -n "${GEMINI_API_KEY:-}" && echo "GEMINI_API_KEY loaded"
 ```
 
@@ -126,14 +126,14 @@ those values with the selected USB microphone, PulseAudio `Master`, and the
 provisioned Piper path. Override another deployment during CMake configuration:
 
 ```bash
-cmake --fresh -S xWalk-rpi5 --preset rpi-release -DXWALK_RPI_VOICE_CAPTURE_DEVICE=default -DXWALK_RPI_VOICE_MIXER_DEVICE=default -DXWALK_RPI_VOICE_MIXER_ELEMENT=PCM -DXWALK_RPI_PIPER_EXECUTABLE=piper
+cmake --fresh -S xWalk-rpi5-hw --preset rpi-release -DXWALK_RPI_VOICE_CAPTURE_DEVICE=default -DXWALK_RPI_VOICE_MIXER_DEVICE=default -DXWALK_RPI_VOICE_MIXER_ELEMENT=PCM -DXWALK_RPI_PIPER_EXECUTABLE=piper
 ```
 
 Regenerate an existing build-local runtime after tracked defaults or deployment
 overrides change:
 
 ```bash
-xWalkTool/shell-agent/deploy-tool/configure-rpi-runtime.sh --build-directory "$PWD/build-rpi" --runtime-user xwalk --generate-only
+xWalk-rpi5-tool/shell-agent/deploy-tool/configure-rpi-runtime.sh --build-directory "$PWD/build-rpi" --runtime-user xwalk --generate-only
 ```
 
 To select Gemini instead, set `voice_active_car_gpt_provider = gemini`, restore
@@ -143,7 +143,7 @@ the documented Gemini HTTPS endpoint, and set
 ## 5. Build and check
 
 ```bash
-cmake --fresh -S xWalk-rpi5 --preset rpi-release
+cmake --fresh -S xWalk-rpi5-hw --preset rpi-release
 cmake --build build-rpi/cmake --parallel
 build-rpi/cmake/xWalkController/xWalkApp/xwalk-picarx-control --validate-config
 build-rpi/cmake/xWalkController/xWalkApp/xwalk-picarx-control doctor
@@ -154,7 +154,7 @@ build-rpi/cmake/xWalkController/xWalkApp/xwalk-picarx-control doctor
 Place the vehicle safely with its wheels clear before enabling voice actions.
 
 ```bash
-source xWalkTool/shell-agent/env-tool/license/xWalkEnv.sh
+source xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkEnv.sh
 build-rpi/cmake/xWalkController/xWalkApp/xwalk-picarx-control voice-active-car-gpt start
 ```
 

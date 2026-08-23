@@ -40,7 +40,7 @@ The Ubuntu RPI build requires the Linux GPIO, I2C, and SPI UAPI headers supplied
 the `linux-libc-dev` package.
 
 The `rpi-release` preset reads its defaults from
-`xWalkTool/shell-agent/deploy-tool/rpi-defaults.conf`: Robot HAT v4, runtime user
+`xWalk-rpi5-tool/shell-agent/deploy-tool/rpi-defaults.conf`: Robot HAT v4, runtime user
 `xwalk`, `/dev/gpiochip4`, `/dev/i2c-1`, `/dev/spidev0.0`, and a CSI camera.
 Explicit `-DXWALK_RPI_*=...` values continue to override them.
 
@@ -54,7 +54,7 @@ components:
 - working ALSA capture, PCM playback, and mixer devices.
 
 Their machine-independent defaults are maintained below
-`xWalk-rpi5/xWalkController/xWalkConfig`. The RPi configure initializes the
+`xWalk-rpi5-hw/xWalkController/xWalkConfig`. The RPi configure initializes the
 writable `build-rpi/runtime/picar-x.conf` tree and compiles that generated
 manifest path into the build-tree CLI. Vosk is loaded dynamically, so vendor
 development headers are not required to compile xWalk.
@@ -94,7 +94,7 @@ ctest --test-dir ../build-rpi/cmake -N -L hardware
 ```
 
 After reviewing the configured profile, runtime user, and exact device paths,
-run the opt-in provisioning target from `xWalk-rpi5`:
+run the opt-in provisioning target from `xWalk-rpi5-hw`:
 
 ```sh
 cmake --build --preset rpi-provision --parallel
@@ -124,8 +124,8 @@ under `/etc/xwalk/picar-x.d`. Setup initializes the active manifest and fragment
 tree under `/var/lib/xwalk` once. See the [deployment guide](Deployment%20Guide.md) for staging,
 Debian packaging, provisioning, service setup, permissions, analysis, coverage, and hardware acceptance.
 
-See the [xWalk Controller README](../../../../xWalk-rpi5/xWalkController/README.md) for aggregate ownership
-and the [xWalkApp README](../../../../xWalk-rpi5/xWalkController/xWalkApp/README.md)
+See the [xWalk Controller README](../../../../xWalk-rpi5-hw/xWalkController/README.md) for aggregate ownership
+and the [xWalkApp README](../../../../xWalk-rpi5-hw/xWalkController/xWalkApp/README.md)
 for every command, action, safety rule, and backend-composition detail.
 
 ## Clean generated build output
@@ -133,14 +133,14 @@ for every command, action, safety rule, and backend-composition detail.
 Preview every root and submodule build directory that will be removed:
 
 ```sh
-xWalkTool/shell-agent/repo-tool/clean-build.sh --dry-run
+xWalk-rpi5-tool/shell-agent/repo-tool/clean-build.sh --dry-run
 ```
 
 Remove all listed `build` and `build-*` directories, supported in-source CMake
 output, and recognized Python-generated caches and package output:
 
 ```sh
-xWalkTool/shell-agent/repo-tool/clean-build.sh --yes
+xWalk-rpi5-tool/shell-agent/repo-tool/clean-build.sh --yes
 ```
 
 The cleaner never removes a source `CMakeLists.txt` or Python source file.
@@ -152,23 +152,23 @@ documented build and test commands.
 Each module remains independently configurable. For example:
 
 ```sh
-cmake -S xWalk-rpi5/xWalkHal/device/xWalkPwm -B xWalk-rpi5/xWalkHal/device/xWalkPwm/build
-cmake --build xWalk-rpi5/xWalkHal/device/xWalkPwm/build --parallel
+cmake -S xWalk-rpi5-hw/xWalkHal/device/xWalkPwm -B xWalk-rpi5-hw/xWalkHal/device/xWalkPwm/build
+cmake --build xWalk-rpi5-hw/xWalkHal/device/xWalkPwm/build --parallel
 ```
 
 Enable host tests with the option documented by the module README:
 
 ```sh
-cmake -S xWalk-rpi5/xWalkHal/device/xWalkPwm -B xWalk-rpi5/xWalkHal/device/xWalkPwm/build-host -DXWALK_PWM_BUILD_HOST_TESTS=ON
-cmake --build xWalk-rpi5/xWalkHal/device/xWalkPwm/build-host --parallel
-ctest --test-dir xWalk-rpi5/xWalkHal/device/xWalkPwm/build-host --output-on-failure
+cmake -S xWalk-rpi5-hw/xWalkHal/device/xWalkPwm -B xWalk-rpi5-hw/xWalkHal/device/xWalkPwm/build-host -DXWALK_PWM_BUILD_HOST_TESTS=ON
+cmake --build xWalk-rpi5-hw/xWalkHal/device/xWalkPwm/build-host --parallel
+ctest --test-dir xWalk-rpi5-hw/xWalkHal/device/xWalkPwm/build-host --output-on-failure
 ```
 
 Build hardware tests only when the target headers and dependencies are present.
 List hardware tests without executing them during normal verification:
 
 ```sh
-ctest --test-dir xWalk-rpi5/xWalkHal/device/xWalkPwm/build-rpi -N -L hardware
+ctest --test-dir xWalk-rpi5-hw/xWalkHal/device/xWalkPwm/build-rpi -N -L hardware
 ```
 
 `Doc/note` contains Markdown sources and `Doc/image` contains referenced image

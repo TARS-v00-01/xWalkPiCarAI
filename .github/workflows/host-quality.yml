@@ -24,11 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host validation dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Validate shell scripts and CI metadata
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh preparation
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh preparation
       - name: Validate C++ formatting
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh styler
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh styler
 
   xwalk-agent:
     name: xWalkAgent
@@ -37,15 +37,15 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Configure and build xWalkAgent
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-agent-build
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-agent-build
       - name: Run xWalkAgent aggregate tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-agent-aggregate
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-agent-aggregate
       - name: Run xWalkAgent functional-group tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-agent-groups
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-agent-groups
       - name: Run xWalkAgent configuration and communication tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-agent-functional
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-agent-functional
 
   xwalk-controller:
     name: xWalkController
@@ -54,13 +54,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Configure and build xWalkController
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-controller-build
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-controller-build
       - name: Run controller, CLI, and Controller-to-HAL tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-controller-tests
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-controller-tests
       - name: Run device-free deployment configuration diagnosis
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-controller-diagnostic
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-controller-diagnostic
 
   xwalk-hal:
     name: xWalkHal
@@ -69,30 +69,30 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Configure and build xWalkHal
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-build
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-build
       - name: Run HAL unit and host-safe sequence tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-unit
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-unit
       - name: Run HAL interface, device, sensor, and layer tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-groups
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-groups
       - name: Run Robot HAT and lifecycle simulations
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-simulation
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-simulation
       - name: Run the device-free Robot HAT soak test
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-soak
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-hal-soak
 
   xwalk-iw:
-    name: xWalkIW
+    name: xWalk-rpi5-iw
     needs: preparation
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
-      - name: Configure and build xWalkIW
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-iw-build
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+      - name: Configure and build xWalk-rpi5-iw
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-iw-build
       - name: Run schema, serialization, gRPC, signal, and transport tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-iw-tests
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-iw-tests
 
   xwalk-library:
     name: xWalkLibrary
@@ -101,11 +101,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Configure and build xWalkLibrary consumers
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-library-build
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-library-build
       - name: Run shared-library, configuration, utility, licence, and architecture tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-library-tests
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-library-tests
 
   xwalk-trace:
     name: xWalkTrace
@@ -114,9 +114,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Build and run Trace formatting, routing, macro, and selector tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-trace-tests
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-trace-tests
 
   xwalk-vision:
     name: xWalk Vision
@@ -125,11 +125,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Configure and build recorded vision scenarios
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-vision-build
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-vision-build
       - name: Validate recorded media, OpenCV scenarios, safety, and assets
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-vision-tests
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-vision-tests
 
   xwalk-streaming:
     name: xWalk Streaming
@@ -138,11 +138,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk host dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Configure and build xWalk Streaming
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-streaming-build
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-streaming-build
       - name: Run loopback HTTP, MJPEG, lifecycle, timeout, and backpressure tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-streaming-tests
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-streaming-tests
 
   xwalk-quality:
     name: xWalk Quality
@@ -152,25 +152,25 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk quality dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Run GCC Debug build and tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh build-and-test gcc Debug
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh build-and-test gcc Debug
       - name: Run GCC Release build and tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh build-and-test gcc Release
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh build-and-test gcc Release
       - name: Run Clang Debug build and tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh build-and-test clang Debug
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh build-and-test clang Debug
       - name: Run Clang Release build and tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh build-and-test clang Release
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh build-and-test clang Release
       - name: Run AddressSanitizer and UndefinedBehaviorSanitizer
-        run: timeout --signal=TERM 20m xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh asan-ubsan
+        run: timeout --signal=TERM 20m xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh asan-ubsan
       - name: Run LeakSanitizer
-        run: timeout --signal=TERM 20m xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh leak-sanitizer
+        run: timeout --signal=TERM 20m xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh leak-sanitizer
       - name: Run ThreadSanitizer
-        run: timeout --signal=TERM 10m xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh thread-sanitizer
+        run: timeout --signal=TERM 10m xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh thread-sanitizer
       - name: Run Clang-Tidy and Cppcheck
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh static-analysis
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh static-analysis
       - name: Run Clang Static Analyzer
-        run: timeout --signal=TERM 30m xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh clang-static-analyzer
+        run: timeout --signal=TERM 30m xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh clang-static-analyzer
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -178,13 +178,13 @@ jobs:
           path: build-host/clang-analyzer/reports
           if-no-files-found: ignore
       - name: Run host stress tests
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh stress-tests
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh stress-tests
       - name: Run bounded fuzz smoke tests
-        run: timeout --signal=TERM 10m xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh fuzz-smoke
+        run: timeout --signal=TERM 10m xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh fuzz-smoke
       - name: Run Valgrind analysis
-        run: timeout --signal=TERM 30m xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh valgrind
+        run: timeout --signal=TERM 30m xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh valgrind
       - name: Generate GCC and Clang coverage
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh coverage
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh coverage
       - uses: actions/upload-artifact@v6
         if: always()
         with:
@@ -206,13 +206,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install xWalk deployment dependencies
-        run: xWalkTool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_HOST_PACKAGES
       - name: Validate deployment and provisioning scripts
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh deployment-scripts
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh deployment-scripts
       - name: Validate ARM64 dependencies and configured cross-build
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh arm64
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh arm64
       - name: Build and validate the staged installation
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh staged-install
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh staged-install
       - uses: actions/upload-artifact@v6
         with:
           name: staged-install-checksums
@@ -228,7 +228,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build and verify the searchable developer-note wiki
-        run: xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh developer-note-wiki
+        run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh developer-note-wiki
       - uses: actions/upload-artifact@v6
         with:
           name: xwalk-developer-note-wiki
@@ -244,7 +244,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Validate MyPiCarX CodeScene component configuration
-        run: xWalkTool/py-agent/dev-tool/xWalkCodeHealth validate-config
+        run: xWalk-rpi5-tool/py-agent/dev-tool/xWalkCodeHealth validate-config
       - name: Analyse changed code with the licensed CodeScene CLI when available
         env:
           GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
@@ -252,7 +252,7 @@ jobs:
           XWALK_CODESCENE_BASE_REVISION: ${{ github.event.pull_request.base.sha || github.event.before }}
           XWALK_CODESCENE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
           XWALK_CODESCENE_STRICT: ${{ vars.XWALK_CODESCENE_STRICT || 'false' }}
-        run: xWalkTool/py-agent/dev-tool/xWalkCodeHealth analyze
+        run: xWalk-rpi5-tool/py-agent/dev-tool/xWalkCodeHealth analyze
       - uses: actions/upload-artifact@v6
         if: always()
         with:

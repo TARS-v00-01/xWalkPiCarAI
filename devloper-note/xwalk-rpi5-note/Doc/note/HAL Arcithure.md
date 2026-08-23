@@ -43,17 +43,17 @@ The implementation is designed to provide:
 
 ```text
 MyPiCarX/
-├── xWalk-rpi5/xWalkLibrary/                reviewed project-managed dependencies
+├── xWalk-rpi5-hw/xWalkLibrary/                reviewed project-managed dependencies
 │   └── common/               common interface target, headers, and portable assets
-├── xWalk-rpi5/xWalkAudioResources/         packaged sound effects, music, and provenance
-├── xWalk-rpi5/xWalkHal/                     hardware abstraction and provider-neutral features
+├── xWalk-rpi5-hw/xWalkAudioResources/         packaged sound effects, music, and provenance
+├── xWalk-rpi5-hw/xWalkHal/                     hardware abstraction and provider-neutral features
 │   ├── xWalkI2c/                 hardware front end plus Linux backend
 │   ├── xWalkGpio/                hardware front end plus Linux backend
 │   ├── xWalkSpi/                 bounded SPI front end plus Linux backend
 │   ├── xWalkAudio/               shared ALSA ownership
 │   ├── xWalk*/                   independently configurable HAL modules
 │   └── CMakeLists.txt            aggregate HAL composition
-├── xWalk-rpi5/xWalkAgent/                   application-level robot coordinators
+├── xWalk-rpi5-hw/xWalkAgent/                   application-level robot coordinators
 │   ├── xWalkVehicle/             movement, sensing, and autonomous behavior
 │   ├── xWalkCalibration/         sensor, servo, and motor calibration
 │   ├── xWalkVision/              camera, detection, tracking, and video
@@ -61,12 +61,12 @@ MyPiCarX/
 │   ├── xWalkVoice/               speech and conversational AI
 │   ├── xWalkConnectivity/        external control and SPI transactions
 │   └── xWalkPlatform/            boot and platform composition
-├── xWalk-rpi5/xWalkController/              standalone command-line aggregate
+├── xWalk-rpi5-hw/xWalkController/              standalone command-line aggregate
 │   ├── xWalkHandler/             parser and command-handler implementation
 │   ├── xWalkApp/                 executable targets, entry points, generated help, and GoogleTest
 │   ├── xWalkConfig/              layered runtime and provider configuration
 │   └── xWalkTest/                centralized CLI and sequence verification
-├── xWalkTool/                    maintenance, deployment, licence, and verification tools
+├── xWalk-rpi5-tool/                    maintenance, deployment, licence, and verification tools
 ├── Doc/note/                     cross-module C++ documentation index
 ├── devloper-note/                            architecture and implementation notes
 ```
@@ -109,7 +109,7 @@ front ends do not construct target-specific backends.
 | `xWalkUtils` | Platform utilities, lazy reads, and standard-error restoration |
 
 `xWalkLibraryCommon` is the shared dependency beneath the workspace. Its interface target exports the public
-headers stored in `xWalk-rpi5/xWalkLibrary/common`. Production modules use its fixed-width and standard-library aliases
+headers stored in `xWalk-rpi5-hw/xWalkLibrary/common`. Production modules use its fixed-width and standard-library aliases
 rather than introducing unrelated type spellings.
 
 The common header exports the same generic type vocabulary through separate
@@ -119,7 +119,7 @@ contracts remain in `hal`; higher layers do not qualify generic types through
 the HAL namespace.
 
 `xWalkAudioResources` combines repository-owned audio assets under `sounds/`
-and `music/`. The `xWalk-rpi5/xWalkHal/interface/xWalkAudio` directory remains a separate ALSA
+and `music/`. The `xWalk-rpi5-hw/xWalkHal/interface/xWalkAudio` directory remains a separate ALSA
 implementation module and does not own packaged media files.
 
 ## 6. Primitive hardware modules
@@ -318,7 +318,7 @@ When extending the architecture:
 | Coding rules | `.agents/gudlines/CODING_GUIDELINES.md` |
 | Documentation rules | `.agents/gudlines/DOCUMENTATION_GUIDELINES.md` |
 | C++ documentation index | `devloper-note/xwalk-rpi5-note/index.md` |
-| Module API contracts | `xWalk-rpi5/xWalkHal/xWalk<Module>/include` |
-| Module behavior and tests | `xWalk-rpi5/xWalkHal/xWalk<Module>/README.md` |
+| Module API contracts | `xWalk-rpi5-hw/xWalkHal/xWalk<Module>/include` |
+| Module behavior and tests | `xWalk-rpi5-hw/xWalkHal/xWalk<Module>/README.md` |
 | Hardware and backends | `devloper-note/xwalk-rpi5-note/Doc/note/HAL Hardware Architecture.md` |
 | CLI composition and plan | `devloper-note/xwalk-rpi5-note/Doc/note/CLI Architecture.md` |

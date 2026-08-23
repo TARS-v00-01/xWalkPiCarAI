@@ -1,6 +1,6 @@
 # Hardware Provisioning Script Guide
 
-[hardware provisioner](../../../../xWalkTool/shell-agent/deploy-tool/provision-hardware.sh)
+[hardware provisioner](../../../../xWalk-rpi5-tool/shell-agent/deploy-tool/provision-hardware.sh)
 validates a selected Robot HAT profile and Linux device identity, then persists
 that identity into one existing writable xWalk
 configuration file. It is normally invoked by `setup-rpi.sh` near the end of target provisioning.
@@ -43,7 +43,7 @@ physically; device paths alone do not identify the HAT.
 ## Provision the configuration
 
 ```sh
-xWalkTool/shell-agent/deploy-tool/provision-hardware.sh --profile robot_hat_v4 --config /var/lib/xwalk/picar-x.conf --gpio-device /dev/gpiochip0 --i2c-device /dev/i2c-1 --spi-device /dev/spidev0.0
+xWalk-rpi5-tool/shell-agent/deploy-tool/provision-hardware.sh --profile robot_hat_v4 --config /var/lib/xwalk/picar-x.conf --gpio-device /dev/gpiochip0 --i2c-device /dev/i2c-1 --spi-device /dev/spidev0.0
 ```
 
 Use the actual profile and devices reported on the target. Robot HAT v5 is rejected unless the supported
@@ -102,8 +102,8 @@ bounded MCU reset completed and no actuator, speaker, media capture, SPI transfe
 The repository test uses a temporary simulated target and does not access physical hardware:
 
 ```sh
-bash -n xWalkTool/shell-agent/deploy-tool/provision-hardware.sh
-bash xWalkTool/shell-agent/deploy-tool/test/setup-rpi-test.sh
+bash -n xWalk-rpi5-tool/shell-agent/deploy-tool/provision-hardware.sh
+bash xWalk-rpi5-tool/shell-agent/deploy-tool/test/setup-rpi-test.sh
 ```
 
 Hardware-labelled tests remain opt-in and require an explicitly confirmed safe Raspberry Pi and Robot HAT setup.

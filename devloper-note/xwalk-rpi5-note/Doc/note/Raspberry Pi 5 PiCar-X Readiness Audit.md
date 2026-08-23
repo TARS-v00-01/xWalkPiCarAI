@@ -199,7 +199,7 @@ not simulated proof of electrical, mechanical, timing, or physical safety.
 <tbody>
 <tr class="odd">
 <td>Foundation</td>
-<td><code>xWalkLibrary</code>, <code>xWalkTrace</code>, <code>xWalkIW</code> provide platform types, tracing, and
+<td><code>xWalkLibrary</code>, <code>xWalkTrace</code>, <code>xWalk-rpi5-iw</code> provide platform types, tracing, and
 generated Protobuf/gRPC contracts</td>
 <td>C++17, Protobuf, gRPC, OpenSSL, zlib, c-ares, RE2</td>
 <td>None at runtime except IPC/network users</td>
@@ -369,7 +369,7 @@ camera hardware](https://www.raspberrypi.com/documentation/accessories/camera.ht
 <td>Raspberry Pi 5</td>
 <td>Pi 5, Pi-compatible Robot HAT</td>
 <td>Pi model/board guards and RPI composition</td>
-<td><code>xWalkTool/shell-agent/deploy-tool/setup-rpi.sh</code>, <code>xWalkBoot</code></td>
+<td><code>xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh</code>, <code>xWalkBoot</code></td>
 <td>Yes, composition mocked</td>
 <td>Blocked at Protobuf sysroot</td>
 <td>Pending</td>
@@ -1034,11 +1034,11 @@ Inspect the script before use, then preview its Robot HAT v4, `xwalk`,
 `/dev/gpiochip4`, I2C, SPI, and CSI defaults:
 
 ``` bash
-./xWalkTool/shell-agent/deploy-tool/setup-rpi.sh --help
+./xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh --help
 ```
 
 ``` bash
-./xWalkTool/shell-agent/deploy-tool/setup-rpi.sh --dry-run
+./xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh --dry-run
 ```
 
 The script installs the compiler, CMake, Ninja, Git-related build tooling, Protobuf/gRPC dependencies, I2C tools
@@ -1514,7 +1514,7 @@ percent lines, 85.2 percent functions, and 66.6 percent branches. LSan reports
 The intentional Clang TSan race probe and four focused project tests pass when
 loopback access is granted. The LSan result is not recorded as passed. The exact
 native-host reproduction commands and result terminology are in
-`xWalkTool/cpp-tool/quality/README.md`.
+`xWalk-rpi5-tool/cpp-tool/quality/README.md`.
 
 - Clean Debug configuration with tests, strict warnings and compile commands: successful.
 - Complete clean strict Debug and Release host builds: 597 build steps successful in each profile.
@@ -1563,38 +1563,38 @@ than hidden by the final count.
 
 ## Working-tree changes relevant to this audit
 
-- `xWalk-rpi5/xWalkAgent/xWalkVehicle/xWalkLineTracking/src/xAgent_Rpi5CarLineTracking.cpp`: stop recovery only after a valid
+- `xWalk-rpi5-hw/xWalkAgent/xWalkVehicle/xWalkLineTracking/src/xAgent_Rpi5CarLineTracking.cpp`: stop recovery only after a valid
   non-Stop line state.
-- `xWalk-rpi5/xWalkAgent/xWalkVehicle/xWalkLineTracking/test/src/xAgent_Rpi5CarLineTrackingTest.cpp`: persistent-loss
+- `xWalk-rpi5-hw/xWalkAgent/xWalkVehicle/xWalkLineTracking/test/src/xAgent_Rpi5CarLineTrackingTest.cpp`: persistent-loss
   regression with a bounded sample count and zero-output assertions.
-- `xWalk-rpi5/xWalkAgent/CMakeLists.txt`: serialize the aggregate Agent test because it invokes the same group executables and
+- `xWalk-rpi5-hw/xWalkAgent/CMakeLists.txt`: serialize the aggregate Agent test because it invokes the same group executables and
   writable group fixtures that CTest otherwise schedules independently.
-- `xWalk-rpi5/xWalkController/xWalkTest/xGoogleTest/CMakeLists.txt` and
-  `xWalk-rpi5/xWalkController/xWalkTest/xSequenceTest/CMakeLists.txt`: serialize controller aggregate wrappers for the same
+- `xWalk-rpi5-hw/xWalkController/xWalkTest/xGoogleTest/CMakeLists.txt` and
+  `xWalk-rpi5-hw/xWalkController/xWalkTest/xSequenceTest/CMakeLists.txt`: serialize controller aggregate wrappers for the same
   shared-child-fixture reason.
-- `xWalkTool/shell-agent/deploy-tool/setup-rpi.sh`: install the Protobuf, gRPC, GoogleTest and TinyXML2 development packages required
+- `xWalk-rpi5-tool/shell-agent/deploy-tool/setup-rpi.sh`: install the Protobuf, gRPC, GoogleTest and TinyXML2 development packages required
   by a clean Raspberry Pi build.
-- `xWalk-rpi5/xWalkHal/simulation/xWalkRobotHat`, the atomic I2C/ADC path, motor/servo lifecycle code, and their tests:
+- `xWalk-rpi5-hw/xWalkHal/simulation/xWalkRobotHat`, the atomic I2C/ADC path, motor/servo lifecycle code, and their tests:
   deterministic device-free Robot HAT behaviour, fault injection, paired-stop, watchdog, and actuator lifecycle
   validation.
-- `xWalk-rpi5/xWalkAgent/xWalkVision/xWalkRoadUserSafety` and OpenCV source tests: stable detector/classifier safety
+- `xWalk-rpi5-hw/xWalkAgent/xWalkVision/xWalkRoadUserSafety` and OpenCV source tests: stable detector/classifier safety
   boundaries,
   synthetic risk scenarios, a generated end-to-end recorded scenario, finite-media EOF handling, and
   recorded-video input without a physical camera.
-- `xWalk-rpi5/xWalkAgent/xWalkVision/xWalkVideoStreaming`: bounded multi-client MJPEG queueing, framing, drop-oldest
+- `xWalk-rpi5-hw/xWalkAgent/xWalkVision/xWalkVideoStreaming`: bounded multi-client MJPEG queueing, framing, drop-oldest
   backpressure, and camera-loss shutdown. It is not a network listener.
-- `xWalk-rpi5/xWalkAgent/xWalkVision/xWalkVideoRecording/hardware/src/xAgent_Rpi5CarVideoRecordingOpenCv.cpp`: retain the
+- `xWalk-rpi5-hw/xWalkAgent/xWalkVision/xWalkVideoRecording/hardware/src/xAgent_Rpi5CarVideoRecordingOpenCv.cpp`: retain the
   released rollback context explicitly so focused Clang-Tidy reports no ignored `nodiscard` result.
-- `xWalk-rpi5/cmake/toolchains/aarch64-linux-gnu.cmake` and `xWalkTool/shell-agent/deploy-tool`: reviewed-sysroot
+- `xWalk-rpi5-hw/cmake/toolchains/aarch64-linux-gnu.cmake` and `xWalk-rpi5-tool/shell-agent/deploy-tool`: reviewed-sysroot
   cross-build
   guardrails
   and
   hardware-independent/wheels-up guidance. The dependency audit confines `pkg-config`, reports all missing target
   package families in one run, inspects linker inputs, and rejects host path contamination.
-- `xWalk-rpi5/xWalkController/xWalkApp`: device-free configuration validation, sanitized effective values, and
+- `xWalk-rpi5-hw/xWalkController/xWalkApp`: device-free configuration validation, sanitized effective values, and
   `--diagnose --no-hardware` execution before either host or Raspberry Pi boot construction. Schema version 1 is
   explicit, deterministically printed, and an explicitly unsupported version is rejected.
-- `xWalk-rpi5/xWalkAgent/xWalkVehicle/xWalkPicarx/test/src/xAgent_Rpi5CarPicarxSimulationTest.cpp`: simulator-backed
+- `xWalk-rpi5-hw/xWalkAgent/xWalkVehicle/xWalkPicarx/test/src/xAgent_Rpi5CarPicarxSimulationTest.cpp`: simulator-backed
   rejection,
   per-stage initialization faults, emergency recovery without command replay, and active-movement shutdown checks.
 - `CMakePresets.json`, the AArch64 toolchain, and host CI: a reviewed-sysroot cross profile, reliable sysroot

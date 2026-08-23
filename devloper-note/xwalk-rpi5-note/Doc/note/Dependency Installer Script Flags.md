@@ -1,14 +1,14 @@
 # Dependency Installer Script Flags
 
 This reference documents every command-line flag accepted by
-[dependency installer](../../../../xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller).
+[dependency installer](../../../../xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller).
 The separate [CMake Dependency Guide](Dependency%20Installer%20Guide.md) explains the workspace's CMake
 configure-time and link-time dependency requirements.
 
 ## Command form
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller [OPTIONS]
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller [OPTIONS]
 ```
 
 Installation is the default action when `--check`, `--dry-run`, and `--install` are all omitted. Always use
@@ -19,7 +19,7 @@ Installation is the default action when `--check`, `--dry-run`, and `--install` 
 | Flag | Value | Default | Purpose |
 | --- | --- | --- | --- |
 | `-h`, `--help` | None | Not applicable | Prints generated command help and exits |
-| `--manifest` | File path | `xWalkTool/apt-packages.txt` | Selects the machine-readable package catalog |
+| `--manifest` | File path | `xWalk-rpi5-tool/apt-packages.txt` | Selects the machine-readable package catalog |
 | `--os` | OS name or `auto` | `auto` | Detects or selects the package-manager mapping |
 | `--device` | `auto`, `host`, or `rpi` | `auto` | Selects workstation or Raspberry Pi behavior |
 | `--target` | `auto`, `host`, or `rpi` | `auto` | Compatibility alias for `--device` |
@@ -37,12 +37,12 @@ Print the parser-generated usage text and exit without reading the package catal
 changing the system.
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --help
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --help
 ```
 
 ## `--manifest PATH`
 
-Select a package catalog instead of the default `xWalkTool/apt-packages.txt`. The path is resolved before it
+Select a package catalog instead of the default `xWalk-rpi5-tool/apt-packages.txt`. The path is resolved before it
 is read. The file must contain a valid bounded `XWALK MACHINE-READABLE PACKAGE CATALOG V1` section with at
 least one matching package record.
 
@@ -50,7 +50,7 @@ This option is primarily for controlled validation and testing. Supplying an unr
 which packages are queried or installed.
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --manifest xWalkTool/apt-packages.txt --check
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --manifest xWalk-rpi5-tool/apt-packages.txt --check
 ```
 
 ## `--os NAME`
@@ -72,7 +72,7 @@ explicit OS name changes package mapping only; it does not emulate that operatin
 package manager. Unknown distributions are rejected.
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --os ubuntu --device host --required-only --check
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --os ubuntu --device host --required-only --check
 ```
 
 ## `--device MODE` and `--target MODE`
@@ -89,7 +89,7 @@ Both spellings write the same device selection. `--target` is retained as a comp
 requires `--profile`. It cannot be used to prepare boot files from a workstation or container.
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --check
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --check
 ```
 
 ## `--profile PROFILE`
@@ -106,7 +106,7 @@ The flag never overrides failed board detection. The Servo HAT+ overlay is not a
 substitute.
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device rpi --profile robot_hat_v5 --check
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device rpi --profile robot_hat_v5 --check
 ```
 
 ## `--camera MODE`
@@ -138,7 +138,7 @@ the default selection. Combine the flag with `--required-only` to add specific c
 required set.
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --required-only --include quality --include generator --check
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --required-only --include quality --include generator --check
 ```
 
 The `external` scope reports dependencies such as Vosk and Ollama but does not automatically install them.
@@ -149,7 +149,7 @@ Select only the mandatory `required` scope, plus scopes explicitly added with `-
 Raspberry Pi camera scope. Use this flag for the minimum normal build and runtime dependency set.
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --required-only --dry-run
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --required-only --dry-run
 ```
 
 ## Action flags
@@ -204,19 +204,19 @@ The default all-scope action can return status `1` when an external dependency i
 Inspect a development host without changing it:
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --required-only --check
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --required-only --check
 ```
 
 Preview the complete host package selection:
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --dry-run
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device host --dry-run
 ```
 
 On a physically verified Raspberry Pi with Robot HAT v5, inspect before planning any changes:
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device rpi --profile robot_hat_v5 --camera csi --required-only --check
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarDependencyInstaller --device rpi --profile robot_hat_v5 --camera csi --required-only --check
 ```
 
 No command in this reference runs a hardware test or moves an actuator.

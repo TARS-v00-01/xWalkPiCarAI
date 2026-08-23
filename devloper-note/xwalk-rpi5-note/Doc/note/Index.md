@@ -52,7 +52,7 @@ current C++ implementation.
 - [PiCar-X Controller command reference](PiCar-X%20Controller%20Command%20Reference.md)
 - [Jarvis and Gemini configuration](Jarvis%20and%20Gemini%20Configuration.md)
 - [xWalk licence installation](xWalk%20Licence%20Installation.md)
-- [xWalkTool overview](xWalkTool%20Overview.md)
+- [xWalk-rpi5-tool overview](xWalk-rpi5-tool%20Overview.md)
 - [Add a user to a Gerrit repository](Add%20a%20User%20to%20a%20Gerrit%20Repository.md)
 - [Create Gerrit and configure xWalk CI](Create%20Gerrit%20and%20Configure%20xWalk%20CI.md)
 - [Licence-key workflow](License%20Key%20Workflow.md)

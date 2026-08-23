@@ -1,6 +1,6 @@
 # xWalk licence tool guide
 
-[`xWalkTool/py-agent/dev-tool/xWalkLicenseTool`](../../../../xWalkTool/py-agent/dev-tool/xWalkLicenseTool)
+[`xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool`](../../../../xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool)
 creates and opens the authenticated xWalk licence file. It is an executable
 Python script without a `.py` filename suffix.
 
@@ -13,7 +13,7 @@ The tool:
 - validates names, string types, duplicates, and empty values before encryption;
 - generates a random 256-bit SecretBox key and a fresh authenticated nonce;
 - generates one `XWALK-<UTC_YEAR>-<HEX>` serial and stores it in the encrypted payload;
-- writes only `xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY` during encryption;
+- writes only `xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY` during encryption;
 - authenticates encrypted data before writing decrypted JSON with mode `0600`; and
 - reports variable names and counts without printing plaintext values.
 
@@ -36,12 +36,12 @@ The system-package alternative on Debian-family systems is
 
 ## Prepare model input
 
-The committed `xWalkTool/shell-agent/env-tool/license/xWalkLicense.cfg` file is an empty
+The committed `xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkLicense.cfg` file is an empty
 model-only template. Copy it outside the repository, restrict the copy, and
 fill only model names in the external file:
 
 ```sh
-install -m 0600 xWalkTool/shell-agent/env-tool/license/xWalkLicense.cfg /secure/location/xWalkLicense.cfg
+install -m 0600 xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkLicense.cfg /secure/location/xWalkLicense.cfg
 ```
 
 Running encryption against the empty committed template fails intentionally.
@@ -55,19 +55,19 @@ The executable can be invoked directly because it has a Python 3 shebang and
 executable permissions:
 
 ```sh
-xWalkTool/py-agent/dev-tool/xWalkLicenseTool encrypt --config /secure/location/xWalkLicense.cfg
+xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool encrypt --config /secure/location/xWalkLicense.cfg
 ```
 
 Calling it explicitly through Python 3 is equivalent:
 
 ```sh
-python3 xWalkTool/py-agent/dev-tool/xWalkLicenseTool encrypt --config /secure/location/xWalkLicense.cfg
+python3 xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool encrypt --config /secure/location/xWalkLicense.cfg
 ```
 
 Repeated manual values are also supported:
 
 ```sh
-xWalkTool/py-agent/dev-tool/xWalkLicenseTool encrypt --env OPENAI_MODEL='gpt-model' --env GEMINI_MODEL='gemini-model'
+xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool encrypt --env OPENAI_MODEL='gpt-model' --env GEMINI_MODEL='gemini-model'
 ```
 
 Command-line values can be exposed through shell history or process listings.
@@ -84,7 +84,7 @@ key outside the repository in a password manager or secret service.
 Choose an explicit temporary output outside the source tree:
 
 ```sh
-xWalkTool/py-agent/dev-tool/xWalkLicenseTool decrypt --output /tmp/xWalkLicense.decrypted.json
+xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool decrypt --output /tmp/xWalkLicense.decrypted.json
 ```
 
 The tool requests the key privately with `getpass`. An incorrect key or changed
@@ -102,7 +102,7 @@ encryption does not print a serial number or decryption key.
 Run the host-only fake-secret test suite:
 
 ```sh
-python3 xWalkTool/py-agent/dev-tool/test/test_xWalkLicenseTool.py
+python3 xWalk-rpi5-tool/py-agent/dev-tool/test/test_xWalkLicenseTool.py
 ```
 
 The tests use temporary directories and do not use paid-provider credentials.

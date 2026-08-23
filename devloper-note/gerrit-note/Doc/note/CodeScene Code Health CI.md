@@ -14,7 +14,7 @@ service identity. It is not assumed to exist in every licensed edition. The offi
 supported `cs delta` command for local or CI delta analysis after the CLI is licensed and activated. This repository
 does not download, license, activate, or guess endpoints for CodeScene.
 
-The repository-owned adapter is `xWalkTool/py-agent/dev-tool/xWalkCodeHealth`. It validates project configuration,
+The repository-owned adapter is `xWalk-rpi5-tool/py-agent/dev-tool/xWalkCodeHealth`. It validates project configuration,
 resolves full Git commit IDs, calculates changed files, invokes `cs delta --output-format json BASE REVISION` only
 when an executable is configured, and writes reports below `build-host/codescene`. It never invokes an undocumented
 API. The adapter resolves an explicit `XWALK_CODESCENE_CLI`, the service `PATH`, and CodeScene's official
@@ -49,13 +49,13 @@ same component payload for an administrator to apply through a supported CodeSce
 
 | CodeScene component | Integrated path |
 |---|---|
-| Agent | `xWalk-rpi5/xWalkAgent/**` |
-| Audio Resources | `xWalk-rpi5/xWalkAudioResources/**` |
-| Controller | `xWalk-rpi5/xWalkController/**` |
-| HAL | `xWalk-rpi5/xWalkHal/**` |
-| Interface | `xWalk-rpi5/xWalkIW/**` |
-| Library | `xWalk-rpi5/xWalkLibrary/**` |
-| Trace | `xWalk-rpi5/xWalkTrace/**` |
+| Agent | `xWalk-rpi5-hw/xWalkAgent/**` |
+| Audio Resources | `xWalk-rpi5-hw/xWalkAudioResources/**` |
+| Controller | `xWalk-rpi5-hw/xWalkController/**` |
+| HAL | `xWalk-rpi5-hw/xWalkHal/**` |
+| Interface | `xWalk-rpi5-iw/**` |
+| Library | `xWalk-rpi5-hw/xWalkLibrary/**` |
+| Trace | `xWalk-rpi5-hw/xWalkTrace/**` |
 | Developer Documentation | `devloper-note/**` |
 
 `.codescene/analysis-exclusions.txt` lists only build output, downloaded/vendor content, caches, generated content,
@@ -67,7 +67,7 @@ administrator must apply and verify them through the licensed product's supporte
 
 1. Configure the official CodeScene GitHub App for the single integrated `MyPiCarX` repository. Do not configure
    separate component repositories.
-2. In CodeScene, select the integrated `xWalk-rpi5` content and apply the component and exclusion manifests.
+2. In CodeScene, select the integrated `xWalk-rpi5-hw` content and apply the component and exclusion manifests.
 3. Enable CodeScene pull-request or delta analysis and its changed-code quality gate in the CodeScene project.
 4. Require the native CodeScene check in GitHub branch protection only after the initial non-blocking rollout is
    producing reliable results.
@@ -117,7 +117,7 @@ official Gerrit integration guide. Otherwise retain the repository CLI delta whe
 tests, sanitizers, and static analysis before submit; full CodeScene repository analysis occurs after the accepted
 integration commit is mirrored to GitHub.
 
-An integrated `xWalk-rpi5` Gerrit patch set can use its exact commit and first parent directly. A patch set uploaded
+An integrated `xWalk-rpi5-hw` Gerrit patch set can use its exact commit and first parent directly. A patch set uploaded
 to an independent component repository is built and tested from an exact overlay, but its commit is not part of the
 integrated MyPiCarX Git history. The adapter therefore reports CodeScene `UNAVAILABLE` for that stage instead of
 silently analysing the unrelated integration branch head. Native licensed Gerrit analysis or the subsequent reviewed
@@ -125,7 +125,7 @@ uplift supplies the supported integrated-history analysis.
 
 ## Gerrit-to-GitHub correlation
 
-Only the submitted `xWalk-rpi5/master` integration commit is eligible for GitHub synchronization.
+Only the submitted `xWalk-rpi5-hw/master` integration commit is eligible for GitHub synchronization.
 Component repositories
 are never pushed independently. The worker confirms that the submitted patch-set revision is current and has the CI
 account's `Verified +1`, then performs a non-force fast-forward push of Gerrit's resulting branch revision to
@@ -143,19 +143,19 @@ Credentials from either system are never included in this correlation record.
 Validate mappings and exclusions:
 
 ```bash
-xWalkTool/py-agent/dev-tool/xWalkCodeHealth validate-config
+xWalk-rpi5-tool/py-agent/dev-tool/xWalkCodeHealth validate-config
 ```
 
 Run a non-blocking delta with the installed licensed CLI:
 
 ```bash
-XWALK_CODESCENE_BASE_REVISION=HEAD^ XWALK_CODESCENE_REVISION=HEAD XWALK_CODESCENE_STRICT=false xWalkTool/py-agent/dev-tool/xWalkCodeHealth analyze
+XWALK_CODESCENE_BASE_REVISION=HEAD^ XWALK_CODESCENE_REVISION=HEAD XWALK_CODESCENE_STRICT=false xWalk-rpi5-tool/py-agent/dev-tool/xWalkCodeHealth analyze
 ```
 
 Run the standard host build and tests independently of CodeScene:
 
 ```bash
-cmake --fresh -S xWalk-rpi5 -B build-host/codescene-validation -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --fresh -S xWalk-rpi5-hw -B build-host/codescene-validation -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build-host/codescene-validation --parallel
 ctest --test-dir build-host/codescene-validation --output-on-failure --no-tests=error
 ```

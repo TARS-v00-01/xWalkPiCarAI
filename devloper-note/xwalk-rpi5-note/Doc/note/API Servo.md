@@ -5,8 +5,8 @@
 
 ## Public interface
 
-See [xWalkServo](../../../../xWalk-rpi5/xWalkHal/device/xWalkServo/README.md) and
-[`xHal_Rpi5CarServo.h`](../../../../xWalk-rpi5/xWalkHal/device/xWalkServo/include/xHal_Rpi5CarServo.h).
+See [xWalkServo](../../../../xWalk-rpi5-hw/xWalkHal/device/xWalkServo/README.md) and
+[`xHal_Rpi5CarServo.h`](../../../../xWalk-rpi5-hw/xWalkHal/device/xWalkServo/include/xHal_Rpi5CarServo.h).
 
 The default configuration uses 50 hertz, a 4095-count period, angles from -90
 to 90 degrees, and pulse widths from 500 to 2500 microseconds. Confirm the

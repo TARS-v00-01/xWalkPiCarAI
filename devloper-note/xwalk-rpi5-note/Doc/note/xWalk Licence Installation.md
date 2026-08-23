@@ -26,7 +26,7 @@ sudo apt-get install python3-nacl
 Copy the repository's empty template to an owner-only file outside the repository:
 
 ```bash
-install -m 0600 xWalkTool/shell-agent/env-tool/license/xWalkLicense.cfg "$HOME/xWalkLicense.cfg"
+install -m 0600 xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkLicense.cfg "$HOME/xWalkLicense.cfg"
 nano "$HOME/xWalkLicense.cfg"
 ```
 
@@ -68,10 +68,10 @@ Controller configuration.
 Encrypt the protected model configuration:
 
 ```bash
-xWalkTool/py-agent/dev-tool/xWalkLicenseTool encrypt --config "$HOME/xWalkLicense.cfg"
+xWalk-rpi5-tool/py-agent/dev-tool/xWalkLicenseTool encrypt --config "$HOME/xWalkLicense.cfg"
 ```
 
-The command creates `xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY` and prints its decryption key exactly once. Save
+The command creates `xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY` and prints its decryption key exactly once. Save
 the decryption key in a password manager or approved secret-management service. Do not paste it into chat or
 store it in the repository.
 
@@ -84,13 +84,13 @@ rm "$HOME/xWalkLicense.cfg"
 Confirm that the encrypted file exists, belongs to the runtime user, and has owner-only permissions:
 
 ```bash
-stat -c 'mode=%a owner=%U:%G path=%n' xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY
+stat -c 'mode=%a owner=%U:%G path=%n' xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY
 ```
 
 The expected mode is `600`. If necessary, correct only this file's permissions:
 
 ```bash
-chmod 600 xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY
+chmod 600 xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY
 ```
 
 ## Load and verify the environment
@@ -98,7 +98,7 @@ chmod 600 xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY
 Source the environment loader and enter the saved decryption key when prompted:
 
 ```bash
-source xWalkTool/shell-agent/env-tool/license/xWalkEnv.sh
+source xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkEnv.sh
 ```
 
 Confirm that the Gemini credential and model were loaded without printing either secret:
@@ -116,7 +116,7 @@ AI-backed Controller command.
 Configure and build the Raspberry Pi release:
 
 ```bash
-cmake --fresh -S xWalk-rpi5 --preset rpi-release
+cmake --fresh -S xWalk-rpi5-hw --preset rpi-release
 cmake --build build-rpi/cmake --parallel
 ```
 
@@ -135,7 +135,7 @@ Before starting, place the car securely with its wheels raised. Confirm that the
 intended Robot HAT are connected.
 
 ```bash
-source xWalkTool/shell-agent/env-tool/license/xWalkEnv.sh
+source xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkEnv.sh
 build-rpi/cmake/xWalkController/xWalkApp/xwalk-picarx-control voice-active-car-gpt start
 ```
 
@@ -148,7 +148,7 @@ Say `Hey Jarvis`, wait for the acknowledgement, and then speak the request. Pres
 This message means the loader could not find or read the deployment-specific licence:
 
 ```text
-xWalk environment: encrypted licence file is unreadable: .../xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY
+xWalk environment: encrypted licence file is unreadable: .../xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY
 ```
 
 Generate the file with the encryption command above. If it already exists, inspect its ownership and mode with
@@ -159,7 +159,7 @@ Generate the file with the encryption command above. If it already exists, inspe
 Restrict the existing file:
 
 ```bash
-chmod 600 xWalk-rpi5/xWalkLibrary/X_WALK_LICENSE.KEY
+chmod 600 xWalk-rpi5-hw/xWalkLibrary/X_WALK_LICENSE.KEY
 ```
 
 ### Licence-key decryption failed

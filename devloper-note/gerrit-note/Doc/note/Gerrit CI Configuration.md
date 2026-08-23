@@ -5,7 +5,7 @@
 The local xWalk Gerrit service uses the repository-owned Python worker, not Zuul. `xWalkGerritCi.py` maintains a
 noninteractive SSH `gerrit stream-events` connection, selects active `patchset-created` and WIP-to-active events,
 fetches the exact patch-set ref into a temporary checkout, and invokes `xWalkGerritQuality.py`. The runner calls
-`xWalkTool/shell-agent/gerrit-tool/run-host-ci-job.sh`, which is also used by GitHub Actions.
+`xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh`, which is also used by GitHub Actions.
 
 `xWalkGerritLogServer.py` serves the existing read-only dashboard through Caddy at
 `/ci/changes/<change>/<patch-set>`. Each run retains:
@@ -31,7 +31,7 @@ three-stage graph:
 xWalk Preparation -> xWalkAgent      -> xWalk Host Quality Gate
                   -> xWalkController ->
                   -> xWalkHal        ->
-                  -> xWalkIW         ->
+                  -> xWalk-rpi5-iw         ->
                   -> xWalkLibrary    ->
                   -> xWalkTrace      ->
                   -> xWalk Vision    ->
@@ -65,7 +65,7 @@ the main page.
 | xWalkAgent | Aggregate tests, functional-group tests, configuration and communication handlers |
 | xWalkController | Controller lifecycle, CLI, Controller-to-HAL sequences, `--diagnose --no-hardware` |
 | xWalkHal | Unit and host-safe sequences, interface/device/sensor/layer groups, simulations, Robot HAT soak |
-| xWalkIW | Schema, serialization, gRPC, signal/payload, and transport-interface coverage |
+| xWalk-rpi5-iw | Schema, serialization, gRPC, signal/payload, and transport-interface coverage |
 | xWalkLibrary | Shared utilities, configuration, licence, architecture, and direct-consumer integration |
 | xWalkTrace | Formatting, routing, error/warning macros, and error-signal selection |
 | xWalk Vision | Recorded media/scenarios, OpenCV, road-user safety, assets, annotations, and checksums |
@@ -106,6 +106,10 @@ Patch-set uploads are accepted independently of long-running jobs. The event con
 queued change-log entry and dispatches verification to a bounded pool. `GERRIT_CI_PATCHSET_WORKERS` defaults to
 `2` and accepts `1` through `4`, allowing a component review to start while integrated Host Quality is running.
 Repeated events for the same exact patch set do not create duplicate jobs.
+When a newer patch set is uploaded for the same repository and change, the
+worker terminates the older flow's active process group, records unfinished
+checks as `CANCELLED`, withholds a stale vote, and starts the newest patch set.
+An out-of-order older patch-set event cannot replace the current flow.
 Only one complete integrated graph runs at a time, preventing parallel CMake
 matrices from exhausting build storage. Module-scoped component CI may still
 run concurrently. The service owns patch-set workspaces below
@@ -197,9 +201,9 @@ worker is running.
 
 ```bash
 "$HOME/bin/gerrit-ci-control" stop
-install -m 0700 xWalkTool/py-agent/gerrit-tool/py-src/xWalkGerritCi.py "$HOME/apps/gerrit/tools/xWalkGerritCi.py"
-install -m 0600 xWalkTool/py-agent/gerrit-tool/py-src/xWalkGerritQuality.py "$HOME/apps/gerrit/tools/xWalkGerritQuality.py"
-install -m 0600 xWalkTool/py-agent/gerrit-tool/py-src/xWalkGerritLogServer.py "$HOME/apps/gerrit/tools/xWalkGerritLogServer.py"
+install -m 0700 xWalk-rpi5-tool/py-agent/gerrit-tool/py-src/xWalkGerritCi.py "$HOME/apps/gerrit/tools/xWalkGerritCi.py"
+install -m 0600 xWalk-rpi5-tool/py-agent/gerrit-tool/py-src/xWalkGerritQuality.py "$HOME/apps/gerrit/tools/xWalkGerritQuality.py"
+install -m 0600 xWalk-rpi5-tool/py-agent/gerrit-tool/py-src/xWalkGerritLogServer.py "$HOME/apps/gerrit/tools/xWalkGerritLogServer.py"
 "$HOME/bin/gerrit-ci-control" start
 "$HOME/bin/gerrit-ci-control" status
 ```

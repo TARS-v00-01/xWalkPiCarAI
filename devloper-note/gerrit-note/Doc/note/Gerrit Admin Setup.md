@@ -62,7 +62,7 @@ selected during installation. From the repository checkout, load the
 non-secret installer configuration and inspect the three values with:
 
 ```bash
-. xWalkTool/py-agent/gerrit-tool/config/gerrit-setup.conf && printf 'administrator=%s\nserver=%s\nssh-port=%s\n' "$GERRIT_ADMIN_USER" "$EDUVPN_SERVER_IP" "$GERRIT_SSH_PORT"
+. xWalk-rpi5-tool/py-agent/gerrit-tool/config/gerrit-setup.conf && printf 'administrator=%s\nserver=%s\nssh-port=%s\n' "$GERRIT_ADMIN_USER" "$EDUVPN_SERVER_IP" "$GERRIT_SSH_PORT"
 ```
 
 The administrator must first sign in to Gerrit and register their own SSH

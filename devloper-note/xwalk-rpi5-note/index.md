@@ -5,12 +5,12 @@ options, backend ownership, safety constraints, and verification commands remain
 
 ## Workspace architecture
 
-- [xWalk common library](../../xWalk-rpi5/xWalkLibrary/common/README.md): shared interface target for public
+- [xWalk common library](../../xWalk-rpi5-hw/xWalkLibrary/common/README.md): shared interface target for public
   headers in
-  `xWalk-rpi5/xWalkLibrary/common`.
-- [xWalkHal](../../xWalk-rpi5/xWalkHal/README.md): aggregate hardware-abstraction architecture and build options.
-- [xWalkAgent](../../xWalk-rpi5/xWalkAgent/README.md): application coordinators and aggregate Agent verification.
-- [xWalkController](../../xWalk-rpi5/xWalkController/README.md): standalone CLI aggregate and Controller
+  `xWalk-rpi5-hw/xWalkLibrary/common`.
+- [xWalkHal](../../xWalk-rpi5-hw/xWalkHal/README.md): aggregate hardware-abstraction architecture and build options.
+- [xWalkAgent](../../xWalk-rpi5-hw/xWalkAgent/README.md): application coordinators and aggregate Agent verification.
+- [xWalkController](../../xWalk-rpi5-hw/xWalkController/README.md): standalone CLI aggregate and Controller
   composition.
 - [High-level architecture](Doc/note/HAL%20Arcithure.md): workspace layers and ownership rules.
 - [Hardware architecture](Doc/note/HAL%20Hardware%20Architecture.md): devices and backends.
@@ -19,7 +19,7 @@ options, backend ownership, safety constraints, and verification commands remain
   checks, and narrowly scoped device permissions.
 - [CMake dependency guide](Doc/note/Dependency%20Installer%20Guide.md): external libraries, imported targets,
   build-mode requirements, package names, and discovery troubleshooting.
-- [xWalkTool overview](Doc/note/xWalkTool%20Overview.md): tool inventory, safety classes, and detailed links.
+- [xWalk-rpi5-tool overview](Doc/note/xWalk-rpi5-tool%20Overview.md): tool inventory, safety classes, and detailed links.
 - [Gerrit account setup guide](Doc/note/Gerrit%20Account%20Setup%20Guide.md): account provisioning, dedicated
   SSH keys, repository setup, review upload, voting, and remote-network access.
 - [Add a user to a Gerrit repository](Doc/note/Add%20a%20User%20to%20a%20Gerrit%20Repository.md): individual
@@ -37,7 +37,7 @@ options, backend ownership, safety constraints, and verification commands remain
   ChatGPT, Gemini, Claude, credential handling, and model selection.
 - [Licence-key workflow](Doc/note/License%20Key%20Workflow.md): authenticated encryption, protected input,
   environment loading, deployment, and secret-handling boundaries.
-- [Audio resources](../../xWalk-rpi5/xWalkAudioResources/README.md): combined sound-effect and background-music
+- [Audio resources](../../xWalk-rpi5-hw/xWalkAudioResources/README.md): combined sound-effect and background-music
   assets,
   provenance, layout, and integrity hashes.
 
@@ -68,10 +68,10 @@ notes.
 
 ## Agent modules
 
-- [xWalkHandler](../../xWalk-rpi5/xWalkController/xWalkHandler/README.md): controller contract, parsing, and
+- [xWalkHandler](../../xWalk-rpi5-hw/xWalkController/xWalkHandler/README.md): controller contract, parsing, and
   command
   handlers.
-- [xWalkApp](../../xWalk-rpi5/xWalkController/xWalkApp/README.md): executable targets, process entry points,
+- [xWalkApp](../../xWalk-rpi5-hw/xWalkController/xWalkApp/README.md): executable targets, process entry points,
   generated help,
   application tests, and Raspberry Pi composition.
 - [Controller command flow](Doc/note/Controller%20Command%20Flow.md): Mermaid traces from every CLI
@@ -82,19 +82,19 @@ notes.
   Gemini credentials, Piper voice setup, configuration, validation, and safe startup.
 - [xWalk licence installation](Doc/note/xWalk%20Licence%20Installation.md): encrypted model configuration,
   credential loading, Controller validation, safe startup, and troubleshooting.
-- [xWalkBoot](../../xWalk-rpi5/xWalkAgent/xWalkPlatform/xWalkBoot/README.md): host stub and RPi process hardware
+- [xWalkBoot](../../xWalk-rpi5-hw/xWalkAgent/xWalkPlatform/xWalkBoot/README.md): host stub and RPi process hardware
   ownership.
-- [xWalkLineTracking](../../xWalk-rpi5/xWalkAgent/xWalkVehicle/xWalkLineTracking/README.md): bounded line
+- [xWalkLineTracking](../../xWalk-rpi5-hw/xWalkAgent/xWalkVehicle/xWalkLineTracking/README.md): bounded line
   following.
-- [xWalkPicarx](../../xWalk-rpi5/xWalkAgent/xWalkVehicle/xWalkPicarx/README.md): movement, calibration, and
+- [xWalkPicarx](../../xWalk-rpi5-hw/xWalkAgent/xWalkVehicle/xWalkPicarx/README.md): movement, calibration, and
   sensing.
-- [xWalkSelfDrive](../../xWalk-rpi5/xWalkAgent/xWalkVehicle/xWalkSelfDrive/README.md): gestures, sounds, and action
+- [xWalkSelfDrive](../../xWalk-rpi5-hw/xWalkAgent/xWalkVehicle/xWalkSelfDrive/README.md): gestures, sounds, and action
   queue.
-- [xWalkSpiTransfer](../../xWalk-rpi5/xWalkAgent/xWalkConnectivity/xWalkSpiTransfer/README.md): bounded SPI
+- [xWalkSpiTransfer](../../xWalk-rpi5-hw/xWalkAgent/xWalkConnectivity/xWalkSpiTransfer/README.md): bounded SPI
   transactions.
-- [xWalkVoiceActiveCar](../../xWalk-rpi5/xWalkAgent/xWalkVoice/xWalkVoiceActiveCar/README.md): sensor-aware
+- [xWalkVoiceActiveCar](../../xWalk-rpi5-hw/xWalkAgent/xWalkVoice/xWalkVoiceActiveCar/README.md): sensor-aware
   voice car.
-- [xWalkGptCar](../../xWalk-rpi5/xWalkAgent/xWalkVoice/xWalkGptCar/README.md): upstream JSON GPT-car assistant.
+- [xWalkGptCar](../../xWalk-rpi5-hw/xWalkAgent/xWalkVoice/xWalkGptCar/README.md): upstream JSON GPT-car assistant.
 
 ## HAL modules
 
@@ -103,37 +103,37 @@ under `interface`, hardware device abstractions under `device`, sensor and
 actuator components under `sensor`, and higher-level robot services and
 features under `layer1`.
 
-- [xWalkAdc](../../xWalk-rpi5/xWalkHal/device/xWalkAdc/README.md): Robot HAT analog-to-digital conversion.
-- [xWalkAdxl345](../../xWalk-rpi5/xWalkHal/device/xWalkAdxl345/README.md): ADXL345 acceleration sensing.
-- [xWalkAudio](../../xWalk-rpi5/xWalkHal/interface/xWalkAudio/README.md): shared ALSA PCM, mixer, and device
+- [xWalkAdc](../../xWalk-rpi5-hw/xWalkHal/device/xWalkAdc/README.md): Robot HAT analog-to-digital conversion.
+- [xWalkAdxl345](../../xWalk-rpi5-hw/xWalkHal/device/xWalkAdxl345/README.md): ADXL345 acceleration sensing.
+- [xWalkAudio](../../xWalk-rpi5-hw/xWalkHal/interface/xWalkAudio/README.md): shared ALSA PCM, mixer, and device
   ownership.
-- [xWalkBoardControl](../../xWalk-rpi5/xWalkHal/layer1/xWalkBoardControl/README.md): board reset, discovery, and
+- [xWalkBoardControl](../../xWalk-rpi5-hw/xWalkHal/layer1/xWalkBoardControl/README.md): board reset, discovery, and
   firmware data.
-- [xWalkBuzzer](../../xWalk-rpi5/xWalkHal/sensor/xWalkBuzzer/README.md): active and passive buzzer control.
-- [xWalkConfig](../../xWalk-rpi5/xWalkHal/interface/xWalkConfig/README.md): configuration parsing and persistence.
-- [xWalkGpio](../../xWalk-rpi5/xWalkHal/interface/xWalkGpio/README.md): GPIO abstraction and Linux backend.
-- [xWalkGPT](../../xWalk-rpi5/xWalkHal/layer1/xWalkGPT/README.md): speech coordination plus Vosk and Espeak
+- [xWalkBuzzer](../../xWalk-rpi5-hw/xWalkHal/sensor/xWalkBuzzer/README.md): active and passive buzzer control.
+- [xWalkConfig](../../xWalk-rpi5-hw/xWalkHal/interface/xWalkConfig/README.md): configuration parsing and persistence.
+- [xWalkGpio](../../xWalk-rpi5-hw/xWalkHal/interface/xWalkGpio/README.md): GPIO abstraction and Linux backend.
+- [xWalkGPT](../../xWalk-rpi5-hw/xWalkHal/layer1/xWalkGPT/README.md): speech coordination plus Vosk and Espeak
   providers.
-- [xWalkI2c](../../xWalk-rpi5/xWalkHal/interface/xWalkI2c/README.md): I2C abstraction and Linux backend.
-- [xWalkIW](../../xWalk-rpi5/xWalkIW/README.md): I2C and Controller Protobuf DTOs and typed gRPC services.
-- [xWalkLanguageModel](../../xWalk-rpi5/xWalkHal/interface/xWalkLanguageModel/README.md): provider-neutral
+- [xWalkI2c](../../xWalk-rpi5-hw/xWalkHal/interface/xWalkI2c/README.md): I2C abstraction and Linux backend.
+- [xWalk-rpi5-iw](../../xWalk-rpi5-iw/README.md): I2C and Controller Protobuf DTOs and typed gRPC services.
+- [xWalkLanguageModel](../../xWalk-rpi5-hw/xWalkHal/interface/xWalkLanguageModel/README.md): provider-neutral
   language-model access.
-- [xWalkLed](../../xWalk-rpi5/xWalkHal/sensor/xWalkLed/README.md): GPIO and PWM LED control.
-- [xWalkLineTracker](../../xWalk-rpi5/xWalkHal/sensor/xWalkLineTracker/README.md): grayscale line-position
+- [xWalkLed](../../xWalk-rpi5-hw/xWalkHal/sensor/xWalkLed/README.md): GPIO and PWM LED control.
+- [xWalkLineTracker](../../xWalk-rpi5-hw/xWalkHal/sensor/xWalkLineTracker/README.md): grayscale line-position
   estimation.
-- [xWalkMotor](../../xWalk-rpi5/xWalkHal/sensor/xWalkMotor/README.md): single and paired motor control.
-- [xWalkMusic](../../xWalk-rpi5/xWalkHal/layer1/xWalkMusic/README.md): musical tones and injected audio playback.
-- [xWalkPwm](../../xWalk-rpi5/xWalkHal/device/xWalkPwm/README.md): Robot HAT PWM output.
-- [xWalkRobot](../../xWalk-rpi5/xWalkHal/layer1/xWalkRobot/README.md): coordinated multi-servo robot control.
-- [xWalkServo](../../xWalk-rpi5/xWalkHal/device/xWalkServo/README.md): calibrated servo positioning.
-- [xWalkSpeaker](../../xWalk-rpi5/xWalkHal/layer1/xWalkSpeaker/README.md): decoded audio-file playback.
-- [xWalkSpi](../../xWalk-rpi5/xWalkHal/interface/xWalkSpi/README.md): bounded SPI abstraction and Linux backend.
-- [xWalkTrace](../../xWalk-rpi5/xWalkTrace/README.md): filtered callback-based diagnostics.
-- [xWalkUltrasonic](../../xWalk-rpi5/xWalkHal/device/xWalkUltrasonic/README.md): ultrasonic distance measurement.
-- [xWalkUserButton](../../xWalk-rpi5/xWalkHal/device/xWalkUserButton/README.md): button events and press timing.
-- [xWalkUtils](../../xWalk-rpi5/xWalkHal/interface/xWalkUtils/README.md): platform utilities and bounded lazy
+- [xWalkMotor](../../xWalk-rpi5-hw/xWalkHal/sensor/xWalkMotor/README.md): single and paired motor control.
+- [xWalkMusic](../../xWalk-rpi5-hw/xWalkHal/layer1/xWalkMusic/README.md): musical tones and injected audio playback.
+- [xWalkPwm](../../xWalk-rpi5-hw/xWalkHal/device/xWalkPwm/README.md): Robot HAT PWM output.
+- [xWalkRobot](../../xWalk-rpi5-hw/xWalkHal/layer1/xWalkRobot/README.md): coordinated multi-servo robot control.
+- [xWalkServo](../../xWalk-rpi5-hw/xWalkHal/device/xWalkServo/README.md): calibrated servo positioning.
+- [xWalkSpeaker](../../xWalk-rpi5-hw/xWalkHal/layer1/xWalkSpeaker/README.md): decoded audio-file playback.
+- [xWalkSpi](../../xWalk-rpi5-hw/xWalkHal/interface/xWalkSpi/README.md): bounded SPI abstraction and Linux backend.
+- [xWalkTrace](../../xWalk-rpi5-hw/xWalkTrace/README.md): filtered callback-based diagnostics.
+- [xWalkUltrasonic](../../xWalk-rpi5-hw/xWalkHal/device/xWalkUltrasonic/README.md): ultrasonic distance measurement.
+- [xWalkUserButton](../../xWalk-rpi5-hw/xWalkHal/device/xWalkUserButton/README.md): button events and press timing.
+- [xWalkUtils](../../xWalk-rpi5-hw/xWalkHal/interface/xWalkUtils/README.md): platform utilities and bounded lazy
   caching.
-- [xWalkVoiceAssistant](../../xWalk-rpi5/xWalkHal/layer1/xWalkVoiceAssistant/README.md): speech and model backend
+- [xWalkVoiceAssistant](../../xWalk-rpi5-hw/xWalkHal/layer1/xWalkVoiceAssistant/README.md): speech and model backend
   composition.
 
 ## Safety and verification

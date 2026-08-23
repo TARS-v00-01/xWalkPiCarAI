@@ -1,10 +1,14 @@
-[submodule "xWalkTool"]
-	path = xWalkTool
-	url = ../xWalkTool
+[submodule "xWalk-rpi5-tool"]
+	path = xWalk-rpi5-tool
+	url = ../xWalk-rpi5-tool
 	branch = master
-[submodule "xWalk-rpi5"]
-	path = xWalk-rpi5
-	url = ../xWalk-rpi5
+[submodule "xWalk-rpi5-hw"]
+	path = xWalk-rpi5-hw
+	url = ../xWalk-rpi5-hw
+	branch = master
+[submodule "xWalk-rpi5-iw"]
+	path = xWalk-rpi5-iw
+	url = ../xWalk-rpi5-iw
 	branch = master
 [submodule "devloper-note"]
 	path = devloper-note

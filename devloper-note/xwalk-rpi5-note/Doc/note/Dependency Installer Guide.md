@@ -16,17 +16,17 @@ Do not add global include paths, global linker paths, or manually assembled `-l`
 packages may be installed under the selected `xWalkLibrary` prefix; otherwise install the matching system
 development package. In both cases, allow CMake to provide the imported target.
 
-The workspace uses a hybrid dependency model. `xWalk-rpi5/xWalkLibrary/XWalkDependencies.cmake` maps the CMake target
-processor to `xWalk-rpi5/xWalkLibrary/x86_64` or `xWalk-rpi5/xWalkLibrary/aarch64`, prepends that prefix and `xWalk-rpi5/xWalkLibrary/common`
+The workspace uses a hybrid dependency model. `xWalk-rpi5-hw/xWalkLibrary/XWalkDependencies.cmake` maps the CMake target
+processor to `xWalk-rpi5-hw/xWalkLibrary/x86_64` or `xWalk-rpi5-hw/xWalkLibrary/aarch64`, prepends that prefix and `xWalk-rpi5-hw/xWalkLibrary/common`
 to `CMAKE_PREFIX_PATH`, and adds the native library directories to the build-tree RPATH. A compatible local
 package is therefore preferred, while ordinary system discovery remains available for a portable dependency
 that has not been reviewed into the repository.
 
 Workspace-wide `xWalkLibraryCommon` public headers, architecture-independent models, and configuration live under
-`xWalk-rpi5/xWalkLibrary/common`. Each native prefix uses the conventional `bin`, `include`, `lib`, and `share` layout.
+`xWalk-rpi5-hw/xWalkLibrary/common`. Each native prefix uses the conventional `bin`, `include`, `lib`, and `share` layout.
 Compilers, build tools, Linux kernel interfaces, ALSA integration, udev rules, camera tools, Device Tree
 overlays, system services, and package managers remain system-installed. See
-[`xWalk-rpi5/xWalkLibrary/README.md`](../../../../xWalk-rpi5/xWalkLibrary/README.md) for inventory and overrides.
+[`xWalk-rpi5-hw/xWalkLibrary/README.md`](../../../../xWalk-rpi5-hw/xWalkLibrary/README.md) for inventory and overrides.
 
 The root build follows this dependency flow:
 
@@ -34,7 +34,7 @@ The root build follows this dependency flow:
 MyPiCarX
 ├── xWalkLibrary
 │   └── common
-├── xWalkIW
+├── xWalk-rpi5-iw
 ├── xWalkHal modules and aggregate target
 └── xWalkController
     └── xWalkAgent
@@ -52,7 +52,7 @@ standalone module builds and aggregate builds without defining the same target t
 | CMake 3.16 or newer | Minimum declared by individual project and module CMake files |
 | C++17 compiler | Required by all public C++ targets |
 | Ninja | Generator selected by every root configure preset |
-| Python 3 | Runs root deployment tests and validates the xWalkIW schema |
+| Python 3 | Runs root deployment tests and validates the xWalk-rpi5-iw schema |
 | `pkg-config` | Supports transitive discovery used by the installed gRPC configuration |
 
 GCC and Clang are the supported host compilers. The configured C++ result is authoritative; editor indexing
@@ -62,9 +62,9 @@ does not replace a successful CMake configure and build.
 
 | Dependency | CMake discovery | Imported target or result | Required when |
 | --- | --- | --- | --- |
-| Protobuf | `find_package(Protobuf REQUIRED)` | `protobuf::libprotobuf` | Every build containing xWalkIW |
-| gRPC | `find_package(gRPC CONFIG REQUIRED)` | `gRPC::grpc++` | Every build containing xWalkIW |
-| Python 3 | `find_package(Python3)` | `Python3_EXECUTABLE` | xWalkIW and root tests |
+| Protobuf | `find_package(Protobuf REQUIRED)` | `protobuf::libprotobuf` | Every build containing xWalk-rpi5-iw |
+| gRPC | `find_package(gRPC CONFIG REQUIRED)` | `gRPC::grpc++` | Every build containing xWalk-rpi5-iw |
+| Python 3 | `find_package(Python3)` | `Python3_EXECUTABLE` | xWalk-rpi5-iw and root tests |
 | ALSA | `find_package(ALSA REQUIRED)` | `ALSA::ALSA` | Audio and speech targets |
 | libcurl | `find_package(CURL REQUIRED)` | `CURL::libcurl` | LanguageModel tests or Ollama provider |
 | Threads | `find_package(Threads REQUIRED)` | `Threads::Threads` | Linux GPIO backend or GPIO hardware tests |
@@ -77,7 +77,7 @@ does not replace a successful CMake configure and build.
 
 ### GoogleTest, TinyXML2, and yaml-cpp
 
-When `BUILD_TESTING=ON` in a normal host build, `xWalk-rpi5/xWalkHal/xWalkTest/xGoogleTest`
+When `BUILD_TESTING=ON` in a normal host build, `xWalk-rpi5-hw/xWalkHal/xWalkTest/xGoogleTest`
 creates the single HAL unit-test executable. GoogleTest supplies test
 registration and reporting; TinyXML2 validates the suite/case enablement file.
 yaml-cpp loads board, AI, example, and hardware runtime values. GoogleTest and
@@ -86,15 +86,15 @@ launcher, including when testing is disabled.
 
 ### Protobuf and gRPC
 
-The top-level `xWalkIW` module is part of the `xWalkHal` aggregate, so normal workspace builds require the
+The top-level `xWalk-rpi5-iw` module is part of the `xWalkHal` aggregate, so normal workspace builds require the
 Protobuf and gRPC C++ development libraries. CMake compiles the checked-in generated sources and links them to
 `protobuf::libprotobuf` and `gRPC::grpc++`.
 
 The Protobuf compiler and gRPC C++ plugin are not required merely to compile those checked-in sources. They
-are required after a schema change when regenerating the `xWalk-rpi5/xWalkIW/auto-gen` tree:
+are required after a schema change when regenerating the `xWalk-rpi5-iw/auto-gen` tree:
 
 ```sh
-xWalkTool/py-agent/dev-tool/xHal_Rpi5CarIwGenerator --generate-cpp
+xWalk-rpi5-tool/py-agent/dev-tool/xHal_Rpi5CarIwGenerator --generate-cpp
 ```
 
 ### ALSA
@@ -162,7 +162,7 @@ sudo apt-get install protobuf-compiler protobuf-compiler-grpc
 Runtime utilities such as `alsa-utils`, `espeak-ng`, `libttspico-utils`, `i2c-tools`, `gpiod`,
 `rpicam-apps`, `ffmpeg`, Ollama, and Vosk are deployment dependencies, not CMake library-discovery
 requirements. See
-[`xWalkTool/apt-packages.txt`](../../../../xWalkTool/apt-packages.txt) for the complete build and runtime package
+[`xWalk-rpi5-tool/apt-packages.txt`](../../../../xWalk-rpi5-tool/apt-packages.txt) for the complete build and runtime package
 map.
 
 The package commands above are the system fallback. GoogleTest, json-c, TinyXML2, yaml-cpp, Protobuf, gRPC,
@@ -210,7 +210,7 @@ Enabling a backend or test option can expand the external dependency surface.
 
 | Module | Option or mode | Added external requirement |
 | --- | --- | --- |
-| `xWalkIW` | Any configuration | Protobuf, gRPC, and Python 3 |
+| `xWalk-rpi5-iw` | Any configuration | Protobuf, gRPC, and Python 3 |
 | `xWalkAudio` | Host tests, hardware tests, or Linux backend | ALSA |
 | `xWalkMusic` | Host tests, hardware tests, or ALSA backend | ALSA |
 | `xWalkMusic` | `XWALK_MUSIC_BUILD_SNDFILE_DECODER=ON` | libsndfile and ALSA |
@@ -269,7 +269,7 @@ decoder enabled while disabling its required ALSA adapter.
 Install the target Linux userspace headers and confirm that the selected compiler or cross-compiling sysroot
 contains GPIO, I2C, and SPI headers. Do not bypass the check with cached result variables.
 
-### Generated xWalkIW file missing
+### Generated xWalk-rpi5-iw file missing
 
 Install `protoc` and `grpc_cpp_plugin`, regenerate the checked-in files from the reviewed schemas, and rerun a
 fresh configure. Do not hand-edit generated output.

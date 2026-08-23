@@ -12,7 +12,7 @@ never invokes `sudo` or a system package manager.
 From the repository root on the college server, run:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh assess
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh assess
 ```
 
 Confirm the persistent home filesystem, quota, supported Java runtime,
@@ -22,14 +22,14 @@ bridge, a virtual-only address, or a guessed address.
 ## Installation
 
 Obtain the official Gerrit WAR SHA-256 checksum. Set it and the detected server
-IP in `xWalkTool/py-agent/gerrit-tool/config/gerrit-setup.conf`. Do not store the administrator
+IP in `xWalk-rpi5-tool/py-agent/gerrit-tool/config/gerrit-setup.conf`. Do not store the administrator
 password in that file.
 
 Leave `GERRIT_STORAGE_PATH` empty for `@@HOME@@/gerrit-site`, or set it to the
 absolute site path supplied by the server administrator. Validate it first:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-storage-check.sh
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-storage-check.sh
 ```
 
 The installer prints the resolved site before changing anything. It rejects a
@@ -38,7 +38,7 @@ space, missing Linux permissions, or failed file-locking and file-operation
 checks.
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh install
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh install
 ```
 
 The script prompts without echo for the initial `@@ADMIN_USERNAME@@` password
@@ -51,7 +51,7 @@ programs, UI plugin, and rendered guides.
 Start and validate an existing installation with:
 
 ```bash
-xWalkTool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh start
+xWalk-rpi5-tool/py-agent/gerrit-tool/shell-script/gerrit-setup.sh start
 ```
 
 ## Installed paths
