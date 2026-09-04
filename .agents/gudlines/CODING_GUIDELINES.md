@@ -204,8 +204,6 @@ xWalk-rpi5-hw/xWalkDriver/xWalkVoice/xWalkGptCar/ upstream GPT PiCar-X assistant
 xWalk-rpi5-hw/xWalkDriver/xWalkConnectivity/ external-control and transaction Agent group
 xWalk-rpi5-hw/xWalkDriver/xWalkConnectivity/xWalkAppControl/ mobile-app vehicle coordination
 xWalk-rpi5-hw/xWalkDriver/xWalkConnectivity/xWalkSpiTransfer/ bounded SPI transaction coordination
-xWalk-rpi5-hw/xWalkDriver/xWalkPlatform/    process composition Agent group
-xWalk-rpi5-hw/xWalkDriver/xWalkPlatform/xWalkBoot/ host-stub and Raspberry Pi process composition
 xWalk-rpi5-hw/xWalkController/             retained Controller configuration without C++ code
 xWalk-rpi5-hw/xWalkController/xWalkConfig/ layered deployment and calibration configuration
 xWalk-rpi5-hw/xWalkAudioResources/music/   packaged background-music resources
@@ -1523,9 +1521,9 @@ meaning rather than the order of evaluation. Do not use names such as `temp`,
 
 - Keep `xWalkDriver` beside `xWalkHal`. Normal Agent modules coordinate caller-owned
   HAL objects and must not duplicate physical I/O backends or own injected
-  project dependencies. `xWalkBoot` is the intentional composition-boundary
-  exception: its optional RPi target owns platform backends only for one
-  synchronous application callback, while its core target remains device-free.
+  project dependencies. The former Platform composition layer is deleted. Add
+  future process composition only at a separately reviewed Controller activity
+  boundary; do not restore a Driver-owned compatibility root.
 - Name agent public headers and sources `xAgent_Rpi5Car<Component>.h` and
   `xAgent_Rpi5Car<Component>.cpp`. Put production declarations in
   `namespace xwalk::agent` while retaining project scalar and container types
@@ -1533,9 +1531,10 @@ meaning rather than the order of evaluation. Do not use names such as `temp`,
 - Give every agent submodule independent host and hardware test options. The
   aggregate `XWALK_AGENT_BUILD_HOST` and `XWALK_AGENT_BUILD_RPI` options must be
   mutually exclusive and default to `OFF`.
-- Keep MCU reset and other temporary hardware claims in `xWalkBootRpi`
-  root when a later dependency must claim the same physical resource. Destroy
-  the temporary backend before constructing the long-lived dependency.
+- Keep MCU reset and other temporary hardware claims in the reviewed application
+  composition root when a later dependency must claim the same physical
+  resource. Destroy the temporary backend before constructing the long-lived
+  dependency.
 - Keep Agent APIs independent of any future application parser or dispatcher. Inject delay, audio, and other
   platform operations, and bind Linux hardware only at a reviewed application composition boundary.
 - Keep `XWalkSelfDrive` limited to named gesture, movement, sound, status, and
@@ -1967,7 +1966,8 @@ As of 2026-08-06:
   trace selection, and its hardware-independent target compiles successfully.
 - Music callbacks are connected to shared ALSA and its opt-in hardware target compiles.
 - Native Music MP3 decoding is covered by a device-free libsndfile host test.
-- The xWalkBoot host stub passes one-shot lifecycle tests, and its RPi composition target compiles.
+- The former Driver-owned Platform and Boot composition targets and their tests
+  are deleted; no replacement process service exists yet.
 - The Speaker host suite and standalone silent simulation pass with persistent
   trace selection, and its hardware-independent target compiles successfully.
 - Speaker decoding and shared-ALSA playback are covered by host and opt-in hardware targets.

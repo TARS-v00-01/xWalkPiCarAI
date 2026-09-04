@@ -44,10 +44,8 @@
                     kind="inc" path="" system="false"/>
                 <pathentry include="xWalkDriver/xWalkConnectivity/xWalkSpiTransfer/include"
                     kind="inc" path="" system="false"/>
-                <pathentry include="xWalkDriver/xWalkPlatform/xWalkBoot/core/include" kind="inc" path="" system="false"/>
-                <pathentry include="xWalkDriver/xWalkPlatform/xWalkBoot/hardware/include" kind="inc" path="" system="false"/>
-                <pathentry include="xWalkDriver/xWalkPlatform/xWalkBoot/stub/include" kind="inc" path="" system="false"/>
-                <pathentry include="xWalkDriver/xWalkPlatform/xWalkBoot/stub/test/include" kind="inc" path="" system="false"/>
+                <pathentry include="xWalkDriver/xWalkService/xWalkLifecycleService/include"
+                    kind="inc" path="" system="false"/>
                 <pathentry include="xWalkDriver/xWalkVision/xWalkCameraCapture/include" kind="inc" path="" system="false"/>
                 <pathentry include="xWalkDriver/xWalkVehicle/xWalkCliffDetection/include"
                     kind="inc" path="" system="false"/>
