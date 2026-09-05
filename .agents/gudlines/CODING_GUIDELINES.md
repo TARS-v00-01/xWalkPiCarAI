@@ -351,6 +351,13 @@ tree. Regenerate them from reviewed schemas, never edit them by hand, and
 exclude them from handwritten-source coverage and static-analysis gates while
 retaining normal compiler warnings and compilation checks.
 
+Name each handwritten Protobuf message with at most two PascalCase operation
+words. Append `Req`, `Cfm`, or `Rej` to a transported flow message without
+counting that suffix as an operation word. Omit redundant `XWalk`, `Command`,
+`Request`, and `Payload` text. Give a supporting DTO a concise two-word name,
+such as `ClientAddr` or `MoveArg`. Keep service, RPC, enumeration, field, signal,
+and package names stable unless their owning contract is explicitly changed.
+
 Define every xWalk-rpi5-iw request, confirmation, and rejection signal through the
 typed `XWalkSignalNumber` Protobuf enumeration. Name its values
 `CXX_XWALK_<SHORT_NAME>_REQ`, `CXX_XWALK_<SHORT_NAME>_CFM`, or
