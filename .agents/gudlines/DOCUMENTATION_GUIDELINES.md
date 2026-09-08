@@ -43,9 +43,10 @@ During staging, convert links from developer-note pages to tracked files outside
 source links for the deployed integration revision. Preserve checkout-relative links in the source Markdown.
 Gerrit and GitHub CI must run `xWalk-rpi5-tool/doc-tool/wiki.sh verify` to validate wiki-owned and repository-owned
 links, strictly build the generated documentation artifact, and inspect it before distribution. Gerrit remains the
-authoritative review system; GitHub repositories under `TARS-v00-01` contain only submitted branches replicated from
-their explicit Gerrit project mappings. Documentation must not instruct developers to push or review through
-GitHub.
+authoritative review system. Only the configured `TARS-v00-01/xWalkPiCarAI/master` integration is synchronized
+to GitHub after Gerrit submission. GitHub Actions fetch pinned component source directly from Gerrit on the
+configured self-hosted runner. Documentation must not instruct developers to publish component mirrors or push
+or review through GitHub.
 
 Documentation must:
 

@@ -1,20 +1,9 @@
-name: Check out private xWalk submodules
-description: Initialize exact submitted component gitlinks with repository-scoped read-only keys.
-
-inputs:
-  key-bundle:
-    description: JSON object containing the private read-only deploy keys.
-    required: true
-  supplemental-key-bundle:
-    description: JSON object containing additional private read-only deploy keys.
-    required: true
+name: Check out submitted Gerrit components
+description: Fetch exact integration gitlinks from Gerrit using the configured self-hosted runner.
 
 runs:
   using: composite
   steps:
     - name: Initialize exact submitted component commits
       shell: bash
-      env:
-        TARS_SUBMODULE_READ_KEYS: ${{ inputs.key-bundle }}
-        TARS_SUBMODULE_READ_KEYS_SUPPLEMENT: ${{ inputs.supplemental-key-bundle }}
       run: ${{ github.action_path }}/checkout.sh

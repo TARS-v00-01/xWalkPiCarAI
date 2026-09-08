@@ -8,29 +8,19 @@ on:
 permissions:
   contents: read
 
-env:
-  XWALK_INTEGRATION_PACKAGES: >-
-    clang cmake ninja-build libasound2-dev libboost-dev libcurl4-openssl-dev libgmock-dev
-    libgtest-dev libjson-c-dev libopencv-dev libtinyxml2-dev libyaml-cpp-dev
-    python3-nacl protobuf-compiler protobuf-compiler-grpc libprotobuf-dev
-    libgrpc++-dev
-
 jobs:
   metadata:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, linux, x64, xwalk-ci]
     steps:
       - uses: actions/checkout@v6
       - name: Check out exact submitted component commits
         uses: ./.github/actions/checkout-private-submodules
-        with:
-          key-bundle: ${{ secrets.TARS_SUBMODULE_READ_KEYS }}
-          supplemental-key-bundle: ${{ secrets.TARS_SUBMODULE_READ_KEYS_SUPPLEMENT }}
       - name: Validate integration metadata
         run: xWalk-rpi5-tool/shell-agent/gerrit-tool/validate-integration-metadata.sh
 
   private-integration:
     if: vars.XWALK_GERRIT_PRIVATE_CI_ENABLED == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, linux, x64, xwalk-ci]
     strategy:
       fail-fast: false
       matrix:
@@ -40,11 +30,8 @@ jobs:
       - uses: actions/checkout@v6
       - name: Check out exact submitted component commits
         uses: ./.github/actions/checkout-private-submodules
-        with:
-          key-bundle: ${{ secrets.TARS_SUBMODULE_READ_KEYS }}
-          supplemental-key-bundle: ${{ secrets.TARS_SUBMODULE_READ_KEYS_SUPPLEMENT }}
-      - name: Install host dependencies
-        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_INTEGRATION_PACKAGES
+      - name: Validate host dependencies
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/check-host-quality-dependencies.sh
       - name: Select compiler
         run: |
           if [ "${{ matrix.compiler }}" = clang ]; then echo "CC=clang" >> "$GITHUB_ENV"; echo "CXX=clang++" >> "$GITHUB_ENV"; else echo "CC=gcc" >> "$GITHUB_ENV"; echo "CXX=g++" >> "$GITHUB_ENV"; fi
@@ -56,16 +43,13 @@ jobs:
         run: ctest --test-dir build-host/integration --output-on-failure --no-tests=error
   sanitizers:
     if: vars.XWALK_GERRIT_PRIVATE_CI_ENABLED == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, linux, x64, xwalk-ci]
     steps:
       - uses: actions/checkout@v6
       - name: Check out exact submitted component commits
         uses: ./.github/actions/checkout-private-submodules
-        with:
-          key-bundle: ${{ secrets.TARS_SUBMODULE_READ_KEYS }}
-          supplemental-key-bundle: ${{ secrets.TARS_SUBMODULE_READ_KEYS_SUPPLEMENT }}
-      - name: Install sanitizer dependencies
-        run: xWalk-rpi5-tool/shell-agent/quality-tool/install-github-host-packages.sh $XWALK_INTEGRATION_PACKAGES
+      - name: Validate sanitizer dependencies
+        run: xWalk-rpi5-tool/shell-agent/quality-tool/check-host-quality-dependencies.sh
       - name: Configure ASan and UBSan
         run: CC=clang CXX=clang++ cmake --fresh -S xWalk-rpi5-hw -B build-host/sanitizers -G Ninja -DCMAKE_BUILD_TYPE=Debug -DXWALK_ENABLE_SANITIZERS=ON -DXWALK_ENABLE_STRICT_WARNINGS=ON
       - name: Build and test ASan and UBSan

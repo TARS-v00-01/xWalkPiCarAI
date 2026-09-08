@@ -20,14 +20,11 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, linux, x64, xwalk-ci]
     steps:
       - uses: actions/checkout@v6
       - name: Validate the integrated repository metadata
         uses: ./.github/actions/checkout-private-submodules
-        with:
-          key-bundle: ${{ secrets.TARS_SUBMODULE_READ_KEYS }}
-          supplemental-key-bundle: ${{ secrets.TARS_SUBMODULE_READ_KEYS_SUPPLEMENT }}
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'

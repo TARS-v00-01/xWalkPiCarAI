@@ -41,11 +41,22 @@ For a WIP change, use Gerrit's **Mark As Active** button as the Activate action.
 The WIP-to-active transition triggers CI for the current patch set. Moving an
 active change into WIP does not trigger CI.
 
-Never push a component change directly to GitHub. Every `TARS-v00-01` component
-repository is a submit-gated mirror of its explicit Gerrit project mapping.
-Gerrit replication publishes only the submitted `master` ref; pending patch
-sets and Gerrit review, metadata, user, edit, cache, and draft refs have no
-GitHub destination. GitHub pull requests are not the project review workflow.
+Never push a component change directly to GitHub or configure component GitHub
+remotes. GitHub contains only the configured integrated repository,
+`TARS-v00-01/xWalkPiCarAI/master`. The dedicated synchronization service may
+fast-forward only the exact submitted Gerrit integration commit after complete
+CI and approval. Component repositories and Gerrit review refs have no GitHub
+destination. GitHub pull requests are not the project review workflow.
+
+GitHub jobs that need component source run on the configured `xwalk-ci`
+self-hosted runner and use `.github/actions/checkout-private-submodules` to
+fetch the exact integration gitlinks directly from Gerrit. The runner provides
+`GERRIT_SERVER_HOST`, `GERRIT_SSH_PORT`, `GERRIT_SUBMODULE_USERNAME`,
+`GERRIT_SUBMODULE_SSH_KEY_FILE`, and `GERRIT_SSH_KNOWN_HOSTS_FILE`. Require
+pinned SSH host keys and a private key file inaccessible to group and others.
+Verify every pinned revision is reachable from Gerrit's submitted `master`
+branch. Do not fall back to component GitHub mirrors or scan and trust host
+keys during a job. These jobs remain host-safe.
 
 During migration, `xWalkPiCarAI/master` is the active integration branch; the
 final target is `xWalk-rpi5/master`. A Gerrit change may be submitted only after
