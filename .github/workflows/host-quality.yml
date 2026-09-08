@@ -22,6 +22,8 @@ jobs:
       - uses: actions/checkout@v6
       - name: Check out exact submitted component commits
         uses: ./.github/actions/checkout-private-submodules
+      - name: Test Gerrit push routing
+        run: python3 .github/tests/test_git_environment.py
       - name: Test Gerrit checkout contract
         run: python3 .github/actions/checkout-private-submodules/test_checkout.py
       - name: Validate xWalk host dependencies

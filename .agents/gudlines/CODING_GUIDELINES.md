@@ -31,7 +31,12 @@ git push origin HEAD:refs/for/master%wip
 ```
 
 Source `xWalk-git-env.sh` once per checkout to install the repository-local
-Gerrit push transport. With `XWALK_GIT_AUTO_START=true`, every ordinary Gerrit
+Gerrit push transport. An ordinary `git push` from the integration checkout
+or an initialized gitlink repository targets `HEAD:refs/for/master` in its
+own Gerrit project through the default `origin` remote. Uninitialized gitlink
+directories must not alter the integration repository configuration. When the
+connector is absent, use the configured authenticated Gerrit SSH endpoint.
+With the connector and `XWALK_GIT_AUTO_START=true`, every ordinary Gerrit
 push starts the server stack installed on the current machine before SSH:
 personal workstations start their local profile, the college host starts its
 managed profile, and clients without a local installation connect to the

@@ -135,7 +135,7 @@ unset -f _xwalk_git_env_prepend_path
 
 _xwalk_git_env_block_direct_github_pushes()
 {
-    local repository_path remote_name push_urls
+    local repository_path remote_name push_urls resolved_repository_root
     local blocked_url="xwalk-gerrit-uplift-only://direct-github-push-disabled"
 
     for repository_path in "${XWALK_REPOSITORY_ROOT}" ${XWALK_GITLINK_SUBMODULE_PATHS}
@@ -143,6 +143,8 @@ _xwalk_git_env_block_direct_github_pushes()
         [[ "${repository_path}" == "${XWALK_REPOSITORY_ROOT}" ]] || \
             repository_path="${XWALK_REPOSITORY_ROOT}/${repository_path}"
         [[ -d "${repository_path}" ]] || continue
+        resolved_repository_root=$(git -C "${repository_path}" rev-parse --show-toplevel 2>/dev/null || true)
+        [[ "${resolved_repository_root}" == "${repository_path}" ]] || continue
         while IFS= read -r remote_name
         do
             [[ -n "${remote_name}" ]] || continue
@@ -179,13 +181,10 @@ _xwalk_git_env_project_name()
 
 _xwalk_git_env_configure_gerrit_pushes()
 {
-    local repository_path remote_name project_name push_url
+    local repository_path remote_name project_name push_url default_remote resolved_repository_root
 
-    [[ -x "${XWALK_GERRIT_GIT_CONNECT}" ]] || {
-        printf 'Missing Gerrit Git connector: %s\n' "${XWALK_GERRIT_GIT_CONNECT}" >&2
-        return 1
-    }
-    [[ "${XWALK_GERRIT_GIT_CONNECT}" != *[[:space:]]* ]] || {
+    [[ ! -x "${XWALK_GERRIT_GIT_CONNECT}" || \
+        "${XWALK_GERRIT_GIT_CONNECT}" != *[[:space:]]* ]] || {
         printf 'Gerrit Git connector path must not contain whitespace: %s\n' \
             "${XWALK_GERRIT_GIT_CONNECT}" >&2
         return 1
@@ -196,18 +195,34 @@ _xwalk_git_env_configure_gerrit_pushes()
         [[ "${repository_path}" == "${XWALK_REPOSITORY_ROOT}" ]] || \
             repository_path="${XWALK_REPOSITORY_ROOT}/${repository_path}"
         [[ -d "${repository_path}" ]] || continue
+        resolved_repository_root=$(git -C "${repository_path}" rev-parse --show-toplevel 2>/dev/null || true)
+        [[ "${resolved_repository_root}" == "${repository_path}" ]] || continue
         project_name=$(_xwalk_git_env_project_name "${repository_path}")
-        push_url="ext::${XWALK_GERRIT_GIT_CONNECT} ${GERRIT_USER}@${GERRIT_SERVER_HOST} "
-        push_url+="${GERRIT_SSH_PORT} ${project_name} ${XWALK_GIT_AUTO_START} %S"
-        git -C "${repository_path}" config --local protocol.ext.allow always
+        if [[ -x "${XWALK_GERRIT_GIT_CONNECT}" ]]
+        then
+            push_url="ext::${XWALK_GERRIT_GIT_CONNECT} ${GERRIT_USER}@${GERRIT_SERVER_HOST} "
+            push_url+="${GERRIT_SSH_PORT} ${project_name} ${XWALK_GIT_AUTO_START} %S"
+            git -C "${repository_path}" config --local protocol.ext.allow always
+        else
+            push_url="${GERRIT_SSH_URL}/${project_name}"
+        fi
         for remote_name in origin gerrit
         do
             if git -C "${repository_path}" config --local --get "remote.${remote_name}.url" >/dev/null
             then
                 git -C "${repository_path}" config --local --replace-all \
                     "remote.${remote_name}.pushurl" "${push_url}"
+                git -C "${repository_path}" config --local --replace-all \
+                    "remote.${remote_name}.push" "HEAD:refs/for/${GERRIT_BRANCH}"
             fi
         done
+        if git -C "${repository_path}" config --local --get remote.origin.url >/dev/null
+        then
+            default_remote=origin
+        else
+            default_remote=gerrit
+        fi
+        git -C "${repository_path}" config --local remote.pushDefault "${default_remote}"
     done
 }
 
