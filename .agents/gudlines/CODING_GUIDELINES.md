@@ -932,7 +932,10 @@ direction always runs from the façade to the selected tool.
   releasing the file lock.
 - Use `RPI.<digits>` UIDs with HAL macros, `CTRL.<digits>` UIDs with Controller
   macros, `RPIAGENT.<digits>` UIDs with Agent macros, and `LIB.<digits>` UIDs
-  with Library macros. Source files below `xWalkHal`, `xWalkController`,
+  with Library macros. Node sources use `XWALK_MQTT_TRACE_UIDn` with
+  `MQTTUL.<digits>` for clients and `MQTTDL.<digits>` for servers. Their
+  warning and error macros are `XWALK_MQTT_WARNING` and `XWALK_MQTT_ERROR`,
+  preserving the existing selector contract and unfiltered behavior. Source files below `xWalkHal`, `xWalkController`,
   `xWalkDriver`, and `xWalkLibrary` must use their owning macro family. The
   numeric value must be unique within its tag across the complete repository
   regardless of module, submodule, or priority. IDs `RPI.001`, `CTRL.001`,

@@ -3,6 +3,13 @@
         {
             "name": "Linux",
             "includePath": [
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttInit/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttServer/include",
+                "${workspaceFolder}/xWalk-rpi5-node/build-host/generated/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttClient/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/tests/include",
+                "${workspaceFolder}/xWalk-rpi5-node/build-host/xWalkMqttInit/xWalkTrace/generated/include",
                 "${workspaceFolder}",
                 "/usr/include/opencv4",
                 "${workspaceFolder}/xWalk-rpi5-hw/xWalkDriver/test/include",
@@ -291,8 +298,7 @@
                 "limitSymbolsToIncludedHeaders": false
             },
             "compilerPath": "/usr/bin/c++",
-            "configurationProvider": "ms-vscode.cmake-tools",
-            "mergeConfigurations": true,
+            "mergeConfigurations": false,
             "compilerArgs": [
                 "-std=c++17"
             ],
@@ -303,7 +309,10 @@
                 "XWALK_TEST_MUSIC_DIRECTORY=\"${workspaceFolder}/xWalk-rpi5-hw/xWalkAudioResources/music\"",
                 "XWALK_VOICE_ACTIVE_CAR_CONFIG_DIRECTORY=\"${workspaceFolder}/xWalk-rpi5-hw/xWalkDriver/xWalkVoice/xWalkVoiceActiveCar/config\""
             ],
-            "compileCommands": ["${workspaceFolder}/build-host/cmake/compile_commands.json"],
+            "compileCommands": [
+                "${workspaceFolder}/xWalk-rpi5-node/build-host/compile_commands.json",
+                "${workspaceFolder}/build-host/cmake/compile_commands.json"
+            ],
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64"
