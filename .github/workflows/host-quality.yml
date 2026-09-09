@@ -112,7 +112,7 @@ jobs:
         uses: ./.github/actions/checkout-private-submodules
       - name: Configure and build xWalk-rpi5-iw
         run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-iw-build
-      - name: Run schema, serialization, gRPC, signal, and transport tests
+      - name: Run Protobuf schema, serialization, signal, and transport tests
         run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-iw-tests
 
   xwalk-library:

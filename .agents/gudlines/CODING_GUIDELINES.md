@@ -224,7 +224,7 @@ xWalk-rpi5-hw/xWalkController/             retained Controller configuration wit
 xWalk-rpi5-hw/xWalkController/xWalkConfig/ layered deployment and calibration configuration
 xWalk-rpi5-hw/xWalkAudioResources/music/   packaged background-music resources
 xWalk-rpi5-hw/xWalkAudioResources/sounds/  packaged sound-effect resources
-xWalk-rpi5-iw/                     I2C and Controller Protobuf DTOs and gRPC interface definitions
+xWalk-rpi5-iw/                     I2C, lifecycle, and Controller Protobuf message definitions
 xWalk-rpi5-hw/xWalkLibrary/                common public headers, portable dependencies, models, and native assets
 xWalk-rpi5-hw/xWalkLibrary/common/         common interface target, headers, configuration, and documentation
 xWalk-rpi5-hw/CMakeLists.txt    product and HAL aggregate build
@@ -362,7 +362,7 @@ module or runner, such as `Example`, `GoogleTest`, or `SequenceTest`. Keep
 generated copies under the same filename so runtime diagnostics and deployment
 instructions identify one stable configuration artifact.
 
-Keep generated Protobuf and gRPC sources under the owning module's `auto-gen`
+Keep generated Protobuf sources under the owning module's `auto-gen`
 tree. Regenerate them from reviewed schemas, never edit them by hand, and
 exclude them from handwritten-source coverage and static-analysis gates while
 retaining normal compiler warnings and compilation checks.
@@ -371,8 +371,12 @@ Name each handwritten Protobuf message with at most two PascalCase operation
 words. Append `Req`, `Cfm`, or `Rej` to a transported flow message without
 counting that suffix as an operation word. Omit redundant `XWalk`, `Command`,
 `Request`, and `Payload` text. Give a supporting DTO a concise two-word name,
-such as `ClientAddr` or `MoveArg`. Keep service, RPC, enumeration, field, signal,
+such as `ClientAddr` or `MoveArg`. Keep enumeration, field, signal,
 and package names stable unless their owning contract is explicitly changed.
+
+Keep xWalk-rpi5-iw message-only: do not define RPC services or require a gRPC
+runtime or generator plugin. Generate C++ with `protoc` and link consumers
+through `xWalk::IW` to the Protobuf runtime.
 
 Define every xWalk-rpi5-iw request, confirmation, and rejection signal through the
 typed `XWalkSignalNumber` Protobuf enumeration. Name its values
@@ -1839,7 +1843,7 @@ As of 2026-08-06:
 - The GPIO core and Linux backend host suite passes through an injected device
   mirror, and the standalone stub simulation runs without opening hardware.
   The Linux GPIO backend and opt-in hardware test compile without execution.
-- The xWalk-rpi5-iw Protobuf/XML contract validates, its generated gRPC C++ library
+- The xWalk-rpi5-iw Protobuf/XML contract validates, its generated Protobuf C++ library
   compiles, and its host schema test passes in the aggregate suite.
 - The SPI core and Linux backend host suite passes through an injected device mirror, and the standalone stub
   simulation runs without opening hardware. The Agent transaction service passes with injected transfers; the
