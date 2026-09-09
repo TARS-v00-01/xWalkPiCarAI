@@ -2,6 +2,19 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "xWalk: Configure MQTT node navigation",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "-S", "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT",
+                "-B", "${workspaceFolder}/xWalk-rpi5-node/build-host",
+                "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+                "-DXWALK_MQTT_BUILD_HOST_TESTS=ON"
+            ],
+            "options": {"cwd": "${workspaceFolder}"},
+            "problemMatcher": []
+        },
+        {
             "label": "xWalk: Configure hardware navigation",
             "type": "shell",
             "command": "cmake",
@@ -19,7 +32,7 @@
         {
             "label": "xWalk: Refresh all C++ navigation",
             "dependsOrder": "sequence",
-            "dependsOn": ["xWalk: Configure hardware navigation"],
+            "dependsOn": ["xWalk: Configure hardware navigation", "xWalk: Configure MQTT node navigation"],
             "problemMatcher": []
         }
     ]
