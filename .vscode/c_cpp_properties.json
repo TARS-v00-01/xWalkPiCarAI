@@ -3,7 +3,12 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/xWalkMqttTypes/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/xWalkMqttQueue/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/xWalkMqttJson/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/xWalkMqttNode/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/xWalkMqttQueue/test/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/xWalkMqttNode/test/include",
                 "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttInit/include",
                 "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttServer/include",
                 "${workspaceFolder}/xWalk-rpi5-node/build-host/generated/include",
@@ -148,7 +153,17 @@
                 "${workspaceFolder}/xWalk-rpi5-hw/xWalkHal/interface/xWalkSpi/test/include",
                 "${workspaceFolder}/xWalk-rpi5-hw/xWalkHal/interface/xWalkSpi/hardware/test/src",
                 "${workspaceFolder}/xWalk-rpi5-hw/xWalkLibrary/common/include",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkReciver/xWalkRequest/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkReciver/xWalkCfm/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkReciver/xWalkReject/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkReciver/test/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/auto-gen",
+                "${workspaceFolder}/xWalk-rpi5-hw/xWalkLibrary/auto-gen",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkTransmitter/xWalkRequest/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkTransmitter/xWalkCfm/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkTransmitter/xWalkReject/include",
+                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkTransmitter/test/include"
             ],
             "browse": {
                 "path": [
@@ -293,9 +308,20 @@
                     "${workspaceFolder}/xWalk-rpi5-hw/xWalkHal/interface/xWalkSpi/simulation/include",
                     "${workspaceFolder}/xWalk-rpi5-hw/xWalkHal/interface/xWalkSpi/test/include",
                     "${workspaceFolder}/xWalk-rpi5-hw/xWalkHal/interface/xWalkSpi/hardware/test/src",
-                    "${workspaceFolder}/xWalk-rpi5-hw/xWalkLibrary/common/include"
+                    "${workspaceFolder}/xWalk-rpi5-hw/xWalkLibrary/common/include",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkReciver/xWalkRequest/include",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkReciver/xWalkCfm/include",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkReciver/xWalkReject/include",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkReciver/test/include",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkMqttCommon/auto-gen",
+                    "${workspaceFolder}/xWalk-rpi5-hw/xWalkLibrary/auto-gen",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkTransmitter/xWalkRequest/include",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkTransmitter/xWalkCfm/include",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkTransmitter/xWalkReject/include",
+                    "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT/xWalkAgent/xWalkTransmitter/test/include"
                 ],
-                "limitSymbolsToIncludedHeaders": false
+                "limitSymbolsToIncludedHeaders": false,
+                "databaseFilename": "${workspaceFolder}/xWalk-rpi5-node/build-host/editor-index/workspace.vc.db"
             },
             "compilerPath": "/usr/bin/c++",
             "mergeConfigurations": false,

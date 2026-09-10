@@ -934,7 +934,9 @@ direction always runs from the façade to the selected tool.
   macros, `RPIAGENT.<digits>` UIDs with Agent macros, and `LIB.<digits>` UIDs
   with Library macros. Node sources use `XWALK_MQTT_TRACE_UIDn` with
   `MQTTUL.<digits>` for clients and `MQTTDL.<digits>` for servers. Their
-  warning and error macros are `XWALK_MQTT_WARNING` and `XWALK_MQTT_ERROR`,
+  warning and error macros are `XWALK_MQTT_WARNING` and `XWALK_MQTT_ERROR`.
+  The functional request handlers below `xWalk-rpi5-node/xWalkIoT/xWalkAgent` instead use
+  `XWALK_XAGENT_TRACE_UIDn` with `XAGENT.<digits>`, `XWALK_XAGENT_WARNING`, and `XWALK_XAGENT_ERROR`,
   preserving the existing selector contract and unfiltered behavior. Source files below `xWalkHal`, `xWalkController`,
   `xWalkDriver`, and `xWalkLibrary` must use their owning macro family. The
   numeric value must be unique within its tag across the complete repository
