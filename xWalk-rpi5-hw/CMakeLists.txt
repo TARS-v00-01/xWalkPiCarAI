@@ -5,11 +5,19 @@ project(xWalk VERSION 1.0.0 LANGUAGES CXX)
 set(XWALK_RPI5_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 get_filename_component(XWALK_WORKSPACE_ROOT "${XWALK_RPI5_ROOT}/.." ABSOLUTE)
 
+option(XWALK_CONTROLLER_BUILD_MODULE "Build only the Controller terminal and standalone handler stubs" OFF)
+if(XWALK_CONTROLLER_BUILD_MODULE)
+    include(CTest)
+    add_subdirectory(xWalkController)
+    return()
+endif()
+
 include(${XWALK_RPI5_ROOT}/xWalkLibrary/XWalkDependencies.cmake)
 include(CTest)
 include(GNUInstallDirs)
 
 option(XWALK_BUILD_RPI "Build Raspberry Pi backends and deployment configuration" OFF)
+option(XWALK_BUILD_ALL_BACKENDS "Compile every Linux provider without selecting hardware execution" OFF)
 option(XWALK_ENABLE_STRICT_WARNINGS "Add the host sanity warning extensions" OFF)
 option(XWALK_ENABLE_SANITIZERS "Enable AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 option(XWALK_ENABLE_THREAD_SANITIZER "Enable ThreadSanitizer for host concurrency tests" OFF)
@@ -468,6 +476,20 @@ else()
     message(STATUS "xWalk HAL production mode: verification targets are disabled")
 endif()
 
+if(XWALK_BUILD_ALL_BACKENDS)
+    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        message(FATAL_ERROR "The complete backend build requires Linux")
+    endif()
+    foreach(backend IN ITEMS I2C_BUILD_LINUX_BACKEND SPI_BUILD_LINUX_BACKEND GPIO_BUILD_LINUX_BACKEND
+            AUDIO_BUILD_LINUX_BACKEND CAMERA_BUILD_LINUX_BACKEND CAMERA_BUILD_OPENCV_BACKEND
+            LANGUAGE_MODEL_BUILD_OLLAMA_PROVIDER GPT_BUILD_STT_ALSA_BACKEND GPT_BUILD_TTS_ALSA_BACKEND
+            GPT_BUILD_VOSK_PROVIDER GPT_BUILD_ESPEAK_PROVIDER GPT_BUILD_PIPER_PROVIDER
+            GPT_BUILD_PICO2WAVE_PROVIDER MUSIC_BUILD_ALSA_BACKEND MUSIC_BUILD_SNDFILE_DECODER
+            SPEAKER_BUILD_ALSA_BACKEND UTILS_BUILD_LINUX_BACKEND)
+        set(XWALK_${backend} ON CACHE BOOL "Required by the complete backend build" FORCE)
+    endforeach()
+endif()
+
 add_subdirectory(xWalkLibrary/common)
 add_subdirectory("${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-iw" xWalk-rpi5-iw)
 add_subdirectory("${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-trace" xWalkTrace)
@@ -512,6 +534,8 @@ if(BUILD_TESTING)
     add_subdirectory(xWalkHal/xWalkTest/xSequenceTest)
 endif()
 add_subdirectory(xWalkDriver)
+set(XWALK_CONTROLLER_BUILD_HOST_TESTS ${XWALK_ROOT_BUILD_HOST} CACHE BOOL
+    "Controlled by the workspace root" FORCE)
 add_subdirectory(xWalkController)
 if(XWALK_CLI_INSTALL_RUNTIME)
     install(PROGRAMS

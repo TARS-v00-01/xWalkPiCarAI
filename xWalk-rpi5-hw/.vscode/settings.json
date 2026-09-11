@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.h": "cpp"
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.configureOnOpen": true,
+    "cmake.useCMakePresets": "always",
+    "C_Cpp.errorSquiggles": "enabled",
+    "C_Cpp.intelliSenseEngine": "default",
+    "C_Cpp.files.exclude": {
+        "**/.git": true,
+        "**/build-host/controller-boot": true
+    }
+}

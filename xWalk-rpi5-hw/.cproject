@@ -35,6 +35,12 @@
                     value="&quot;xWalkDriver/xWalkVoice/xWalkVoiceActiveCar/config&quot;"/>
                 <pathentry include="/usr/include/opencv4" kind="inc" path="" system="true"/>
                 <pathentry include="xWalkLibrary/common/include" kind="inc" path="" system="false"/>
+                <pathentry include="xWalkController/xWalkInit/include" kind="inc" path="" system="false"/>
+                <pathentry include="xWalkController/xWalkRequest/include" kind="inc" path="" system="false"/>
+                <pathentry include="xWalkController/xWalkCfm/include" kind="inc" path="" system="false"/>
+                <pathentry include="xWalkController/xWalkReject/include" kind="inc" path="" system="false"/>
+                <pathentry include="xWalkController/test/include" kind="inc" path="" system="false"/>
+                <pathentry include="xWalkLibrary/auto-gen" kind="inc" path="" system="false"/>
                 <pathentry include="xWalkDriver/test/include" kind="inc" path="" system="false"/>
                 <pathentry include="xWalkDriver/xWalkCalibration/xWalkGrayscaleCalibration/include"
                     kind="inc" path="" system="false"/>

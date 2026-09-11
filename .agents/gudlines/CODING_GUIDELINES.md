@@ -148,7 +148,12 @@ in the same build directory. The default aggregate build contains production
 libraries only. A host build must register every submodule host and unit test so plain
 `ctest` runs the complete host suite. An RPI build must register every submodule
 hardware test so plain `ctest` runs the complete hardware suite after deployment
-and safety approval. The `Doc` directory has no build system. Use the existing
+and safety approval. Full Node HOST and RPI5 products include the hardware aggregate before adding Node consumers, so the default
+build compiles all HAL and Driver libraries. `XWALK_BUILD_ALL_BACKENDS` enables compilation of every Linux
+provider independently of the runtime platform: HOST Boot retains simulation and hardware tests remain opt-in.
+The Node module preset omits this aggregate and continues to verify only Node interfaces.
+
+The `Doc` directory has no build system. Use the existing
 layout:
 
 ```text
@@ -220,7 +225,7 @@ xWalk-rpi5-hw/xWalkDriver/xWalkVoice/xWalkGptCar/ upstream GPT PiCar-X assistant
 xWalk-rpi5-hw/xWalkDriver/xWalkConnectivity/ external-control and transaction Agent group
 xWalk-rpi5-hw/xWalkDriver/xWalkConnectivity/xWalkAppControl/ mobile-app vehicle coordination
 xWalk-rpi5-hw/xWalkDriver/xWalkConnectivity/xWalkSpiTransfer/ bounded SPI transaction coordination
-xWalk-rpi5-hw/xWalkController/             retained Controller configuration without C++ code
+xWalk-rpi5-hw/xWalkController/             four-core request scheduling and retained configuration
 xWalk-rpi5-hw/xWalkController/xWalkConfig/ layered deployment and calibration configuration
 xWalk-rpi5-hw/xWalkAudioResources/music/   packaged background-music resources
 xWalk-rpi5-hw/xWalkAudioResources/sounds/  packaged sound-effect resources
@@ -623,6 +628,17 @@ direction always runs from the façade to the selected tool.
 - Treat the configured CMake build as the authoritative C++ result. IntelliSense
   diagnostics are editor assistance and do not replace compilation with the
   project's warning flags.
+- Prioritize the aggregate `build-host/cmake/compile_commands.json` over older
+  component databases. Keep parent, hardware-folder, and Controller-folder editor
+  configurations consistent. Use **xWalk: Refresh all C++ navigation** to regenerate
+  the host, native-provider and Node databases. The separate `build-host/rpi5-navigation`
+  database parses native providers, examples and hardware tests using the host
+  compiler; it is not an ARM64 build and its binaries must not be run as host tests.
+- Keep `browse.path` limited to live source/header directories using non-recursive
+  `/*` entries. Do not recursively index the workspace root or staged build copies.
+  Keep each opened workspace folder on its own browse database to avoid conflicting
+  indexes. Include `.cpp` directories so declaration-to-definition navigation finds
+  implementations, not only public headers. Use the semantic IntelliSense engine.
 - When adding or renaming a module, add its public and test include directories
   to `../.vscode/c_cpp_properties.json`. Update both `includePath` and `browse.path`
   in the same change.
@@ -1538,17 +1554,56 @@ meaning rather than the order of evaluation. Do not use names such as `temp`,
 - Grant device permissions through standard operating-system groups and exact
   configured I2C, GPIO, and SPI node matches. Do not add broad device wildcards.
 
-## Controller configuration conventions
+## Controller interface conventions
 
-- Keep `xWalk-rpi5-hw/xWalkController` configuration-only until a replacement execution architecture is
-  reviewed. Do not restore a Controller class, command-line executable, command handler, application directory, or
-  Controller-owned test runner as an incremental compatibility layer.
-- Keep deployment settings below `xWalkController/xWalkConfig`. The component CMake project may generate and
-  install these files, but it must not import Agent or HAL code or expose a C++ target.
-- Compose and test `xWalkDriver` directly from the product CMake project while the Controller is configuration-only.
-- Design any future CBB-style mechanism as a separately reviewed architecture with explicit ownership, bounded
-  dispatch, payload lifetime, error propagation, concurrency, and Raspberry Pi safety contracts before adding C++
-  code to the Controller component.
+- Controller-specific implementation style follows the MQTT module's C-style function bodies: C headers and
+  library calls, explicit local types, C-style casts, `NULL`, pthread entry functions and return-value errors.
+  This is an explicit exception to the general cast/null spelling rules above. Retain existing class inheritance,
+  public reference signatures, non-throwing callback contracts and valid class construction/destruction for Node
+  compatibility. Do not replace constructed class storage with raw `malloc` bytes. Generated terminal copies
+  follow the same style while respecting the external Protobuf API.
+
+
+- `xWalkController` owns the transport-neutral Node-to-Driver scheduling boundary and retains configuration in
+  `xWalkConfig`. Do not restore the retired command-line application or Driver-owned process composition.
+- Controller groups are `xWalkInit`, `xWalkRequest`, `xWalkCfm` and `xWalkReject`, each with `include` and `src`. Keep existing
+  class declarations, constructors, destructors and shared functions in `xWalkInit`; keep typed request dispatch in
+  `xWalkRequest` and typed completion methods in `xWalkCfm`/`xWalkReject`. Do not introduce separate completion classes.
+  Typed production completions return the injected Node encoder/publisher result; never report an unsent
+  CFM or REJ as delivered. The module build uses separate standalone stubs and always reports responses unsent.
+- `XWalkController` owns four `XWalkCore` subclasses: service/core 0, vehicle/core 1, vision/core 2 and voice/core 3.
+  Pin these workers to four distinct allowed Linux CPUs; fail startup rather than silently sharing fewer CPUs.
+- Each worker owns an eight-entry FIFO, excluding its one active request. Route existing generated request
+  signals to exact shared structures. The public boundary passes a signal, borrowed `const void*`, and `sizeof`
+  the matching structure, not serialized GPB bytes. Deep-copy present nested string and binary views before
+  returning from enqueue; bound combined view data to 65,536 bytes per request.
+- Reject invalid inputs without queueing. On FIFO overflow, reject the incoming request with its original
+  identity and correlation, invoke the synchronous rejection callback, log the central Controller assertion,
+  and terminate with `abort()` in every build mode. Never overwrite an older queued request.
+- Keep callbacks outside FIFO locks. Callbacks and contexts are non-owning, thread-safe, non-throwing, bounded
+  and alive until shutdown joins all workers. Lifecycle calls belong to one owner thread, never a worker callback.
+- Stop rejects new work, drains accepted requests and joins the workers while Node MQTT remains connected.
+  Production handlers forward to Boot's operation adapter; a scheduled request is not a hardware completion.
+- Node's `XWalkControllerResponse` encodes central Controller warning/error callbacks as existing IW GPB
+  rejections. Typed requests use their matching REJ signal and original client correlation; unaddressed lifecycle
+  or unsafe input uses `TraceRej` on the status topic. Keep Protobuf/MQTT dependencies in Node, not Controller.
+- Scope diagnostic forwarding per thread and operation through `XWalkTraceScope` in the trace module. Deliver
+  outside trace/FIFO locks, suppress recursive transport diagnostics, and finish the QoS 1 publish attempt before
+  fatal overflow aborts. Never claim delivery when transport fails or fabricate a client address.
+- Driver integration must arbitrate shared movement, camera and audio resources across functional workers;
+  CPU affinity alone provides no hardware resource isolation. Keep all current Controller tests hardware-free.
+
+- Full standalone `xwalk-ctrl run` owns Boot directly for HOST simulation or RPI5 device execution, without MQTT.
+  Node still owns Boot in its own process. Keep `json`/FIFO verification hardware-free and module builds stub-only.
+  Interactive standalone sessions preserve Boot across commands, wait for real CFM/REJ and released execution
+  leases, and cancel/join before releasing providers on timeout, interruption, EOF or quit.
+
+- Boot's cancellable operation worker holds one exclusive shared-device lease across Controller functions.
+  It copies admitted requests, rejects competing work, and handles same-session or global lifecycle stop requests
+  without blocking the request queues. Driver and encoder exceptions stay inside adapter boundaries. Cleanup
+  precedes stop confirmation; backend calls must have bounded return times for timely cooperative cancellation.
+  The `module` build selects standalone stubs and omits the Boot execution runtime.
+
 ## Agent conventions
 
 - Keep `xWalkDriver` beside `xWalkHal`. Normal Agent modules coordinate caller-owned

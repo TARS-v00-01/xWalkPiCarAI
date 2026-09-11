@@ -7,14 +7,14 @@
             "command": "cmake",
             "args": [
                 "-S",
-                "${workspaceFolder}/xWalk-rpi5-node/xWalkIoT",
+                "${workspaceFolder}/../xWalk-rpi5-node/xWalkIoT",
                 "-B",
-                "${workspaceFolder}/xWalk-rpi5-node/build-host",
+                "${workspaceFolder}/../xWalk-rpi5-node/build-host",
                 "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
                 "-DXWALK_MQTT_BUILD_HOST_TESTS=ON"
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/.."
             },
             "problemMatcher": []
         },
@@ -26,10 +26,10 @@
                 "--preset",
                 "host-debug",
                 "-S",
-                "${workspaceFolder}/xWalk-rpi5-hw"
+                "${workspaceFolder}/../xWalk-rpi5-hw"
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/.."
             },
             "problemMatcher": []
         },
@@ -39,15 +39,15 @@
             "command": "cmake",
             "args": [
                 "-S",
-                "${workspaceFolder}/xWalk-rpi5-hw",
+                "${workspaceFolder}/../xWalk-rpi5-hw",
                 "-B",
-                "${workspaceFolder}/build-host/rpi5-navigation",
+                "${workspaceFolder}/../build-host/rpi5-navigation",
                 "-DXWALK_BUILD_RPI=ON",
                 "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
                 "-DCMAKE_BUILD_TYPE=Debug"
             ],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/.."
             },
             "problemMatcher": []
         },
