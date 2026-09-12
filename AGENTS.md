@@ -116,8 +116,11 @@ For a WIP change, Gerrit's **Mark As Active** button is the Activate action.
 Clearing WIP through that button triggers CI for the current patch set. Moving
 an active change into WIP must not trigger CI.
 
-GitHub contains only the configured integrated repository, `xWalkPiCarAI/master`.
-Component repositories must not have GitHub remotes. After
+GitHub hosts `xWalkPiCarAI/master` and private component repositories for recursive cloning.
+Use explicit `https://github.com/TARS-v00-01/<component>.git` submodule URLs and permit GitHub fetch remotes.
+Every integrated gitlink must be available in its GitHub component repository before publishing the integration.
+Gerrit remains the source review and submission authority; GitHub fetch access does not authorize direct pushes.
+After
 an integration change passes complete CI, receives approval, and is submitted
 to the configured Gerrit integration branch, the dedicated synchronization
 service may fast-forward that exact submitted commit to the matching GitHub

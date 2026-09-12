@@ -46,12 +46,16 @@ For a WIP change, use Gerrit's **Mark As Active** button as the Activate action.
 The WIP-to-active transition triggers CI for the current patch set. Moving an
 active change into WIP does not trigger CI.
 
-Never push a component change directly to GitHub or configure component GitHub
-remotes. GitHub contains only the configured integrated repository,
-`TARS-v00-01/xWalkPiCarAI/master`. The dedicated synchronization service may
+Never push a component change directly to GitHub. GitHub hosts the configured integrated repository,
+`TARS-v00-01/xWalkPiCarAI/master`, and private component repositories for recursive cloning.
+Use explicit GitHub HTTPS URLs in `.gitmodules`; GitHub component fetch remotes are permitted.
+All pinned component commits must exist on GitHub before the integration revision is published there.
+Existing clones refresh local overrides with `git submodule sync --recursive` before initialization.
+Cloning requires GitHub access to every private component, but no Gerrit connection or environment script.
+The dedicated synchronization service may
 fast-forward only the exact submitted Gerrit integration commit after complete
-CI and approval. Component repositories and Gerrit review refs have no GitHub
-destination. GitHub pull requests are not the project review workflow.
+CI and approval. Gerrit review refs must not be published to GitHub.
+GitHub pull requests are not the project review workflow.
 
 GitHub jobs that need component source run on the configured `xwalk-ci`
 self-hosted runner and use `.github/actions/checkout-private-submodules` to
@@ -1561,7 +1565,8 @@ meaning rather than the order of evaluation. Do not use names such as `temp`,
   This is an explicit exception to the general cast/null spelling rules above. Retain existing class inheritance,
   public reference signatures, non-throwing callback contracts and valid class construction/destruction for Node
   compatibility. Do not replace constructed class storage with raw `malloc` bytes. Generated terminal copies
-  follow the same style while respecting the external Protobuf API.
+  use `static_cast` for scalar, enum, and void-pointer conversions and `reinterpret_cast` for byte views,
+  keeping the generated Protobuf adapter clean under `-Wold-style-cast`.
 
 
 - `xWalkController` owns the transport-neutral Node-to-Driver scheduling boundary and retains configuration in

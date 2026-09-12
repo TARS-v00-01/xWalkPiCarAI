@@ -1,40 +1,40 @@
 [submodule "devloper-note"]
 	path = devloper-note
-	url = ../devloper-note.git
+	url = https://github.com/TARS-v00-01/devloper-note.git
 	branch = master
 [submodule "xWalkDriver"]
 	path = xWalk-rpi5-hw/xWalkDriver
-	url = ../xWalkDriver.git
+	url = https://github.com/TARS-v00-01/xWalkDriver.git
 	branch = master
 [submodule "xWalkAudioResources"]
 	path = xWalk-rpi5-hw/xWalkAudioResources
-	url = ../xWalkAudioResources.git
+	url = https://github.com/TARS-v00-01/xWalkAudioResources.git
 	branch = master
 [submodule "xWalkController"]
 	path = xWalk-rpi5-hw/xWalkController
-	url = ../xWalkController.git
+	url = https://github.com/TARS-v00-01/xWalkController.git
 	branch = master
 [submodule "xWalkHal"]
 	path = xWalk-rpi5-hw/xWalkHal
-	url = ../xWalkHal.git
+	url = https://github.com/TARS-v00-01/xWalkHal.git
 	branch = master
 [submodule "xWalk-rpi5-iw"]
 	path = xWalk-rpi5-iw
-	url = ../xWalk-rpi5-iw.git
+	url = https://github.com/TARS-v00-01/xWalk-rpi5-iw.git
 	branch = master
 [submodule "xWalk-rpi5-node"]
 	path = xWalk-rpi5-node
-	url = ../xWalk-rpi5-node.git
+	url = https://github.com/TARS-v00-01/xWalk-rpi5-node.git
 	branch = master
 [submodule "xWalkLibrary"]
 	path = xWalk-rpi5-hw/xWalkLibrary
-	url = ../xWalkLibrary.git
+	url = https://github.com/TARS-v00-01/xWalkLibrary.git
 	branch = master
 [submodule "xWalk-rpi5-tool"]
 	path = xWalk-rpi5-tool
-	url = ../xWalk-rpi5-tool.git
+	url = https://github.com/TARS-v00-01/xWalk-rpi5-tool.git
 	branch = master
 [submodule "xWalk-rpi5-trace"]
 	path = xWalk-rpi5-trace
-	url = ../xWalk-rpi5-trace.git
+	url = https://github.com/TARS-v00-01/xWalk-rpi5-trace.git
 	branch = master

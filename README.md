@@ -6,6 +6,34 @@ and development tooling.
 
 Normal host builds use simulated or software backends and do not actuate physical hardware.
 
+## Clone from GitHub
+
+The integration repository uses explicit GitHub HTTPS URLs for all ten submodules. The component repositories
+are private: your GitHub account must have read access to each one, even though the integration repository is public.
+Authenticate Git before cloning. With GitHub CLI:
+
+```bash
+gh auth login --hostname github.com --git-protocol https
+gh auth setup-git
+git clone --recurse-submodules https://github.com/TARS-v00-01/xWalkPiCarAI.git
+```
+
+For an existing clone, after fetching and checking out the integration revision containing these URLs, replace
+old local submodule URL overrides and initialize the exact pinned component revisions:
+
+```bash
+git submodule sync --recursive
+git submodule update --init --recursive
+git submodule status --recursive
+```
+
+Each status entry should begin with a space. A leading `-` means uninitialized; `+` means the checkout differs
+from the pinned revision. Do not use `--remote` for a reproducible integration checkout.
+
+Cloning requires no Gerrit connection or `xWalk-git-env.sh`. Contributors source that script separately to
+configure Gerrit review uploads. GitHub component remotes support fetching; source changes still go through Gerrit.
+The managed GitHub Actions checkout continues to use its runner's Gerrit credentials independently of developer clones.
+
 ## Repository layout
 
 ```text
