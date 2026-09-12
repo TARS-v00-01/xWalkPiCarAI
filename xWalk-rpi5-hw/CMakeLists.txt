@@ -185,8 +185,19 @@ endif()
 
 set(XWALK_RPI_RUNTIME_ROOT "${CMAKE_BINARY_DIR}/../runtime")
 set(XWALK_RPI_RUNTIME_CONFIG_FILE "${XWALK_RPI_RUNTIME_ROOT}/picar-x.conf")
-set(XWALK_PICARX_CONFIG_FILE "${XWALK_RPI_RUNTIME_CONFIG_FILE}" CACHE FILEPATH
-    "Writable PiCar-X runtime configuration compiled into the build-tree CLI")
+# Migrate the old automatically cached RPi path in HOST trees to the safe host profile.
+if(NOT XWALK_BUILD_RPI AND XWALK_PICARX_CONFIG_FILE STREQUAL XWALK_RPI_RUNTIME_CONFIG_FILE)
+    set(XWALK_PICARX_CONFIG_FILE "${CMAKE_BINARY_DIR}/config/picar-x-profile.conf" CACHE FILEPATH
+        "Selected Controller configuration" FORCE)
+endif()
+if(XWALK_BUILD_RPI)
+    set(XWALK_PICARX_CONFIG_FILE "${XWALK_RPI_RUNTIME_CONFIG_FILE}" CACHE FILEPATH
+        "Writable PiCar-X runtime configuration compiled into Node and Controller")
+else()
+    # Select the host profile before Driver can cache its standalone source configuration.
+    set(XWALK_PICARX_CONFIG_FILE "${CMAKE_BINARY_DIR}/config/picar-x-profile.conf" CACHE FILEPATH
+        "Selected Controller configuration")
+endif()
 
 add_custom_target(host-dependency-check
     COMMAND "${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-tool/shell-agent/quality-tool/check-host-quality-dependencies.sh"
@@ -254,6 +265,8 @@ if(XWALK_BUILD_RPI)
 endif()
 
 if(XWALK_BUILD_RPI)
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+        "${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-tool/shell-agent/deploy-tool/generate-rpi-runtime.sh")
     execute_process(
         COMMAND
             "${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-tool/shell-agent/deploy-tool/generate-rpi-runtime.sh"
