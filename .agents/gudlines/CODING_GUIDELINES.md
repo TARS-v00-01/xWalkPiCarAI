@@ -2068,3 +2068,18 @@ As of 2026-08-06:
 - Host coverage passes enforced minimums of 79 percent for lines and 40 percent
   for branches.
 - Hardware tests have not been executed as part of this verification.
+
+## Cooperative provider interruption
+
+Synchronous providers may borrow the operation owner's atomic cancellation latch while idle.
+The owner keeps it alive until the worker has joined and resets it only before a new operation.
+Providers never infer protocol STOP ownership from this latch. Release local HTTP/process resources before
+propagating `XWalkOperationCancelled` from the common header; this control outcome does not emit an error trace.
+This is an explicit exception to ordinary failure-trace handling. Actual provider and safety-cleanup failures
+retain the existing error path, including when cancellation is also pending. The Controller catches the typed
+interruption at its existing operation boundary and still completes required device cleanup before responding.
+
+Only fixed, bounded diagnostic categories cross the GPB rejection boundary; arbitrary exception/provider text
+stays out of responses. Optional farewell speech requires continued operation permission. Owned speech child
+processes use private process groups, bounded TERM-to-KILL escalation, and direct-child reaping. Never signal
+unrelated processes. The common `owningpointer` alias accepts an optional deleter for scoped resource cleanup.

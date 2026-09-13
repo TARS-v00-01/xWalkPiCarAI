@@ -55,6 +55,7 @@ xwalk_read_rpi_default(XWALK_DEFAULT_RPI_VOICE_CAPTURE_DEVICE)
 xwalk_read_rpi_default(XWALK_DEFAULT_RPI_VOICE_MIXER_DEVICE)
 xwalk_read_rpi_default(XWALK_DEFAULT_RPI_VOICE_MIXER_ELEMENT)
 xwalk_read_rpi_default(XWALK_DEFAULT_RPI_PIPER_EXECUTABLE)
+xwalk_read_rpi_default(XWALK_DEFAULT_RPI_PIPER_MODEL)
 
 set(XWALK_RPI_PROFILE "${XWALK_DEFAULT_RPI_PROFILE}" CACHE STRING
     "Explicit Robot HAT profile used by the opt-in Raspberry Pi provisioner")
@@ -99,6 +100,8 @@ set(XWALK_RPI_VOICE_MIXER_DEVICE "${XWALK_DEFAULT_RPI_VOICE_MIXER_DEVICE}" CACHE
     "ALSA mixer selected in the generated Raspberry Pi runtime")
 set(XWALK_RPI_VOICE_MIXER_ELEMENT "${XWALK_DEFAULT_RPI_VOICE_MIXER_ELEMENT}" CACHE STRING
     "ALSA mixer element selected in the generated Raspberry Pi runtime")
+set(XWALK_RPI_PIPER_MODEL "${XWALK_DEFAULT_RPI_PIPER_MODEL}" CACHE FILEPATH
+    "Selected Piper .onnx asset; deployment validation requires its companion JSON")
 set(XWALK_RPI_PIPER_EXECUTABLE "${XWALK_DEFAULT_RPI_PIPER_EXECUTABLE}" CACHE FILEPATH
     "Piper executable selected in the generated Raspberry Pi runtime")
 option(XWALK_RPI_WITH_VOSK "Install repository-controlled Vosk assets while provisioning" ON)
@@ -279,6 +282,9 @@ if(XWALK_BUILD_RPI)
             --voice-mixer-device "${XWALK_RPI_VOICE_MIXER_DEVICE}"
             --voice-mixer-element "${XWALK_RPI_VOICE_MIXER_ELEMENT}"
             --piper-executable "${XWALK_RPI_PIPER_EXECUTABLE}"
+            --piper-model "${XWALK_RPI_PIPER_MODEL}"
+            --native-binary "${CMAKE_BINARY_DIR}/xwalk"
+            --configuration-file "${XWALK_PICARX_CONFIG_FILE}"
             --initialize-only
         RESULT_VARIABLE XWALK_RPI_RUNTIME_GENERATION_RESULT
         OUTPUT_VARIABLE XWALK_RPI_RUNTIME_GENERATION_OUTPUT
