@@ -185,11 +185,8 @@ endif()
 
 set(XWALK_RPI_RUNTIME_ROOT "${CMAKE_BINARY_DIR}/../runtime")
 set(XWALK_RPI_RUNTIME_CONFIG_FILE "${XWALK_RPI_RUNTIME_ROOT}/picar-x.conf")
-# Migrate the old automatically cached RPi path in HOST trees to the safe host profile.
-if(NOT XWALK_BUILD_RPI AND XWALK_PICARX_CONFIG_FILE STREQUAL XWALK_RPI_RUNTIME_CONFIG_FILE)
-    set(XWALK_PICARX_CONFIG_FILE "${CMAKE_BINARY_DIR}/config/picar-x-profile.conf" CACHE FILEPATH
-        "Selected Controller configuration" FORCE)
-endif()
+# A cached path may be an intentional override, even when it matches an old default.
+# Select defaults without FORCE; use a fresh build tree to verify a changed default.
 if(XWALK_BUILD_RPI)
     set(XWALK_PICARX_CONFIG_FILE "${XWALK_RPI_RUNTIME_CONFIG_FILE}" CACHE FILEPATH
         "Writable PiCar-X runtime configuration compiled into Node and Controller")
