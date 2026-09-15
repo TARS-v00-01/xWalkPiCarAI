@@ -30,7 +30,8 @@ git submodule status --recursive
 Each status entry should begin with a space. A leading `-` means uninitialized; `+` means the checkout differs
 from the pinned revision. Do not use `--remote` for a reproducible integration checkout.
 
-Cloning requires no Gerrit connection or `xWalk-git-env.sh`. Contributors source that script separately to
+Cloning requires no Gerrit connection or Git environment script. Contributors source
+`xWalk-rpi5-tool/shell-agent/env-tool/git.sh` separately to
 configure Gerrit review uploads. GitHub component remotes support fetching; source changes still go through Gerrit.
 The managed GitHub Actions checkout continues to use its runner's Gerrit credentials independently of developer clones.
 
@@ -61,15 +62,205 @@ MyPiCarX/
 The supported host workflow requires Linux, CMake 3.25 or newer, Ninja, a C++17 compiler, Python 3, and the
 development libraries used by the complete product.
 
-On Ubuntu or Debian, install the core host dependencies with:
+On Ubuntu or Debian, run the [dependency installation script](setup.sh). Run it with sudo to
+update the package index and install each native dependency separately:
+
+```bash
+sudo ./setup.sh
+```
+
+The script requires root privileges and stops if an installation command fails. It detects host or Pi
+and reads the full shared package catalog, including MQTT/TLS, generators, tests, and quality tools.
+Use `sudo ./setup.sh --target host` or `sudo ./setup.sh --target rpi` to select the target explicitly.
+Pi setup requires Raspberry Pi 5 ARM64 and includes CSI camera packages. Initialize the tooling submodule first.
+For complete source and Raspberry Pi setup, use [install.sh](install.sh) instead.
+
+For a manual installation of the core host subset, run:
 
 ```bash
 sudo apt-get update
-sudo apt-get install build-essential cmake ninja-build pkg-config python3 libasound2-dev libcurl4-openssl-dev libprotobuf-dev libgrpc++-dev libgtest-dev libjson-c-dev libtinyxml2-dev libyaml-cpp-dev
+sudo apt-get install build-essential
+sudo apt-get install cmake
+sudo apt-get install ninja-build
+sudo apt-get install pkg-config
+sudo apt-get install python3
+sudo apt-get install libasound2-dev
+sudo apt-get install libcurl4-openssl-dev
+sudo apt-get install libprotobuf-dev
+sudo apt-get install libgrpc++-dev
+sudo apt-get install libgtest-dev
+sudo apt-get install libjson-c-dev
+sudo apt-get install libtinyxml2-dev
+sudo apt-get install libyaml-cpp-dev
 ```
 
 See the [dependency guide](devloper-note/xwalk-rpi5-note/Doc/note/Dependency%20Installer%20Guide.md) for optional
 quality tools, generators, Raspberry Pi packages, and dependency troubleshooting.
+
+## Prepare a fresh Linux machine
+
+[install.sh](install.sh) prepares a fresh Linux machine to build the xWalk source. It installs native
+dependencies, initializes the pinned source submodules, and configures CMake. On Raspberry Pi it also prepares
+boot settings and device permissions for the selected Robot HAT.
+
+### Requirements
+
+- Ubuntu 24.04 or newer, or Debian/Raspberry Pi OS 12 or newer, with APT.
+- A normal user account with sudo access. Run the script without `sudo`; it elevates system operations itself.
+- Internet access to package repositories and authenticated read access to every private Git submodule.
+- For native Pi setup: Raspberry Pi 5 with a 64-bit ARM64 operating system and an identified Robot HAT revision.
+
+Install the operating system and configure networking first. The script does not flash an SD card or firmware.
+For Git authentication and recursive cloning, follow [Clone from GitHub](#clone-from-github).
+If Git is missing before cloning, install it through your operating system's package manager first.
+
+The commands below run from the directory containing `install.sh`. The script also works when invoked by its
+absolute path from another directory.
+
+### Linux workstation
+
+Install dependencies and configure the host build:
+
+```bash
+./install.sh --target host
+```
+
+To compile as part of setup:
+
+```bash
+./install.sh --target host --build --jobs 2
+```
+
+To build later and run host tests:
+
+```bash
+cmake --build build-host/cmake --parallel 2
+ctest --test-dir build-host/cmake --output-on-failure --no-tests=error
+```
+
+Host setup uses the `host-debug` preset and writes build files under `build-host/cmake`.
+
+### Raspberry Pi 5
+
+Identify the physical HAT revision before selecting its profile. CSI camera dependencies are selected by this
+installer. The runtime account defaults to the account running the script.
+
+#### Robot HAT v4
+
+```bash
+./install.sh --target rpi --profile robot_hat_v4 --build
+```
+
+There is no verified v4 overlay in this repository. This profile enables I2C/SPI and prepares device access,
+but retains the installed audio overlay. Board-specific v4 audio setup remains separate. The Servo HAT+ file
+is not installed as a v4 substitute.
+
+#### Robot HAT v5
+
+```bash
+./install.sh --target rpi --profile robot_hat_v5 --build
+```
+
+The supported v5 UUID must already be visible in the local Device Tree. The installer checks the bundled
+`sunfounder-robothat5.dtbo` checksum before installing it into the boot overlay directory and enabling it.
+If board identification fails, installation stops; selecting v4 is not a workaround for an unidentified v5 board.
+
+#### Select the runtime user and GPIO controller
+
+For an existing account named `xwalk` and a board whose intended GPIO controller is `/dev/gpiochip0`:
+
+```bash
+./install.sh --target rpi --profile robot_hat_v4 --runtime-user xwalk --gpio-device /dev/gpiochip0
+```
+
+Replace these example values with the actual account and device. The script does not create a runtime user.
+The GPIO default comes from the deployment defaults file, currently `/dev/gpiochip4`.
+
+Pi setup uses the `rpi-release` preset and writes build files under `build-rpi/cmake`. To compile later:
+
+```bash
+cmake --build build-rpi/cmake --parallel 2
+```
+
+After setup, review the boot configuration and its backup, then reboot manually to activate boot settings
+and new group memberships. Hardware acceptance is separate. To list hardware tests without running them:
+
+```bash
+ctest --test-dir build-rpi/cmake -N -L hardware
+```
+
+### What setup changes
+
+| Area | Action |
+| --- | --- |
+| Source | Synchronizes submodule URLs and initializes exact pinned revisions recursively. |
+| Packages | Installs catalog-selected build, generator, audio, test, quality, and packaging dependencies. |
+| Build | Configures the selected CMake preset; compiles only with `--build`. |
+| Pi camera | Installs CSI camera dependencies, including GStreamer components. |
+| Pi boot | Enables I2C/SPI in an `[all]` section and arranges for `i2c-dev` to load at boot. |
+| Pi HAT v5 | Installs and selects the checksum-verified Robot HAT v5 overlay. |
+| Pi access | Adds device groups, runtime-user memberships, and rules for the selected device nodes. |
+| Pi configuration | Initializes writable configuration under `/var/lib/xwalk` from repository templates. |
+
+Boot configuration backups use the `.xwalk-backup` suffix alongside `config.txt`. A different existing v5
+blob is also backed up before replacement. Existing backups are preserved on reruns. The setup locates
+`/boot/firmware/config.txt` or the supported legacy `/boot/config.txt` layout.
+
+Setup does not start the robot, automatically reboot, or run hardware tests. Optional Ollama/Piper models,
+provider credentials, and board-specific audio configuration require separate runtime setup.
+
+### Options
+
+| Option | Meaning |
+| --- | --- |
+| `--apply` | Optional compatibility alias; installation is already the default. |
+| `--target auto\|host\|rpi` | Select the target; `auto` detects Raspberry Pi from the local Device Tree. |
+| `--profile robot_hat_v4\|robot_hat_v5` | Explicit physical HAT profile, required for Pi setup. |
+| `--runtime-user USER` | Existing Pi runtime account; defaults to the invoking user. |
+| `--gpio-device /dev/gpiochipN` | Select the Pi GPIO controller used by provisioning and CMake. |
+| `--build` | Compile after successful setup and CMake configuration. |
+| `--jobs N` | Positive build parallelism, default 2 to limit memory use. |
+| `--skip-submodules` | Keep current revisions; skip submodule synchronization and initialization. |
+| `--help` | Display command-line help. |
+
+Running `./install.sh` starts installation immediately and detects the target automatically.
+Pi setup must run on the Raspberry Pi with an explicit HAT profile.
+
+### Troubleshooting
+
+#### Private submodule clone fails
+
+Verify your Git authentication and read access to every component repository. Re-run after access is fixed.
+See the [clone instructions](#clone-from-github).
+
+#### Submodule revisions differ from their pins
+
+The installer stops before changing an existing checkout with different revisions. If you deliberately want
+to build those revisions, use `--skip-submodules`. Missing source modules must still be initialized.
+
+#### Missing sudo or root invocation
+
+Use a normal build account with sudo access. The installer rejects execution as root so Git and CMake
+outputs remain owned by the build account.
+
+#### No APT candidate for rpicam-apps
+
+Some Ubuntu repositories do not provide this package. The dependency installer can accept a validated existing
+`rpicam-still`; otherwise it reports the separate user-local camera setup workflow. Read the
+[deployment tooling README](xWalk-rpi5-tool/shell-agent/deploy-tool/README.md) before using that workflow:
+`setup-rpi-local.sh` also installs Ollama and downloads a model. Re-run installation after resolving the camera
+prerequisite. This root installer does not change APT sources automatically.
+
+#### Boot conflict or unidentified HAT
+
+Review the reported disabled interface or overlapping overlay in the actual boot configuration. Verify the
+physical board and Device Tree identity. Correct the configuration for that board before rerunning.
+
+#### Package, provisioning, or CMake failure
+
+The script returns a nonzero status and stops. Earlier completed steps may remain applied; this is not a
+transactional rollback. Resolve the reported error and rerun the same command. Package checks skip installed
+packages, and boot additions preserve backups and avoid duplicating the settings they manage.
 
 ## Build the complete repository
 
@@ -175,13 +366,14 @@ through Gerrit and should reference the applicable Jira work item.
 
 ### Start the local Gerrit server
 
-Load the repository Git environment once in each checkout. It configures the
+Load [git.sh](xWalk-rpi5-tool/shell-agent/env-tool/git.sh) once in each integrated checkout
+as your normal user. It configures the
 repository-local Gerrit push transport so an ordinary `git push` starts the
 Gerrit stack installed on the current machine before opening the Gerrit SSH
 connection:
 
 ```bash
-source xWalk-git-env.sh
+source xWalk-rpi5-tool/shell-agent/env-tool/git.sh
 ```
 
 On a personal workstation this starts its local Gerrit profile. On the college

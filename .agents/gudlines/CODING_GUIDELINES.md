@@ -30,7 +30,8 @@ must be deferred, upload the change as WIP:
 git push origin HEAD:refs/for/master%wip
 ```
 
-Source `xWalk-git-env.sh` once per checkout to install the repository-local
+Source `xWalk-rpi5-tool/shell-agent/env-tool/git.sh` once per checkout to install
+the repository-local
 Gerrit push transport. An ordinary `git push` from the integration checkout
 or an initialized gitlink repository targets `HEAD:refs/for/master` in its
 own Gerrit project through the default `origin` remote. Uninitialized gitlink
@@ -1517,6 +1518,15 @@ meaning rather than the order of evaluation. Do not use names such as `temp`,
 - In the aggregate RPI build directory, run plain `ctest` only on the connected
   target after the hardware setup has passed its safety review. This executes
   every registered hardware test.
+
+## Dependency setup entry point
+
+Use the integration-root `setup.sh` with sudo for native package installation. It selects host or Pi
+from the local board, accepts an explicit `--target`, and installs missing packages one at a time.
+Keep package selection, OS and camera validation, and installed-package verification in
+`xWalk-rpi5-tool/shell-agent/deploy-tool/install-dependencies-common.sh` using `apt-packages.txt`.
+The full `install.sh` delegates package installation to `setup.sh` and owns source/build/boot preparation.
+The component launchers remain compatible entry points for standalone tooling users.
 
 ## CMake conventions
 
