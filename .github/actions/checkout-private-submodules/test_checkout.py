@@ -32,6 +32,8 @@ class GerritCheckoutTest(unittest.TestCase):
                         GIT_CONFIG_GLOBAL='/dev/null', GIT_AUTHOR_NAME='Checkout Test',
                         GIT_AUTHOR_EMAIL='test@example.invalid', GIT_COMMITTER_NAME='Checkout Test',
                         GIT_COMMITTER_EMAIL='test@example.invalid')
+        self.env.update(GITHUB_ACTIONS='true', GITHUB_WORKSPACE=str(self.root),
+                        GITHUB_RUN_ID='123', GITHUB_RUN_ATTEMPT='2')
         self.git(self.root, 'init', '-b', 'master')
         seed = self.directory / 'seed'
         seed.mkdir()
@@ -115,6 +117,41 @@ os.execv('/usr/bin/git', ['git', 'upload-pack', str(Path(os.environ['FIXTURE_GER
                  f'160000,{pending},{MAPPINGS["xWalkDriver"]}')
         self.git(self.root, 'commit', '-m', 'Pin unsubmitted review')
         self.assertIn('has not been submitted', self.checkout(False).stderr)
+
+    def test_dirty_reused_component_is_preserved_before_switching_revision(self):
+        self.checkout()
+        component = self.root / MAPPINGS['xWalk-rpi5-tool']
+        (component / 'source.txt').write_text('staged runner change\n')
+        self.git(component, 'add', 'source.txt')
+        (component / 'source.txt').write_text('unstaged runner change\n')
+        (component / 'generated.txt').write_text('generated runner file\n')
+        seed = self.directory / 'seed'
+        (seed / 'source.txt').write_text('new submitted source\n')
+        self.git(seed, 'commit', '-am', 'Update submitted source')
+        self.git(seed, 'push', str(self.server / 'xWalk-rpi5-tool'), 'HEAD:master')
+        revision = self.git(seed, 'rev-parse', 'HEAD')
+        self.git(self.root, 'update-index', '--cacheinfo',
+                 f'160000,{revision},{MAPPINGS["xWalk-rpi5-tool"]}')
+        self.git(self.root, 'commit', '-m', 'Update component pin')
+        self.checkout()
+        self.assertEqual(self.git(component, 'rev-parse', 'HEAD'), revision)
+        self.assertEqual(self.git(component, 'status', '--porcelain'), '')
+        self.assertEqual(self.git(component, 'show', 'refs/stash:source.txt'), 'unstaged runner change')
+        self.assertEqual(self.git(component, 'show', 'refs/stash^2:source.txt'), 'staged runner change')
+        self.assertEqual(self.git(component, 'show', 'refs/stash^3:generated.txt'), 'generated runner file')
+        saved = self.git(component, 'rev-parse', 'refs/stash')
+        self.checkout()
+        self.assertEqual(self.git(component, 'rev-parse', 'refs/stash'), saved)
+
+    def test_dirty_developer_checkout_is_not_modified(self):
+        self.checkout()
+        component = self.root / MAPPINGS['xWalk-rpi5-tool']
+        (component / 'source.txt').write_text('developer change\n')
+        for actions, workspace in (('false', str(self.root)), ('true', str(self.directory))):
+            self.env.update(GITHUB_ACTIONS=actions, GITHUB_WORKSPACE=workspace)
+            self.assertIn('Refusing to stash', self.checkout(False).stderr)
+            self.assertEqual((component / 'source.txt').read_text(), 'developer change\n')
+            self.assertEqual(self.git(component, 'stash', 'list'), '')
 
     def test_unsafe_key_permissions_fail_before_transport(self):
         Path(self.env['GERRIT_SUBMODULE_SSH_KEY_FILE']).chmod(0o644)

@@ -68,6 +68,11 @@ Verify every pinned revision is reachable from Gerrit's submitted `master`
 branch. Do not fall back to component GitHub mirrors or scan and trust host
 keys during a job. These jobs remain host-safe.
 
+Before changing a reused GitHub runner's component revision, preserve tracked, staged, and untracked
+changes in a local Git stash. Permit automatic preservation only when `GITHUB_ACTIONS=true` and
+`GITHUB_WORKSPACE` equals the integration root. Report the stash identity, keep it out of source artifacts,
+and leave dirty developer workspaces untouched. Clean component checkouts must not create extra stashes.
+
 During migration, `xWalkPiCarAI/master` is the active integration branch; the
 final target is `xWalk-rpi5/master`. A Gerrit change may be submitted only after
 its current patch set satisfies the configured review and automatic

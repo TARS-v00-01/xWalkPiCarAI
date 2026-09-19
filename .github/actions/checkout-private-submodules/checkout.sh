@@ -67,6 +67,20 @@ for index in "${!components[@]}"; do
     git -C "$root" config --local "submodule.$component.url" "$url"
     # Reused runner checkouts may still carry a former GitHub component remote.
     if [[ -e "$root/$path/.git" ]]; then
+        [[ "$(git -C "$root/$path" rev-parse --show-toplevel)" == "$root/$path" ]] || \
+            fail "Unexpected component worktree: $path"
+        if [[ -n "$(git -C "$root/$path" status --porcelain --untracked-files=normal)" ]]; then
+            [[ "${GITHUB_ACTIONS:-}" == true && "${GITHUB_WORKSPACE:-}" == "$root" ]] || \
+                fail "Refusing to stash changes outside the GitHub Actions workspace: $path"
+            # Preserve tracked/index changes and generated untracked files before switching revisions.
+            # The stash stays local in .git/modules; source artifacts never include it.
+            git -C "$root/$path" -c user.name='xWalk CI' -c user.email='xwalk-ci@localhost' \
+                stash push --include-untracked --message \
+                "xWalk CI checkout ${GITHUB_RUN_ID:-unknown}/${GITHUB_RUN_ATTEMPT:-unknown}"
+            [[ -z "$(git -C "$root/$path" status --porcelain --untracked-files=normal)" ]] || \
+                fail "Component remains modified after preserving runner changes: $path"
+            echo "Preserved runner changes in $path at $(git -C "$root/$path" rev-parse refs/stash)"
+        fi
         git -C "$root/$path" remote set-url origin "$url"
     fi
 done
