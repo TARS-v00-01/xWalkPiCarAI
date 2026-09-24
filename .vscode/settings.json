@@ -16,5 +16,20 @@
     "C_Cpp.files.exclude": {
         "**/.git": true,
         "**/build-host/controller-boot": true
-    }
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder}/xWalk-pcx86-app/.venv/bin/python",
+    "python.analysis.extraPaths": [
+        "xWalk-pcx86-app/build/analysis",
+        "xWalk-pcx86-app/auto-gen",
+        "xWalk-pcx86-app/xWalkMobilityApp/xWalkStartup/py-src"
+    ],
+    "python.analysis.exclude": [
+        "**/__pycache__",
+        "**/.venv",
+        "**/build",
+        "**/build-host"
+    ],
+    "python.analysis.ignore": [
+        "xWalk-pcx86-app/auto-gen"
+    ]
 }
