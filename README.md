@@ -354,7 +354,9 @@ through Gerrit and should reference the applicable Jira work item.
 
 ## Additional documentation
 
-- [Open the published xWalk Developer Notes wiki](https://jochuuu.github.io/xWalkPiCarAI/)
+- [Open the xWalk Developer Notes wiki builds](https://github.com/TARS-v00-01/xWalkPiCarAI/actions/workflows/developer-note-pages.yml)
+  Private documentation artifacts covering architecture, hardware, deployment, and Gerrit/CI. Sign in with
+  repository access and download the site artifact from a successful run; artifacts are retained for 30 days.
 - [C++ documentation index](devloper-note/xwalk-rpi5-note/index.md)
 - [Build and open the developer-note wiki](devloper-note/README.md)
 - [Build and installation guide](devloper-note/xwalk-rpi5-note/Doc/note/Installation.md)

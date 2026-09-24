@@ -766,12 +766,15 @@ direction always runs from the façade to the selected tool.
   destructors invoke their safe-stop operation without releasing dependencies.
   Route these attempts through explicit Boolean I2C and PWM status operations;
   do not intercept exceptions to implement fail-safe cleanup.
-- Bound final PiCar-X motor PWM magnitude through the deployment key
-  `picarx_max_motor_output_percent`, using 20 percent by default for first-run
-  safety. Apply the bound after compatibility scaling and calibration. Do not
-  permit a limit above 20 percent until the calibration workflow persists
-  `picarx_calibration_verified = true` after raised-wheel motor-direction,
-  steering-center, and motor-balance checks.
+- Interpret PiCar-X motor commands as direct power percentages from zero through one hundred,
+  without the upstream non-zero 50-percent boost. Apply motor-balance calibration and steering
+  compensation, then the configurable `picarx_max_motor_output_percent` ceiling (default 100).
+  `picarx_calibration_verified` records commissioning status without changing the power ceiling.
+  Preserve watchdog expiry, emergency stopping, finite-value checks, and explicit actuator initialization.
+- Remote Treasure Hunt owns a bounded speech worker for its session. Only that worker calls the
+  borrowed TTS backend while the foreground owns movement and camera detection. Keep one latest
+  pending prompt, share provider cancellation, and join before releasing the operation lease.
+  Forward worker diagnostics into the original operation result after joining; never log speech text.
 - Persist signed motor balance through `picarx_motor_speed_calibration` in the
   range -100 through 100 percentage points. Positive values reduce the left
   side and negative values reduce the right side. Persist confirmed stationary
@@ -1593,6 +1596,10 @@ The component launchers remain compatible entry points for standalone tooling us
   CFM or REJ as delivered. The module build uses separate standalone stubs and always reports responses unsent.
 - `XWalkController` owns four `XWalkCore` subclasses: service/core 0, vehicle/core 1, vision/core 2 and voice/core 3.
   Pin these workers to four distinct allowed Linux CPUs; fail startup rather than silently sharing fewer CPUs.
+- Capture Boot background-worker placement on the lifecycle owner before workers start. Pin operation workers
+  by request role, camera streaming to vision/core 2, and announcement playback, replay timing and asynchronous
+  prompts to voice/core 3. Never derive their CPU map from an already-pinned caller. Preserve device leases;
+  affinity does not permit otherwise unsafe concurrent hardware access.
 - Each worker owns an eight-entry FIFO, excluding its one active request. Route existing generated request
   signals to exact shared structures. The public boundary passes a signal, borrowed `const void*`, and `sizeof`
   the matching structure, not serialized GPB bytes. Deep-copy present nested string and binary views before
@@ -1610,6 +1617,17 @@ The component launchers remain compatible entry points for standalone tooling us
 - Scope diagnostic forwarding per thread and operation through `XWalkTraceScope` in the trace module. Deliver
   outside trace/FIFO locks, suppress recursive transport diagnostics, and finish the QoS 1 publish attempt before
   fatal overflow aborts. Never claim delivery when transport fails or fabricate a client address.
+- Node functional publishers must release transport locks while polling QoS acknowledgement completion.
+  Fence completion by connection epoch across reconnects. Keep Paho API calls serialized and RX polling
+  nonblocking. Preserve synchronous delivery for RX-callback publications that cannot await their own pump;
+  do not move ordinary Controller completion callbacks onto the MQTT receive thread.
+- Typed Node subscribers own eight fresh-exec transport children: request and response processes for each
+  functional core. Pin each pair to its owning CPU, require distinct MQTT client IDs, and retain all hardware
+  ownership and Controller dispatch in the parent. Use private bounded SOCK_SEQPACKET frames with exact lengths
+  and sequence validation; never transfer pointers or hardware handles. Preserve synchronous actual-delivery
+  results across response IPC. Keep eight outstanding request credits, fail safely on IPC/child failure, and
+  drain hardware with response children alive before reaping. Do not fork a live hardware/provider graph or
+  automatically restart actuator state. The transport-only module and one-shot publishers retain their modes.
 - Driver integration must arbitrate shared movement, camera and audio resources across functional workers;
   CPU affinity alone provides no hardware resource isolation. Keep all current Controller tests hardware-free.
 
@@ -1618,11 +1636,18 @@ The component launchers remain compatible entry points for standalone tooling us
   Interactive standalone sessions preserve Boot across commands, wait for real CFM/REJ and released execution
   leases, and cancel/join before releasing providers on timeout, interruption, EOF or quit.
 
-- Boot's cancellable operation worker holds one exclusive shared-device lease across Controller functions.
-  It copies admitted requests, rejects competing work, and handles same-session or global lifecycle stop requests
-  without blocking the request queues. Driver and encoder exceptions stay inside adapter boundaries. Cleanup
-  precedes stop confirmation; backend calls must have bounded return times for timely cooperative cancellation.
-  The `module` build selects standalone stubs and omits the Boot execution runtime.
+- Boot's cancellable vehicle operation worker holds one exclusive shared-device lease across movement, modes,
+  camera control and sensing. Announcements and periodic replay use a separate single-admission speech worker,
+  copied request, Piper provider and cancellation latch. They never borrow or reset vehicle cancellation and
+  do not close background video. Use a mixing default audio route when mode prompts overlap announcements.
+  Health, Version, Help and Doctor metadata execute on the service queue without taking the device lease or
+  changing cancellation. A repeated background video START may acknowledge an already-running stream on
+  the vision worker without reacquiring its device. New stream acquisition still requires the device lease.
+  Movement release and same-mode STOP preserve speech; global lifecycle STOP and owner shutdown cancel both
+  workers and join speech before final completion. Ordinary competing device operations still reject.
+  Driver and encoder exceptions stay inside adapter boundaries. Cleanup precedes stop confirmation; backend
+  calls must have bounded return times for timely cooperative cancellation. The `module` build selects
+  standalone stubs and omits the Boot execution runtime.
 
 ## Agent conventions
 
