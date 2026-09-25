@@ -30,10 +30,6 @@
 	path = xWalk-rpi5-hw/xWalkLibrary
 	url = https://github.com/TARS-v00-01/xWalkLibrary.git
 	branch = master
-[submodule "xWalk-rpi5-tool"]
-	path = xWalk-rpi5-tool
-	url = https://github.com/TARS-v00-01/xWalk-rpi5-tool.git
-	branch = master
 [submodule "xWalk-rpi5-trace"]
 	path = xWalk-rpi5-trace
 	url = https://github.com/TARS-v00-01/xWalk-rpi5-trace.git

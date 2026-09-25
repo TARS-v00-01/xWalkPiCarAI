@@ -8,7 +8,7 @@ Normal host builds use simulated or software backends and do not actuate physica
 
 ## Clone from GitHub
 
-The integration repository uses explicit GitHub HTTPS URLs for all ten submodules. The component repositories
+The integration repository uses explicit GitHub HTTPS URLs for all nine submodules. The component repositories
 are private: your GitHub account must have read access to each one, even though the integration repository is public.
 Authenticate Git before cloning. With GitHub CLI:
 
@@ -17,6 +17,16 @@ gh auth login --hostname github.com --git-protocol https
 gh auth setup-git
 git clone --recurse-submodules https://github.com/TARS-v00-01/xWalkPiCarAI.git
 ```
+
+`xWalk-rpi5-tool` is a standalone repository, not a submodule, and is never uplifted into the integration
+repository. Clone it at the workspace root so that every `xWalk-rpi5-tool/...` path in this guide resolves:
+
+```bash
+git -C xWalkPiCarAI clone --branch master https://github.com/TARS-v00-01/xWalk-rpi5-tool.git xWalk-rpi5-tool
+```
+
+`install.sh` clones it automatically when it is missing. Update it independently with
+`git -C xWalk-rpi5-tool pull --ff-only`; submodule commands never change it.
 
 For an existing clone, after fetching and checking out the integration revision containing these URLs, replace
 old local submodule URL overrides and initialize the exact pinned component revisions:
@@ -53,7 +63,7 @@ MyPiCarX/
 │   └── xwalk-rpi5-note/       C++ architecture, build, and deployment documentation
 ├── xWalk-rpi5-iw/             Interface schemas and generated bindings
 ├── xWalk-rpi5-node/           Reserved Raspberry Pi node component
-├── xWalk-rpi5-tool/           CI, Gerrit, deployment, quality, and maintenance tools
+├── xWalk-rpi5-tool/           standalone clone: CI, Gerrit, deployment, quality, and maintenance tools
 └── xWalk-rpi5-trace/           Shared tracing implementation
 ```
 
@@ -72,7 +82,7 @@ sudo ./setup.sh
 The script requires root privileges and stops if an installation command fails. It detects host or Pi
 and reads the full shared package catalog, including MQTT/TLS, generators, tests, and quality tools.
 Use `sudo ./setup.sh --target host` or `sudo ./setup.sh --target rpi` to select the target explicitly.
-Pi setup requires Raspberry Pi 5 ARM64 and includes CSI camera packages. Initialize the tooling submodule first.
+Pi setup requires Raspberry Pi 5 ARM64 and includes CSI camera packages. Clone the standalone tool first.
 For complete source and Raspberry Pi setup, use [install.sh](install.sh) instead.
 
 For a manual installation of the core host subset, run:

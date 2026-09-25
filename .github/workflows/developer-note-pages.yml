@@ -6,7 +6,6 @@ on:
     paths:
       - devloper-note
       - devloper-note/**
-      - xWalk-rpi5-tool/doc-tool/**
       - .github/actions/checkout-private-submodules/**
       - .github/workflows/developer-note-pages.yml
   workflow_dispatch:

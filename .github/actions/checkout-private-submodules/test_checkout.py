@@ -17,8 +17,9 @@ MAPPINGS = {
     'xWalk-rpi5-trace': 'xWalk-rpi5-trace',
     'xWalk-rpi5-iw': 'xWalk-rpi5-iw',
     'xWalk-rpi5-node': 'xWalk-rpi5-node',
-    'xWalk-rpi5-tool': 'xWalk-rpi5-tool',
 }
+# The standalone tool repository is fetched from submitted master, never pinned as a gitlink.
+TOOL = 'xWalk-rpi5-tool'
 
 
 class GerritCheckoutTest(unittest.TestCase):
@@ -50,6 +51,7 @@ class GerritCheckoutTest(unittest.TestCase):
             self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{name}.url', f'../{name}.git')
             self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{name}.branch', 'master')
             self.git(self.root, 'update-index', '--add', '--cacheinfo', f'160000,{self.submitted},{path}')
+        self.git(self.directory, 'clone', '--bare', str(seed), str(self.server / TOOL))
         self.git(self.root, 'add', '.gitmodules')
         self.git(self.root, 'commit', '-m', 'Pin submitted components')
         key = self.directory / 'key'
@@ -99,13 +101,37 @@ os.execv('/usr/bin/git', ['git', 'upload-pack', str(Path(os.environ['FIXTURE_GER
 
     def test_exact_submitted_checkout_and_reused_remote(self):
         self.checkout()
-        for name, path in MAPPINGS.items():
+        for name, path in {**MAPPINGS, TOOL: TOOL}.items():
             self.assertEqual(self.git(self.root / path, 'rev-parse', 'HEAD'), self.submitted)
             self.git(self.root / path, 'remote', 'set-url', 'origin', f'git@github.invalid:{name}')
         self.checkout()
-        for name, path in MAPPINGS.items():
+        for name, path in {**MAPPINGS, TOOL: TOOL}.items():
             self.assertEqual(self.git(self.root / path, 'remote', 'get-url', 'origin'),
                              f'ssh://ci@gerrit.example:29419/{name}')
+
+    def test_standalone_tool_follows_submitted_master(self):
+        self.checkout()
+        tool = self.root / TOOL
+        self.assertEqual(self.git(self.root, 'ls-files', '--', TOOL), '')
+        (tool / 'generated.txt').write_text('generated runner file\n')
+        seed = self.directory / 'seed'
+        (seed / 'source.txt').write_text('new submitted tool\n')
+        self.git(seed, 'commit', '-am', 'Update submitted tool')
+        self.git(seed, 'push', str(self.server / TOOL), 'HEAD:master')
+        self.checkout()
+        self.assertEqual(self.git(tool, 'rev-parse', 'HEAD'), self.git(seed, 'rev-parse', 'HEAD'))
+        self.assertEqual(self.git(tool, 'status', '--porcelain'), '')
+        self.assertEqual(self.git(tool, 'show', 'refs/stash^3:generated.txt'), 'generated runner file')
+
+    def test_tracked_tool_gitlink_is_rejected(self):
+        self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{TOOL}.path', TOOL)
+        self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{TOOL}.url', f'../{TOOL}.git')
+        self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{TOOL}.branch', 'master')
+        self.git(self.root, 'update-index', '--add', '--cacheinfo', f'160000,{self.submitted},{TOOL}')
+        self.git(self.root, 'add', '.gitmodules')
+        self.git(self.root, 'commit', '-m', 'Pin standalone tool')
+        self.assertIn('Unexpected component mappings', self.checkout(False).stderr)
+        self.assertFalse((self.directory / 'ssh.log').exists())
 
     def test_review_only_revision_is_rejected(self):
         seed = self.directory / 'seed'
@@ -120,7 +146,7 @@ os.execv('/usr/bin/git', ['git', 'upload-pack', str(Path(os.environ['FIXTURE_GER
 
     def test_dirty_reused_component_is_preserved_before_switching_revision(self):
         self.checkout()
-        component = self.root / MAPPINGS['xWalk-rpi5-tool']
+        component = self.root / MAPPINGS['xWalk-rpi5-iw']
         (component / 'source.txt').write_text('staged runner change\n')
         self.git(component, 'add', 'source.txt')
         (component / 'source.txt').write_text('unstaged runner change\n')
@@ -128,10 +154,10 @@ os.execv('/usr/bin/git', ['git', 'upload-pack', str(Path(os.environ['FIXTURE_GER
         seed = self.directory / 'seed'
         (seed / 'source.txt').write_text('new submitted source\n')
         self.git(seed, 'commit', '-am', 'Update submitted source')
-        self.git(seed, 'push', str(self.server / 'xWalk-rpi5-tool'), 'HEAD:master')
+        self.git(seed, 'push', str(self.server / 'xWalk-rpi5-iw'), 'HEAD:master')
         revision = self.git(seed, 'rev-parse', 'HEAD')
         self.git(self.root, 'update-index', '--cacheinfo',
-                 f'160000,{revision},{MAPPINGS["xWalk-rpi5-tool"]}')
+                 f'160000,{revision},{MAPPINGS["xWalk-rpi5-iw"]}')
         self.git(self.root, 'commit', '-m', 'Update component pin')
         self.checkout()
         self.assertEqual(self.git(component, 'rev-parse', 'HEAD'), revision)
@@ -145,7 +171,7 @@ os.execv('/usr/bin/git', ['git', 'upload-pack', str(Path(os.environ['FIXTURE_GER
 
     def test_dirty_developer_checkout_is_not_modified(self):
         self.checkout()
-        component = self.root / MAPPINGS['xWalk-rpi5-tool']
+        component = self.root / MAPPINGS['xWalk-rpi5-iw']
         (component / 'source.txt').write_text('developer change\n')
         for actions, workspace in (('false', str(self.root)), ('true', str(self.directory))):
             self.env.update(GITHUB_ACTIONS=actions, GITHUB_WORKSPACE=workspace)

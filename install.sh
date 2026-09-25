@@ -17,6 +17,7 @@ Run as your normal build user; sudo is used only for system changes.
 On Pi, explicitly select the physically identified HAT profile. CSI is used.
 --build additionally compiles the product; --jobs defaults to 2 to limit memory.
 --skip-submodules preserves an intentionally modified component checkout.
+A missing standalone xWalk-rpi5-tool clone is cloned from its GitHub master.
 No reboot, application startup, or hardware tests are performed.
 HELP
 }
@@ -103,8 +104,13 @@ if [[ "$submodules" == true && -f "$root/.gitmodules" ]]; then
     run git -C "$root" submodule update --init --recursive
 fi
 tool="$root/xWalk-rpi5-tool"
+# xWalk-rpi5-tool is a standalone repository beside the integrated sources, never a submodule.
+if [[ ! -e "$tool" ]]; then
+    run git clone --branch master https://github.com/TARS-v00-01/xWalk-rpi5-tool.git "$tool"
+    run git -C "$tool" remote set-url --push origin xwalk-gerrit-uplift-only://direct-github-push-disabled
+fi
 deploy="$tool/shell-agent/deploy-tool"
-[[ -r "$deploy/rpi-defaults.conf" ]] || fail 'Missing tool submodule; initialize the private submodules'
+[[ -r "$deploy/rpi-defaults.conf" ]] || fail 'Missing standalone xWalk-rpi5-tool clone; clone it beside the sources'
 if [[ "$target" == host ]]; then
     run sudo bash "$root/setup.sh" --target host
     preset=host-debug

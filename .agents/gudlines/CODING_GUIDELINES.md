@@ -179,7 +179,7 @@ devloper-note/xwalk-rpi5-note/index.md  C++ architecture and module documentatio
 devloper-note/gerrit-note/              Gerrit administration and CI documentation
 devloper-note/mkdocs.yml                searchable developer-note wiki configuration
 Doc/image/                   hardware and project images referenced by documentation
-xWalk-rpi5-tool/                   independently reviewed Gerrit tooling component uplifted at the integration root
+xWalk-rpi5-tool/                   standalone Gerrit tooling repository cloned at the workspace root, never uplifted
 xWalk-rpi5-tool/cpp-tool/          grouped C++ quality probes, fuzz harnesses, corpora, and documentation
 xWalk-rpi5-tool/cpp-tool/fuzz/     C++ fuzz harnesses and seed corpora
 xWalk-rpi5-tool/cpp-tool/quality/  host quality documentation and sanitizer availability probes

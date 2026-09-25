@@ -1,3 +1,6 @@
+# Standalone repositories cloned beside the integrated sources
+/xWalk-rpi5-tool/
+
 # Project build trees
 /build-host/
 /build-rpi/
@@ -85,7 +88,6 @@ junit.xml
 *.swo
 *~
 /core.[0-9]*
-/xWalk-rpi5-tool/py-agent/gerrit-tool/logs/runtime/
 
 # Tool, language, and editor caches
 .cache/
@@ -121,7 +123,6 @@ Desktop.ini
 /xWalk-rpi5-hw/xWalkController/xWalkConfig/picar-x.local.conf
 **/xWalkLicense.*.json
 **/xWalkLicense.*.cfg
-!/xWalk-rpi5-tool/shell-agent/env-tool/license/xWalkLicense.cfg
 **/xWalkLicense.decrypted.json
 **/decrypted-license*.json
 **/decrypted-environment*.json

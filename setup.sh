@@ -29,7 +29,7 @@ fi
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 common="$root/xWalk-rpi5-tool/shell-agent/deploy-tool/install-dependencies-common.sh"
 if [[ ! -r "$common" ]]; then
-    printf 'Initialize the xWalk-rpi5-tool submodule before running setup.sh.\n' >&2
+    printf 'Clone the standalone xWalk-rpi5-tool repository beside the sources before running setup.sh.\n' >&2
     exit 2
 fi
 if [[ "$target" == auto ]]; then

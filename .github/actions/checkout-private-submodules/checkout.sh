@@ -14,6 +14,23 @@ fail()
     exit 1
 }
 
+# Preserve runner edits in a reused worktree before switching it to another revision.
+preserve_runner_changes()
+{
+    local path="$1"
+    [[ -n "$(git -C "$root/$path" status --porcelain --untracked-files=normal)" ]] || return 0
+    [[ "${GITHUB_ACTIONS:-}" == true && "${GITHUB_WORKSPACE:-}" == "$root" ]] || \
+        fail "Refusing to stash changes outside the GitHub Actions workspace: $path"
+    # Preserve tracked/index changes and generated untracked files before switching revisions.
+    # The stash stays local in the worktree's Git metadata; source artifacts never include it.
+    git -C "$root/$path" -c user.name='xWalk CI' -c user.email='xwalk-ci@localhost' \
+        stash push --include-untracked --message \
+        "xWalk CI checkout ${GITHUB_RUN_ID:-unknown}/${GITHUB_RUN_ATTEMPT:-unknown}"
+    [[ -z "$(git -C "$root/$path" status --porcelain --untracked-files=normal)" ]] || \
+        fail "Component remains modified after preserving runner changes: $path"
+    echo "Preserved runner changes in $path at $(git -C "$root/$path" rev-parse refs/stash)"
+}
+
 [[ "$username" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]] || fail 'Invalid Gerrit username'
 [[ "$host" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]] || fail 'Invalid Gerrit hostname'
 [[ "$port" =~ ^[0-9]{1,5}$ ]] || fail 'Invalid Gerrit port'
@@ -54,7 +71,6 @@ xWalkLibrary xWalk-rpi5-hw/xWalkLibrary
 xWalk-rpi5-trace xWalk-rpi5-trace
 xWalk-rpi5-iw xWalk-rpi5-iw
 xWalk-rpi5-node xWalk-rpi5-node
-xWalk-rpi5-tool xWalk-rpi5-tool
 MAPPINGS
 
 mapfile -t configured_paths < <(git -C "$root" config -f .gitmodules --get-regexp '^submodule\..*\.path$')
@@ -69,18 +85,7 @@ for index in "${!components[@]}"; do
     if [[ -e "$root/$path/.git" ]]; then
         [[ "$(git -C "$root/$path" rev-parse --show-toplevel)" == "$root/$path" ]] || \
             fail "Unexpected component worktree: $path"
-        if [[ -n "$(git -C "$root/$path" status --porcelain --untracked-files=normal)" ]]; then
-            [[ "${GITHUB_ACTIONS:-}" == true && "${GITHUB_WORKSPACE:-}" == "$root" ]] || \
-                fail "Refusing to stash changes outside the GitHub Actions workspace: $path"
-            # Preserve tracked/index changes and generated untracked files before switching revisions.
-            # The stash stays local in .git/modules; source artifacts never include it.
-            git -C "$root/$path" -c user.name='xWalk CI' -c user.email='xwalk-ci@localhost' \
-                stash push --include-untracked --message \
-                "xWalk CI checkout ${GITHUB_RUN_ID:-unknown}/${GITHUB_RUN_ATTEMPT:-unknown}"
-            [[ -z "$(git -C "$root/$path" status --porcelain --untracked-files=normal)" ]] || \
-                fail "Component remains modified after preserving runner changes: $path"
-            echo "Preserved runner changes in $path at $(git -C "$root/$path" rev-parse refs/stash)"
-        fi
+        preserve_runner_changes "$path"
         git -C "$root/$path" remote set-url origin "$url"
     fi
 done
@@ -95,3 +100,24 @@ for index in "${!components[@]}"; do
         fail "Component revision has not been submitted to Gerrit master: $path $revision"
 done
 echo 'Checked out all exact component gitlinks from submitted Gerrit master history'
+
+# xWalk-rpi5-tool is a standalone repository, never an integration gitlink.
+# Check out its submitted Gerrit master beside the integrated sources.
+tool_path=xWalk-rpi5-tool
+tool_url="ssh://$username@$host:$port/xWalk-rpi5-tool"
+! git -C "$root" ls-files --error-unmatch -- "$tool_path" >/dev/null 2>&1 || \
+    fail "xWalk-rpi5-tool must not be tracked by the integration repository"
+if [[ -e "$root/$tool_path/.git" ]]; then
+    [[ "$(git -C "$root/$tool_path" rev-parse --show-toplevel)" == "$root/$tool_path" ]] || \
+        fail "Unexpected tool worktree: $tool_path"
+    preserve_runner_changes "$tool_path"
+    git -C "$root/$tool_path" remote set-url origin "$tool_url"
+else
+    [[ ! -e "$root/$tool_path" ]] || rmdir -- "$root/$tool_path" || \
+        fail "Unexpected non-repository tool directory: $tool_path"
+    git init --quiet "$root/$tool_path"
+    git -C "$root/$tool_path" remote add origin "$tool_url"
+fi
+git -C "$root/$tool_path" fetch --no-tags origin '+refs/heads/master:refs/remotes/origin/master'
+git -C "$root/$tool_path" checkout --quiet --detach refs/remotes/origin/master
+echo "Checked out submitted standalone xWalk-rpi5-tool master $(git -C "$root/$tool_path" rev-parse HEAD)"
