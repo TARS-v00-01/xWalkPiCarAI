@@ -1,5 +1,10 @@
 # Standalone repositories cloned beside the integrated sources
 /xWalk-rpi5-tool/
+/xWalk-pcx86-app/
+/xWalk-arm64-app/
+
+# Per-user Claude Code settings
+/.claude/settings.local.json
 
 # Project build trees
 /build-host/
