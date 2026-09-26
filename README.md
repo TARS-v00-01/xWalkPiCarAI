@@ -5,6 +5,8 @@ contains the complete product integration, host-safe simulation and tests, deplo
 and development tooling.
 
 Normal host builds use simulated or software backends and do not actuate physical hardware.
+The separate [xWalkPiCarApp](https://github.com/TARS-v00-01/xWalkPiCarApp) integration pins the Python and
+Android applications, their shared IW schemas, and tooling with private component gitlinks.
 
 ## Clone from GitHub
 

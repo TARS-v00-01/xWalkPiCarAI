@@ -100,6 +100,17 @@ unresolved blocking comments, a current mergeable patch set, and Gerrit's
 complete submit policy. Only the exact resulting merged commit may be
 synchronized to the configured GitHub `xWalkPiCarAI/master` branch.
 
+## Application integration
+
+`xWalkPiCarApp` follows the same Gerrit review, CI, and submitted-commit replication policy as `xWalkPiCarAI`.
+Both integration repositories are public; their component repositories stay private. Integrations own metadata,
+documentation, licences, and CI configuration. Component changes enter as exact submitted gitlink uplifts,
+not copied source trees. App integration pins IW, tooling, Android, and Python. Hardware integration retains
+its existing nine gitlinks and standalone tooling. IW uplifts target both integrations; app and tool uplifts
+target `xWalkPiCarApp`. Every integration uplift runs its complete host quality graph before submission.
+App protocol references are pinned by revision and blob in `INTEGRATION.json`, fetched privately into ignored
+`protocol-contracts`, and validated before builds. Do not commit reference source or generated build files.
+
 ## Language and compiler expectations
 
 - Write C++17. Declare `cxx_std_17` on every public library target that needs to
