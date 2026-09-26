@@ -507,6 +507,10 @@ if(XWALK_BUILD_ALL_BACKENDS)
 endif()
 
 add_subdirectory(xWalkLibrary/common)
+# A composing product may select its own generated IW copy before adding the hardware tree.
+if(NOT XWALK_IW_GENERATED_DIRECTORY)
+    set(XWALK_IW_GENERATED_DIRECTORY "${XWALK_RPI5_ROOT}/xWalkController/auto-gen")
+endif()
 add_subdirectory("${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-iw" xWalk-rpi5-iw)
 add_subdirectory("${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-trace" xWalkTrace)
 add_subdirectory(xWalkHal/interface/xWalkI2c)
@@ -797,7 +801,7 @@ if(XWALK_CPPCHECK_EXECUTABLE AND CMAKE_EXPORT_COMPILE_COMMANDS)
             "--project=${CMAKE_BINARY_DIR}/compile_commands.json"
             --enable=warning,performance,portability
             --error-exitcode=1
-            "-i${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-iw/auto-gen"
+            "-i${XWALK_IW_GENERATED_DIRECTORY}"
             --suppress=missingIncludeSystem
             --suppress=assertWithSideEffect
             "--suppressions-list=${XWALK_CPPCHECK_SUPPRESSIONS}"
@@ -808,7 +812,7 @@ if(XWALK_CPPCHECK_EXECUTABLE AND CMAKE_EXPORT_COMPILE_COMMANDS)
             "--project=${CMAKE_BINARY_DIR}/compile_commands.json"
             --enable=warning,style,performance,portability
             --inconclusive
-            "-i${XWALK_WORKSPACE_ROOT}/xWalk-rpi5-iw/auto-gen"
+            "-i${XWALK_IW_GENERATED_DIRECTORY}"
             --suppress=missingIncludeSystem
             "--suppressions-list=${XWALK_CPPCHECK_SUPPRESSIONS}"
         WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"

@@ -173,7 +173,7 @@
                 <pathentry include="xWalkHal/layer1/xWalkVoiceAssistant/include" kind="inc" path="" system="false"/>
                 <pathentry include="xWalkHal/layer1/xWalkVoiceAssistant/simulation/include" kind="inc" path="" system="false"/>
                 <pathentry include="xWalkHal/layer1/xWalkVoiceAssistant/test/include" kind="inc" path="" system="false"/>
-                <pathentry include="../xWalk-rpi5-iw/auto-gen/include" kind="inc" path="" system="false"/>
+                <pathentry include="xWalkController/auto-gen/include" kind="inc" path="" system="false"/>
             </storageModule>
         </cconfiguration>
     </storageModule>

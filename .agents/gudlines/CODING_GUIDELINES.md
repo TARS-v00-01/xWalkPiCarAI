@@ -377,8 +377,14 @@ module or runner, such as `Example`, `GoogleTest`, or `SequenceTest`. Keep
 generated copies under the same filename so runtime diagnostics and deployment
 instructions identify one stable configuration artifact.
 
-Keep generated Protobuf sources under the owning module's `auto-gen`
-tree. Regenerate them from reviewed schemas, never edit them by hand, and
+Keep generated Protobuf sources under the owning consumer's `auto-gen`
+tree. The IW C++ bindings are consumer-owned: `xWalk-rpi5-node/xWalkIoT/auto-gen`
+and `xWalk-rpi5-hw/xWalkController/auto-gen` hold identical copies, and each
+consumer selects its copy with `XWALK_IW_GENERATED_DIRECTORY` before adding
+`xWalk-rpi5-iw`, which keeps only the schemas and the target recipe. Module-scoped IW CI fetches the submitted
+Controller and Node masters to validate their tracked bindings while an aggregate uplift is pending. Full
+integration CI continues to verify the exact pinned gitlinks. Regenerate bindings from reviewed schemas,
+never edit them by hand, and
 exclude them from handwritten-source coverage and static-analysis gates while
 retaining normal compiler warnings and compilation checks.
 
