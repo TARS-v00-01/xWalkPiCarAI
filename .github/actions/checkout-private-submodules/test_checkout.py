@@ -17,8 +17,9 @@ MAPPINGS = {
     'xWalk-rpi5-trace': 'xWalk-rpi5-trace',
     'xWalk-rpi5-iw': 'xWalk-rpi5-iw',
     'xWalk-rpi5-node': 'xWalk-rpi5-node',
+    'xWalk-rpi5-tool': 'xWalk-rpi5-tool',
 }
-# The standalone tool repository is fetched from submitted master, never pinned as a gitlink.
+# Shared tooling is pinned exactly like every other component.
 TOOL = 'xWalk-rpi5-tool'
 
 
@@ -51,7 +52,6 @@ class GerritCheckoutTest(unittest.TestCase):
             self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{name}.url', f'../{name}.git')
             self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{name}.branch', 'master')
             self.git(self.root, 'update-index', '--add', '--cacheinfo', f'160000,{self.submitted},{path}')
-        self.git(self.directory, 'clone', '--bare', str(seed), str(self.server / TOOL))
         self.git(self.root, 'add', '.gitmodules')
         self.git(self.root, 'commit', '-m', 'Pin submitted components')
         key = self.directory / 'key'
@@ -109,29 +109,16 @@ os.execv('/usr/bin/git', ['git', 'upload-pack', str(Path(os.environ['FIXTURE_GER
             self.assertEqual(self.git(self.root / path, 'remote', 'get-url', 'origin'),
                              f'ssh://ci@gerrit.example:29419/{name}')
 
-    def test_standalone_tool_follows_submitted_master(self):
+    def test_tool_keeps_exact_pin_when_submitted_master_advances(self):
         self.checkout()
         tool = self.root / TOOL
-        self.assertEqual(self.git(self.root, 'ls-files', '--', TOOL), '')
-        (tool / 'generated.txt').write_text('generated runner file\n')
         seed = self.directory / 'seed'
         (seed / 'source.txt').write_text('new submitted tool\n')
         self.git(seed, 'commit', '-am', 'Update submitted tool')
         self.git(seed, 'push', str(self.server / TOOL), 'HEAD:master')
         self.checkout()
-        self.assertEqual(self.git(tool, 'rev-parse', 'HEAD'), self.git(seed, 'rev-parse', 'HEAD'))
-        self.assertEqual(self.git(tool, 'status', '--porcelain'), '')
-        self.assertEqual(self.git(tool, 'show', 'refs/stash^3:generated.txt'), 'generated runner file')
-
-    def test_tracked_tool_gitlink_is_rejected(self):
-        self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{TOOL}.path', TOOL)
-        self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{TOOL}.url', f'../{TOOL}.git')
-        self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.{TOOL}.branch', 'master')
-        self.git(self.root, 'update-index', '--add', '--cacheinfo', f'160000,{self.submitted},{TOOL}')
-        self.git(self.root, 'add', '.gitmodules')
-        self.git(self.root, 'commit', '-m', 'Pin standalone tool')
-        self.assertIn('Unexpected component mappings', self.checkout(False).stderr)
-        self.assertFalse((self.directory / 'ssh.log').exists())
+        self.assertEqual(self.git(tool, 'rev-parse', 'HEAD'), self.submitted)
+        self.assertNotEqual(self.git(tool, 'rev-parse', 'origin/master'), self.submitted)
 
     def test_review_only_revision_is_rejected(self):
         seed = self.directory / 'seed'

@@ -71,6 +71,7 @@ xWalkLibrary xWalk-rpi5-hw/xWalkLibrary
 xWalk-rpi5-trace xWalk-rpi5-trace
 xWalk-rpi5-iw xWalk-rpi5-iw
 xWalk-rpi5-node xWalk-rpi5-node
+xWalk-rpi5-tool xWalk-rpi5-tool
 MAPPINGS
 
 mapfile -t configured_paths < <(git -C "$root" config -f .gitmodules --get-regexp '^submodule\..*\.path$')
@@ -100,24 +101,3 @@ for index in "${!components[@]}"; do
         fail "Component revision has not been submitted to Gerrit master: $path $revision"
 done
 echo 'Checked out all exact component gitlinks from submitted Gerrit master history'
-
-# xWalk-rpi5-tool is a standalone repository, never an integration gitlink.
-# Check out its submitted Gerrit master beside the integrated sources.
-tool_path=xWalk-rpi5-tool
-tool_url="ssh://$username@$host:$port/xWalk-rpi5-tool"
-! git -C "$root" ls-files --error-unmatch -- "$tool_path" >/dev/null 2>&1 || \
-    fail "xWalk-rpi5-tool must not be tracked by the integration repository"
-if [[ -e "$root/$tool_path/.git" ]]; then
-    [[ "$(git -C "$root/$tool_path" rev-parse --show-toplevel)" == "$root/$tool_path" ]] || \
-        fail "Unexpected tool worktree: $tool_path"
-    preserve_runner_changes "$tool_path"
-    git -C "$root/$tool_path" remote set-url origin "$tool_url"
-else
-    [[ ! -e "$root/$tool_path" ]] || rmdir -- "$root/$tool_path" || \
-        fail "Unexpected non-repository tool directory: $tool_path"
-    git init --quiet "$root/$tool_path"
-    git -C "$root/$tool_path" remote add origin "$tool_url"
-fi
-git -C "$root/$tool_path" fetch --no-tags origin '+refs/heads/master:refs/remotes/origin/master'
-git -C "$root/$tool_path" checkout --quiet --detach refs/remotes/origin/master
-echo "Checked out submitted standalone xWalk-rpi5-tool master $(git -C "$root/$tool_path" rev-parse HEAD)"
