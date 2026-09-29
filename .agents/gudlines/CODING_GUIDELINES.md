@@ -100,6 +100,17 @@ unresolved blocking comments, a current mergeable patch set, and Gerrit's
 complete submit policy. Only the exact resulting merged commit may be
 synchronized to the configured GitHub `xWalkPiCarAI/master` branch.
 
+## Sourced Git update environment
+
+Both integrations provide `xwalk_env.sh`. Sourcing it initializes pinned submodules and restores manifest-owned
+assets; `--activate` only registers the checkout in the current Bash session. Its Git wrapper delegates the
+original command, then restores assets after successful pulls and submodule updates, including unchanged
+revisions. Preserve custom hooks, caller shell options, the working directory, and unrelated repositories.
+Do not store credentials in source or silently install system packages. Use the existing pinned, checksum-verified
+asset downloaders and external `HF_TOKEN` or netrc credentials. Restore failures must remain visible and nonzero
+without misreporting the Git result. `XWALK_SKIP_ASSETS=1` supports explicit source-only operations.
+Keep both integration entry points behaviorally aligned and exercise them with local Git fixture tests.
+
 ## Application integration
 
 `xWalkPiCarApp` follows the same Gerrit review, CI, and submitted-commit replication policy as `xWalkPiCarAI`.

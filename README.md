@@ -1,5 +1,7 @@
 # xWalk Raspberry Pi 5 PiCar-X
 
+See the [Git guide](GIT_GUIDE.md) for cloning, source-only updates, submodules, and Gerrit reviews.
+
 xWalk is a C++17 control and automation workspace for the SunFounder PiCar-X on Raspberry Pi 5. The repository
 contains the complete product integration, host-safe simulation and tests, deployment configuration, documentation,
 and development tooling.
@@ -7,6 +9,65 @@ and development tooling.
 Normal host builds use simulated or software backends and do not actuate physical hardware.
 The separate [xWalkPiCarApp](https://github.com/TARS-v00-01/xWalkPiCarApp) integration pins the Python and
 Android applications, their shared IW schemas, and tooling with private component gitlinks.
+
+## Set up the update environment
+
+Use Bash 4.4+ and Python 3.9+; source [xwalk_env.sh](xwalk_env.sh) from this integration root once for initial setup:
+
+```bash
+source ./xwalk_env.sh
+```
+
+The script initializes the pinned submodules and restores assets from each initialized component that owns
+`ci/assets.json` and `ci/fetch-assets.sh`. It uses the existing verified asset downloader, `HF_TOKEN` or
+`~/.netrc`, and `XWALK_ASSET_CACHE` (default `~/.cache/xwalk-assets`). It does not store credentials or install
+application/system dependencies. Follow the component setup instructions for build tools and Python packages.
+
+After setup, the everyday update commands in that Bash session are:
+
+```bash
+git pull
+git submodule update
+```
+
+These two commands update initialized components and restore their pinned assets. Save local work before
+updating. If an integration update adds a new component, rerun `source ./xwalk_env.sh` to initialize it.
+The environment setup handles recursive initialization; you do not need that flag for everyday updates.
+The script adds a shell function that delegates to Git and restores pinned assets only after a successful
+pull or submodule update in a registered integration. It also supports `git -C /path/to/checkout ...`.
+Unrelated repositories and other Git commands retain normal behavior. Existing custom hooks are preserved.
+
+Git checkout hooks do not run for unchanged revisions. The shell function covers that case, so rerunning
+`git submodule update` repairs missing assets even when source is already current. A download failure returns
+nonzero and reports that Git succeeded; resolve credentials/network/cache access and rerun the command.
+Source and manifest verification remain separate: an asset failure does not roll back the Git update.
+
+In each new terminal, activate without fetching or downloading:
+
+```bash
+source /path/to/xWalkPiCarAI/xwalk_env.sh --activate
+```
+
+Replace the path with your checkout. To enable this in every interactive Bash terminal, add that line to your
+own `~/.bashrc`. Source both integrations' scripts to register both in one shell. If you already define a `git`
+alias or function, reconcile it first; the script refuses to replace it. It preserves the working directory
+and shell options. Running `bash ./xwalk_env.sh` performs setup, but cannot activate the calling terminal.
+
+For a source-only update in an activated shell:
+
+```bash
+XWALK_SKIP_ASSETS=1 git -c core.hooksPath=/dev/null pull
+XWALK_SKIP_ASSETS=1 git -c core.hooksPath=/dev/null submodule update
+```
+
+This per-command override skips hooks and asset restoration without deleting existing files. Do not use the
+hook override for commits or review uploads. `command git` bypasses the shell function; other shells, IDE Git
+clients, and subprocesses do not inherit it. Their existing checkout hooks only run when Git checks out a
+revision. Keep using the sourced Bash session for automatic restoration on unchanged updates.
+
+The current hardware integration has no Hugging Face `ci/assets.json` manifests. Its tracked resources
+arrive through Git. The script does not download the separate application traffic dataset or run hardware
+fixture-generation scripts.
 
 ## Clone from GitHub
 
@@ -27,8 +88,8 @@ For an existing clone, after fetching and checking out the integration revision 
 old local submodule URL overrides and initialize the exact pinned component revisions:
 
 ```bash
-git submodule sync --recursive
-git submodule update --init --recursive
+git submodule sync
+git submodule update --init
 git submodule status --recursive
 ```
 
@@ -42,22 +103,24 @@ The managed GitHub Actions checkout continues to use its runner's Gerrit credent
 
 ## Repository layout
 
+Paths below are relative to this integration checkout. Each pinned component owns its source and README.
+
 ```text
-MyPiCarX/
+xWalkPiCarAI/
 ├── xWalk-rpi5-hw/             Integrated Raspberry Pi 5 product
 │   ├── CMakeLists.txt         Product build entry point
 │   ├── CMakePresets.json      Supported host and Raspberry Pi build presets
 │   ├── xWalkDriver/            Product behavior and feature agents
 │   ├── xWalkAudioResources/   Versioned sound and music resources
-│   ├── xWalkController/       CLI and application composition
+│   ├── xWalkController/       Request scheduling, Boot runtime, and standalone Controller
 │   ├── xWalkHal/              Hardware abstraction and simulation backends
 │   ├── xWalkLibrary/          Shared libraries and external dependencies
 │   └── cmake/                 Shared CMake modules and toolchains
 ├── devloper-note/             Developer documentation components
 │   ├── gerrit-note/           Gerrit administration and CI documentation
 │   └── xwalk-rpi5-note/       C++ architecture, build, and deployment documentation
-├── xWalk-rpi5-iw/             Interface schemas and generated bindings
-├── xWalk-rpi5-node/           Reserved Raspberry Pi node component
+├── xWalk-rpi5-iw/             Shared Protobuf schemas and signal registries
+├── xWalk-rpi5-node/           MQTT/GPB transport and host/Raspberry Pi application
 ├── xWalk-rpi5-tool/           gitlink: CI, Gerrit, deployment, quality, and maintenance tools
 └── xWalk-rpi5-trace/           Shared tracing implementation
 ```
@@ -282,7 +345,7 @@ The generated files are written below `build-host/sanity`.
 
 ## VS Code symbol navigation
 
-Open the `MyPiCarX` repository root in VS Code and install the recommended
+Open the `xWalkPiCarAI` integration root in VS Code and install the recommended
 CMake Tools and C/C++ extensions. The workspace combines the host product and
 independent server compilation databases, while the fallback symbol browser
 indexes project-owned hardware, simulation, test, interface, tool, trace, and
@@ -290,7 +353,8 @@ server source trees. Ctrl+click, **Go to Definition**, **Go to Declaration**,
 and **Find All References** therefore work across module boundaries.
 
 After changing CMake source lists or moving files, run the VS Code task
-`xWalk: Refresh all C++ navigation`. The equivalent terminal commands are:
+`xWalk: Refresh all C++ navigation`. The task configures hardware, native-provider, and Node navigation.
+To refresh only the ordinary host product compilation database from the terminal:
 
 ```bash
 cmake --preset host-debug -S xWalk-rpi5-hw
@@ -307,10 +371,15 @@ cmake --build build-host/release --parallel
 ctest --test-dir build-host/release --output-on-failure --no-tests=error
 ```
 
-## Controller configuration
+## Controller and Node runtime
 
-The Controller component currently retains deployment configuration only. It does not build an executable while
-the replacement CBB-style execution architecture is being designed.
+The [Controller](xWalk-rpi5-hw/xWalkController/README.md) schedules service, vehicle, vision, and voice requests
+on four workers. Its Boot layer owns the selected HOST simulation or RPI5 hardware dependency graph, along with
+deployment configuration. It also provides the standalone Controller workflow documented in that component.
+
+The [Node](xWalk-rpi5-node/README.md) adds MQTT/GPB transport and the complete host or Raspberry Pi application.
+Use the Node's documented presets and runtime launcher for application execution. Building a HOST binary on a
+Raspberry Pi still selects simulation; native hardware operation requires the RPI5 configuration.
 
 ## Installation
 
@@ -458,18 +527,20 @@ After Gerrit and the selected CI worker are online, create a signed-off commit a
 upload triggers Host Quality automatically:
 
 ```bash
-git add <files>
+git add -- README.md
 git commit -s
-git push gerrit HEAD:refs/for/master
+git push origin HEAD:refs/for/master
 ```
 
 Upload work in progress without triggering CI by adding `%wip`:
 
 ```bash
-git push gerrit HEAD:refs/for/master%wip
+git push origin HEAD:refs/for/master%wip
 ```
 
 Selecting **Mark As Active** in Gerrit triggers CI for the current WIP patch set. CI does not submit a change.
+The example stages a README-only edit; select the actual intended files for your change. Configure the Gerrit
+push transport and commit hook first, as described in the [Git guide](GIT_GUIDE.md#configure-gerrit-contribution).
 
 Run representative repository-owned checks locally before uploading:
 
