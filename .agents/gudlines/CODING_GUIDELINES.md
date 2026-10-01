@@ -2176,3 +2176,28 @@ service user. Missing, stale, or stalled feeds fail closed without opening a phy
 Updated direct camera providers and the camera service cooperate through `/run/lock/xwalk-camera.lock`.
 Never unlink lease files while any participant is running. Host local-video evaluation bypasses camera sharing.
 Test process ownership and snapshot failure behavior with synthetic frames or recorded media, never hardware.
+
+## Front proximity safety ownership
+
+Keep front-distance GPIO acquisition in the hardware-owning Controller. Its dedicated proximity worker
+uses serialized ultrasonic sampling and enforces the stop locally; traffic inference, MQTT and LLM
+announcements must never gate a motor stop. The same-user, versioned Library proximity IPC has distinct
+`Status`, `AllStop` and clearance-report `Clear` commands; do not reuse Node process-shutdown `Stop`
+for actuator safety.
+A safety stop inhibits paired motors under their existing safety mutex before cancelling Controller
+operations. Lifecycle commands and queued work cannot release the inhibit. Only the owner can release
+inhibition after completed cleanup, zero output and sustained valid clearance with hysteresis. IPC-originated
+stops additionally require fresh traffic clearance based only on sensor data. Camera path assessment is
+local advisory information and cannot request stops, gate recovery or generate safety announcements.
+Fresh finite negative raw readings count as policy-defined open road, including timeout/error sentinels;
+this policy can mask sensor faults. Failed acquisition, stale data, zero and non-finite readings remain
+unsafe. Negative bumper clearance produced by applying the sensor inset must be clamped to zero,
+not treated as a negative raw sample.
+Recovery may resume a still-requested continuous autonomous session, preserving accepted power, but must
+honor Stop/shutdown and must not replay completed actions or expired manual movement leases.
+Proximity-only request rejection is a nonmodal GUI status; unrelated failures retain their warning behavior.
+
+An explicit manual reverse escape may use a dedicated inhibited-motor lease after cleanup. Keep general
+arming and forward output disabled; only fresh reverse requests renew that lease. Repeated front-stop
+samples may preserve it, but Stop, shutdown, clock rollback and lease expiry must stop it. Autonomous
+recovery must not race a current reverse lease.
