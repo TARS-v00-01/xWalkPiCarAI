@@ -415,6 +415,11 @@ never edit them by hand, and
 exclude them from handwritten-source coverage and static-analysis gates while
 retaining normal compiler warnings and compilation checks.
 
+The traffic controller likewise owns `xWalk-rpi5-node/xWalkTrafCtrl/auto-gen/include` and `auto-gen/src`.
+Its CMake build uses the IW-owned `cmake/XWalkTrafficProtocol.cmake` recipe to generate traffic,
+signal, common, and request bindings directly from IW schemas. Keep traffic schemas in IW;
+reuse `SoundReq` with `ANNOUNCE` for spoken traffic advisories instead of adding a parallel sound contract.
+
 Name each handwritten Protobuf message with at most two PascalCase operation
 words. Append `Req`, `Cfm`, or `Rej` to a transported flow message without
 counting that suffix as an operation word. Omit redundant `XWalk`, `Command`,
@@ -997,6 +1002,9 @@ direction always runs from the façade to the selected tool.
   with Library macros. Node sources use `XWALK_MQTT_TRACE_UIDn` with
   `MQTTUL.<digits>` for clients and `MQTTDL.<digits>` for servers. Their
   warning and error macros are `XWALK_MQTT_WARNING` and `XWALK_MQTT_ERROR`.
+  Traffic announcements below `xWalk-rpi5-node/xWalkTrafCtrl` use `XWALK_TRAFCTRL_TRACE_UIDn`
+  with `TRAFCTRL.<digits>`, `XWALK_TRAFCTRL_WARNING`, and `XWALK_TRAFCTRL_ERROR`. Only the explicit
+  print-only announcement output logs generated announcement text; shared LLM diagnostics remain content-free.
   The functional request handlers below `xWalk-rpi5-node/xWalkIoT/xWalkAgent` instead use
   `XWALK_XAGENT_TRACE_UIDn` with `XAGENT.<digits>`, `XWALK_XAGENT_WARNING`, and `XWALK_XAGENT_ERROR`,
   preserving the existing selector contract and unfiltered behavior. Source files below `xWalkHal`, `xWalkController`,
@@ -2156,3 +2164,15 @@ Only fixed, bounded diagnostic categories cross the GPB rejection boundary; arbi
 stays out of responses. Optional farewell speech requires continued operation permission. Owned speech child
 processes use private process groups, bounded TERM-to-KILL escalation, and direct-child reaping. Never signal
 unrelated processes. The common `owningpointer` alias accepts an optional deleter for scoped resource cleanup.
+
+## Shared camera and process ownership
+
+The Pi Boot platform implementation holds `/run/lock/xwalk-controller.lock` before initializing hardware
+and through device teardown. Put platform-specific ownership in the existing CMake-selected platform source;
+do not add preprocessor flags or conditional compilation to shared Boot code for this behavior. Run one full subscriber for all functions; functional MQTT children use existing private IPC.
+Camera consumers deployed together use `XWALK_CAMERA_FRAME_FILE` to read atomic, bounded JPEG snapshots
+from the native `xWalkCameraSvc`. Keep the file in a private tmpfs runtime directory shared by the same
+service user. Missing, stale, or stalled feeds fail closed without opening a physical fallback camera.
+Updated direct camera providers and the camera service cooperate through `/run/lock/xwalk-camera.lock`.
+Never unlink lease files while any participant is running. Host local-video evaluation bypasses camera sharing.
+Test process ownership and snapshot failure behavior with synthetic frames or recorded media, never hardware.
