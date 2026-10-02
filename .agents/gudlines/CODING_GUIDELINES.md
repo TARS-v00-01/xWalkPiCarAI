@@ -2188,7 +2188,8 @@ A safety stop inhibits paired motors under their existing safety mutex before ca
 operations. Lifecycle commands and queued work cannot release the inhibit. Only the owner can release
 inhibition after completed cleanup, zero output and sustained valid clearance with hysteresis. IPC-originated
 stops additionally require fresh traffic clearance based only on sensor data. Camera path assessment is
-local advisory information and cannot request stops, gate recovery or generate safety announcements.
+local advisory information and cannot request stops or gate recovery. Semantic detections may qualify
+traffic reports through the camera incident policy below.
 Fresh finite negative raw readings count as policy-defined open road, including timeout/error sentinels;
 this policy can mask sensor faults. Failed acquisition, stale data, zero and non-finite readings remain
 unsafe. Negative bumper clearance produced by applying the sensor inset must be clamped to zero,
@@ -2225,3 +2226,34 @@ or pairing credentials merely to retain configuration. Generated configuration
 must be reproducible from tracked inputs; preserve local overrides separately.
 Before publication, verify required configuration is tracked in the owning
 submodule, not merely present on disk or hidden by an ignore rule.
+
+Traffic proximity IPC and safety broadcasts require a responding Vehicle or All subscriber.
+Other subscriber modes explicitly report inactive in the versioned status. Missing/inactive owners
+suspend traffic AllStop, Clear and warnings; the publisher rechecks eligibility before dispatch.
+Controller-local sensor safety stays independent of this traffic eligibility flag.
+
+Traffic road-block broadcasts are state transitions: one blocked advisory after 0.5 seconds of sustained blockage,
+then one cleared advisory
+only after two seconds of fresh sensor clearance beyond hysteresis (or policy-accepted negative range).
+Vehicle/All inactivity, disconnects and sensor faults pause the episode without clearing its announced state.
+Keep that state across vehicle process restarts for the lifetime of the traffic monitor. Reuse its simulated
+location for both messages. Delivery uncertainty must not automatically retry an already consumed transition.
+
+
+Live Pi proximity announcements use typed transitions and fresh post-blockage semantic camera evidence.
+Always retain immediate sensor-only motor stopping and sensor-only recovery. Speak one local obstacle
+warning per confirmed episode with the bounded native Espeak/ALSA provider; do not claim physical contact.
+Only camera-qualified traffic occupancy may produce a possible traffic-block/heavy-traffic MQTT advisory,
+and only a reported episode may produce a MQTT clearance. Inconclusive/isolated obstacles remain local.
+Skip the periodic observation/risk publication path for live sensor episodes; retain host replay behavior.
+Camera occupancy/count categories are heuristics, not a trained congestion classifier. Require a frame
+acquired after the transition, bounded three-second inference freshness and a currently active fresh
+sensor blockage. Preserve episode state across Vehicle/All cycles, and consume sends before dispatch.
+
+
+Native Pi builds use the repository's guarded build wrapper after power/cooling faults are corrected.
+Serialize guarded builds across build directories with a private per-user lease. Keep one compiler job
+and lower scheduling priority; pause the owned build group at 65C, resume at 55C, abort at 75C or any
+firmware power/throttling fault, and bound cooling waits to 120 seconds. Never weaken firmware checks
+or claim that software load control repairs the supply. Preserve crash evidence and require clean
+telemetry after the corrected hardware has rebooted before resuming load.
