@@ -38,3 +38,7 @@
 	path = xWalk-rpi5-tool
 	url = https://github.com/TARS-v00-01/xWalk-rpi5-tool.git
 	branch = master
+[submodule "xWalk-rpi5-os"]
+	path = xWalk-rpi5-os
+	url = https://github.com/TARS-v00-01/xWalk-rpi5-os.git
+	branch = master

@@ -139,6 +139,19 @@ jobs:
       - name: Build and run Trace formatting, routing, macro, and selector tests
         run: xWalk-rpi5-tool/shell-agent/gerrit-tool/run-host-ci-job.sh xwalk-trace-tests
 
+  xwalk-os:
+    name: xWalk-rpi5-os
+    needs: preparation
+    runs-on: [self-hosted, linux, x64, xwalk-ci]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check out exact submitted component commits
+        uses: ./.github/actions/checkout-private-submodules
+      - name: Build, test and install standalone desktop
+        run: bash xWalk-rpi5-os/ci/run-host-ci.sh standalone
+      - name: Build, test and install integrated desktop
+        run: bash xWalk-rpi5-os/ci/run-host-ci.sh host
+
   xwalk-vision:
     name: xWalk Vision
     needs: preparation
@@ -301,6 +314,7 @@ jobs:
       - xwalk-iw
       - xwalk-library
       - xwalk-trace
+      - xwalk-os
       - xwalk-vision
       - xwalk-streaming
       - xwalk-quality

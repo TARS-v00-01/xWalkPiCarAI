@@ -1002,6 +1002,12 @@ direction always runs from the façade to the selected tool.
   with Library macros. Node sources use `XWALK_MQTT_TRACE_UIDn` with
   `MQTTUL.<digits>` for clients and `MQTTDL.<digits>` for servers. Their
   warning and error macros are `XWALK_MQTT_WARNING` and `XWALK_MQTT_ERROR`.
+  OS desktop sources use `XWALK_OS_TRACE_UID0` with scanner-registered `OS.<digits>` IDs and
+  `XWALK_OS_WARNING` / `XWALK_OS_ERROR`. Host/Pi link the shared trace implementation.
+  The Qt OS adapter and its tests live in `xWalk-rpi5-trace`; other trace consumers do not require Qt.
+  The dependency-free standalone OS profile uses a file-only test stub in `xWalkStub` with the same IDs,
+  fixed content-free messages and unfiltered warnings/errors; it persists simple selectors in JSON.
+  Neither backend changes CLI protocol stdout, application error behavior, or GUI error-window filtering.
   Traffic announcements below `xWalk-rpi5-node/xWalkTrafCtrl` use `XWALK_TRAFCTRL_TRACE_UIDn`
   with `TRAFCTRL.<digits>`, `XWALK_TRAFCTRL_WARNING`, and `XWALK_TRAFCTRL_ERROR`. Only the explicit
   print-only announcement output logs generated announcement text; shared LLM diagnostics remain content-free.

@@ -57,7 +57,8 @@
                 "xWalk: Configure RPI5 provider navigation",
                 "xWalk: Configure MQTT node navigation",
                 "xWalk: Configure traffic navigation",
-                "xWalk: Configure camera navigation"
+                "xWalk: Configure camera navigation",
+                "xWalk: Configure desktop navigation"
             ],
             "problemMatcher": []
         },
@@ -83,6 +84,21 @@
                 "-B",
                 "${workspaceFolder}/xWalk-rpi5-node/xWalkTrafCtrl/xWalkCameraSvc/build-host"
             ],
+            "problemMatcher": []
+        },
+        {
+            "label": "xWalk: Configure desktop navigation",
+            "type": "process",
+            "command": "cmake",
+            "args": [
+                "--preset",
+                "host",
+                "-S",
+                "${workspaceFolder}/xWalk-rpi5-os"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/xWalk-rpi5-os"
+            },
             "problemMatcher": []
         }
     ]
