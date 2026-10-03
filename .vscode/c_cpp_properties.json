@@ -254,7 +254,8 @@
                 "${workspaceFolder}/xWalk-rpi5-os/xWalkSettings/include",
                 "${workspaceFolder}/xWalk-rpi5-os/xWalkStub/include",
                 "${workspaceFolder}/xWalk-rpi5-os/xWalkTest/include",
-                "${workspaceFolder}/xWalk-rpi5-trace/include"
+                "${workspaceFolder}/xWalk-rpi5-trace/include",
+                "${workspaceFolder}/xWalk-rpi5-hw/xWalkTest/include"
             ],
             "browse": {
                 "path": [
@@ -733,7 +734,9 @@
                     "${workspaceFolder}/xWalk-rpi5-os/xWalkTest/test/src/*",
                     "${workspaceFolder}/xWalk-rpi5-trace/include/*",
                     "${workspaceFolder}/xWalk-rpi5-trace/src/*",
-                    "${workspaceFolder}/xWalk-rpi5-trace/test/src/*"
+                    "${workspaceFolder}/xWalk-rpi5-trace/test/src/*",
+                    "${workspaceFolder}/xWalk-rpi5-hw/xWalkTest/include/*",
+                    "${workspaceFolder}/xWalk-rpi5-hw/xWalkTest/src/*"
                 ],
                 "limitSymbolsToIncludedHeaders": false,
                 "databaseFilename": "${workspaceFolder}/xWalk-rpi5-node/build-host/editor-index/parent-source-navigation.vc.db"
@@ -748,7 +751,8 @@
                 "XWALK_PICARX_CONFIG_FILE=\"xWalk-rpi5-hw/xWalkController/xWalkConfig/picar-x.conf\"",
                 "XWALK_TEST_SOUND_DIRECTORY=\"${workspaceFolder}/xWalk-rpi5-hw/xWalkAudioResources/sounds\"",
                 "XWALK_TEST_MUSIC_DIRECTORY=\"${workspaceFolder}/xWalk-rpi5-hw/xWalkAudioResources/music\"",
-                "XWALK_VOICE_ACTIVE_CAR_CONFIG_DIRECTORY=\"${workspaceFolder}/xWalk-rpi5-hw/xWalkDriver/xWalkVoice/xWalkVoiceActiveCar/config\""
+                "XWALK_VOICE_ACTIVE_CAR_CONFIG_DIRECTORY=\"${workspaceFolder}/xWalk-rpi5-hw/xWalkDriver/xWalkVoice/xWalkVoiceActiveCar/config\"",
+                "XWALK_HW_TEST_DIRECTORY=\"${workspaceFolder}/build-host/cmake/xWalkTest/test-data\""
             ],
             "compileCommands": [
                 "${workspaceFolder}/build-host/cmake/compile_commands.json",
