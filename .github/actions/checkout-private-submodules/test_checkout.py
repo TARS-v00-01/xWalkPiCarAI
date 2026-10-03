@@ -99,6 +99,64 @@ os.execv('/usr/bin/git', ['git', 'upload-pack', str(Path(os.environ['FIXTURE_GER
             self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         return result
 
+    def add_nested_hardware(self):
+        hardware = self.directory / 'hardware'
+        hardware.mkdir()
+        self.git(hardware, 'init', '-b', 'master')
+        for name, path in MAPPINGS.items():
+            if not path.startswith('xWalk-rpi5-hw/'):
+                continue
+            self.git(hardware, 'config', '-f', '.gitmodules', f'submodule.{name}.path', name)
+            self.git(hardware, 'config', '-f', '.gitmodules', f'submodule.{name}.url',
+                     f'https://github.com/TARS-v00-01/{name}.git')
+            self.git(hardware, 'config', '-f', '.gitmodules', f'submodule.{name}.branch', 'master')
+            self.git(hardware, 'update-index', '--add', '--cacheinfo', f'160000,{self.submitted},{name}')
+            self.git(self.root, 'update-index', '--force-remove', path)
+            self.git(self.root, 'config', '-f', '.gitmodules', '--remove-section', f'submodule.{name}')
+        self.git(hardware, 'add', '.gitmodules')
+        self.git(hardware, 'commit', '-m', 'Hardware integration')
+        revision = self.git(hardware, 'rev-parse', 'HEAD')
+        self.git(self.directory, 'clone', '--bare', str(hardware), str(self.server / 'xWalk-rpi5-hw'))
+        for key, value in [('path', 'xWalk-rpi5-hw'), ('branch', 'master'),
+                           ('url', 'https://github.com/TARS-v00-01/xWalk-rpi5-hw.git')]:
+            self.git(self.root, 'config', '-f', '.gitmodules', f'submodule.xWalk-rpi5-hw.{key}', value)
+        self.git(self.root, 'update-index', '--add', '--cacheinfo', f'160000,{revision},xWalk-rpi5-hw')
+        self.git(self.root, 'add', '.gitmodules')
+        self.git(self.root, 'commit', '-m', 'Pin nested hardware integration')
+        return revision
+
+    def test_nested_hardware_fetches_exact_submitted_children_and_preserves_changes(self):
+        revision = self.add_nested_hardware()
+        self.checkout()
+        hardware = self.root / 'xWalk-rpi5-hw'
+        self.assertEqual(self.git(hardware, 'rev-parse', 'HEAD'), revision)
+        component = hardware / 'xWalkHal'
+        self.assertEqual(self.git(component, 'rev-parse', 'HEAD'), self.submitted)
+        (component / 'source.txt').write_text('saved nested runner edit\n')
+        self.checkout()
+        self.assertEqual(self.git(component, 'status', '--porcelain'), '')
+        self.assertEqual(self.git(component, 'show', 'refs/stash:source.txt'), 'saved nested runner edit')
+        self.assertIn('xWalk-rpi5-hw', (self.directory / 'ssh.log').read_text())
+
+    def test_flat_runner_migration_preserves_component_edits_and_local_configuration(self):
+        self.checkout()
+        component = self.root / MAPPINGS['xWalkHal']
+        (component / 'source.txt').write_text('saved pre-migration edit\n')
+        hardware = self.root / 'xWalk-rpi5-hw'
+        (hardware / 'local.cfg').write_text('saved local configuration\n')
+        revision = self.add_nested_hardware()
+        self.env['GITHUB_ACTIONS'] = 'false'
+        self.assertIn('Refusing hardware migration', self.checkout(False).stderr)
+        self.assertFalse((hardware / '.git').exists())
+        self.env['GITHUB_ACTIONS'] = 'true'
+        self.checkout()
+        self.assertEqual(self.git(hardware, 'rev-parse', 'HEAD'), revision)
+        self.assertEqual(self.git(component, 'show', 'refs/stash:source.txt'), 'saved pre-migration edit')
+        self.assertEqual(self.git(hardware, 'show', 'refs/stash^3:local.cfg'), 'saved local configuration')
+        self.assertEqual(self.git(hardware, 'status', '--porcelain'), '')
+        self.checkout()
+        self.assertEqual(self.git(component, 'show', 'refs/stash:source.txt'), 'saved pre-migration edit')
+
     def test_exact_submitted_checkout_and_reused_remote(self):
         self.checkout()
         for name, path in {**MAPPINGS, TOOL: TOOL}.items():

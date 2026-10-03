@@ -10,6 +10,13 @@ Normal host builds use simulated or software backends and do not actuate physica
 The separate [xWalkPiCarApp](https://github.com/TARS-v00-01/xWalkPiCarApp) integration pins the Python and
 Android applications, their shared IW schemas, and tooling with private component gitlinks.
 
+## Hardware integration
+
+`xWalk-rpi5-hw` is an independent integration repository containing Driver, AudioResources, Controller, HAL,
+and Library gitlinks. Hardware component merges first create a hardware review with hardware-only CI.
+After that review is approved and submitted, automation updates the single hardware gitlink here through
+another Gerrit review and the complete product CI gate. Existing build paths remain unchanged.
+
 ## Set up the update environment
 
 Use Bash 4.4+ and Python 3.9+; source [xwalk_env.sh](xwalk_env.sh) from this integration root once for initial setup:
@@ -71,7 +78,7 @@ fixture-generation scripts.
 
 ## Clone from GitHub
 
-The integration repository uses explicit GitHub HTTPS URLs for all ten submodules. The component repositories
+The integration repository uses explicit GitHub HTTPS URLs for seven top-level submodules and five nested hardware submodules. The component repositories
 are private: your GitHub account must have read access to each one, even though the integration repository is public.
 Authenticate Git before cloning. With GitHub CLI:
 
@@ -88,8 +95,8 @@ For an existing clone, after fetching and checking out the integration revision 
 old local submodule URL overrides and initialize the exact pinned component revisions:
 
 ```bash
-git submodule sync
-git submodule update --init
+git submodule sync --recursive
+git submodule update --init --recursive
 git submodule status --recursive
 ```
 

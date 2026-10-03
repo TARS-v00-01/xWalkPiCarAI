@@ -37,14 +37,11 @@ jobs:
           tar --create --file "$RUNNER_TEMP/xwalk-submitted-sources.tar" \
             --exclude='*/.git' \
             devloper-note \
-            xWalk-rpi5-hw/xWalkDriver \
-            xWalk-rpi5-hw/xWalkAudioResources \
-            xWalk-rpi5-hw/xWalkController \
-            xWalk-rpi5-hw/xWalkHal \
-            xWalk-rpi5-hw/xWalkLibrary \
+            xWalk-rpi5-hw \
             xWalk-rpi5-trace \
             xWalk-rpi5-iw \
             xWalk-rpi5-node \
+            xWalk-rpi5-os \
             xWalk-rpi5-tool
       - uses: actions/upload-artifact@v6
         with:

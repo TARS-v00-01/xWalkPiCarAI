@@ -73,8 +73,8 @@ changes in a local Git stash. Permit automatic preservation only when `GITHUB_AC
 `GITHUB_WORKSPACE` equals the integration root. Report the stash identity, keep it out of source artifacts,
 and leave dirty developer workspaces untouched. Clean component checkouts must not create extra stashes.
 
-During migration, `xWalkPiCarAI/master` is the active integration branch; the
-final target is `xWalk-rpi5/master`. A Gerrit change may be submitted only after
+`xWalkPiCarAI/master` is the product integration branch. Its nested hardware
+integration is `xWalk-rpi5-hw/master`; the obsolete `xWalk-rpi5` project is retired. A Gerrit change may be submitted only after
 its current patch set satisfies the configured review and automatic
 verification requirements. The integration repository pins exact submitted
 component revisions, and each pointer update passes through its own Gerrit
@@ -116,7 +116,7 @@ Keep both integration entry points behaviorally aligned and exercise them with l
 `xWalkPiCarApp` follows the same Gerrit review, CI, and submitted-commit replication policy as `xWalkPiCarAI`.
 Both integration repositories are public; their component repositories stay private. Integrations own metadata,
 documentation, licences, and CI configuration. Component changes enter as exact submitted gitlink uplifts,
-not copied source trees. App integration pins IW, tooling, Android, and Python. Hardware integration pins ten gitlinks, including tooling. Each submitted IW or tooling change creates
+not copied source trees. App integration pins IW, tooling, Android, and Python. Hardware integration pins five hardware gitlinks. The product pins seven top-level gitlinks, including hardware and tooling. Each submitted IW or tooling change creates
 one independent uplift per integration. Application changes target only `xWalkPiCarApp`. Every integration uplift runs its complete host quality graph before submission.
 App integration also requires a separate `xWalk Quality` module after both application modules pass.
 Its checks are shared with component reviews: Python static analysis, branch coverage, bounded response races,
@@ -2263,3 +2263,14 @@ and lower scheduling priority; pause the owned build group at 65C, resume at 55C
 firmware power/throttling fault, and bound cooling waits to 120 seconds. Never weaken firmware checks
 or claim that software load control repairs the supply. Preserve crash evidence and require clean
 telemetry after the corrected hardware has rebooted before resuming load.
+
+## Nested hardware review and uplift
+
+`xWalkPiCarAI` pins `xWalk-rpi5-hw` as one Git submodule. The hardware integration owns five exact gitlinks:
+Driver, AudioResources, Controller, HAL and Library. Preserve their existing paths below `xWalk-rpi5-hw`.
+Hardware component submissions uplift into the hardware integration first. Its module-scoped CI must pass
+before its submitted revision uplifts into the product as one hardware gitlink. Product CI remains complete.
+Never advance a nested component directly in the product index or import an unreviewed GitHub branch tip.
+Tool, IW, Trace, Node, OS and developer notes remain independently owned product dependencies.
+Use explicit GitHub HTTPS URLs for every level, and validate exact Gerrit-submitted ancestry in CI.
+Hardware standalone CI records submitted product and Tool context revisions and runs no physical hardware tests.
