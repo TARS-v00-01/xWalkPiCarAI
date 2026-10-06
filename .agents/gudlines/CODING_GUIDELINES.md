@@ -854,7 +854,25 @@ direction always runs from the façade to the selected tool.
   `xWalkEnv.sh` must validate the complete model allowlist and supported netrc
   entries before exporting anything, skip missing or empty unused-provider
   credentials, never evaluate or print decrypted values, and remove its
-  mode-`0600` temporary plaintext. Never use Base64,
+  mode-`0600` temporary plaintext. The one tracked credential file is the image
+  netrc `xWalkPiCarApp/xWalk-rpi5-yocto/xWalkRpi5Build/xWalkConfig/xwalk-netrc.xwn`: an authenticated
+  SecretBox document with the versioned `XWN1` header, produced only by
+  `xwalk-build netrc encrypt`. Its key is installed only in the build user's
+  mode-`0600` `~/.config/xwalk/netrc.key` or `XWALK_NETRC_KEY`, and is tracked
+  only as the passphrase-encrypted `XWK1` document `xWalkConfig/xwalk-secrets.xwk`
+  (Argon2id and SecretBox, written by `xwalk-build key export`). Never store the
+  passphrase in a repository; neither it (`XWALK_SECRETS_PASSPHRASE`) nor the key
+  is ever passed to kas or bitbake. `xwalk-build build` decrypts it only into
+  the mode-`0600` `build/secrets/netrc` for the image's `/home/xwalk/.netrc`,
+  deletes that plaintext when the build ends, and never stores the recipe in
+  sstate. `netrc encrypt` also writes the tracked `xwalk-netrc.template`
+  with the same entries and every value `password ""`; a build without any key
+  installs that template instead, while a wrong, malformed, or shared key stops
+  the build. The car's GitHub access uses one read-only deploy key per
+  repository, created and registered by `xwalk-build ssh setup`; their private
+  keys are tracked only as `XWN1` documents in `xWalkPiCarApp/xWalk-rpi5-yocto/xWalkRpi5Build/xWalkConfig/ssh`
+  and installed in `/home/xwalk/.ssh`. Never give a car key write access.
+  Never commit a plaintext netrc, private key, or any `*.key` file. Never use Base64,
   XOR, `.obj` files, compiled objects, generated source, or hardcoded keys as
   secret protection.
 - Generate one licence serial per successful encryption in
@@ -2196,6 +2214,9 @@ inhibition after completed cleanup, zero output and sustained valid clearance wi
 stops additionally require fresh traffic clearance based only on sensor data. Camera path assessment is
 local advisory information and cannot request stops or gate recovery. Semantic detections may qualify
 traffic reports through the camera incident policy below.
+Physical ultrasonic echo timing uses captured kernel edge timestamps rather than userspace polling times.
+Publish every completed acquisition, including ordinary readers’ retries, to the safety observer with
+its original trigger timestamp. Cached reads must never renew freshness or bypass the 250 ms stale limit.
 Fresh finite negative raw readings count as policy-defined open road, including timeout/error sentinels;
 this policy can mask sensor faults. Failed acquisition, stale data, zero and non-finite readings remain
 unsafe. Negative bumper clearance produced by applying the sensor inset must be clamped to zero,
