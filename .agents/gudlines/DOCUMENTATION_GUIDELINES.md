@@ -80,6 +80,28 @@ Documentation must:
 Do not copy generated HTML, Sphinx templates, translation catalogs, community
 advertising blocks, or unresolved substitution tokens into `devloper-note/xwalk-rpi5-note/Doc`.
 
+## Curated public project documentation
+
+The public `xWalkPiCarAI` integration may publish the separately reviewed source under `docs/public/chapters`
+to `https://tars-v00-01.github.io/xWalkPiCarAI/`. This project site does not publish the full developer-note
+artifact. Keep its MkDocs configuration, pinned dependency, explicit chapter allowlist, and privacy check in
+`docs/public`. The integration owns the GitHub Pages workflow and the public source; components remain private.
+
+Review public prose manually for internal-only details. Reject internal addresses, credentials, personal data,
+private source links, operational settings, and account or administration procedures. Check both the source and
+rendered pages, search index, and sitemap. Pattern checks supplement review; they cannot establish publication
+approval for arbitrary content. Keep generated output below ignored `build-public-docs`.
+
+Source publication still requires complete integration CI, authorized review, Gerrit Submit, and synchronization
+of that exact submitted commit to GitHub `master`. The Pages workflow checks out only public documentation and
+never initializes components or reads private credentials. Only its deployment job receives Pages and OIDC
+write permissions. Restrict deployment to the integration repository's `master` branch and the `github-pages`
+environment. Configure Pages with the GitHub Actions source before deployment.
+
+The xWalkPiCarAI maintainers own public content and rollback. A normal rollback is a Gerrit-reviewed revert;
+urgent exposure permits the authorized owner to unpublish the site before reviewing its correction.
+Report Gerrit submission, GitHub synchronization, and Pages deployment separately.
+
 ## File headers
 
 Every `.cpp`, `.hpp`, and `.h` file starts with this header. Use the real file

@@ -1,0 +1,37 @@
+site_name: xWalk Documentation
+site_description: Public guide to the xWalk Raspberry Pi 5 PiCar-X workspace.
+site_url: https://tars-v00-01.github.io/xWalkPiCarAI/
+docs_dir: chapters
+site_dir: ../../build-public-docs/site
+use_directory_urls: true
+theme:
+  name: material
+  font: false
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.footer
+    - search.highlight
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+validation:
+  nav:
+    omitted_files: warn
+  links:
+    not_found: warn
+    anchors: warn
+nav:
+  - Welcome: index.md
+  - 1. Workspace: 01-xwalk-workspace/index.md
+  - 2. Hardware: 02-xwalk-hardware/index.md
+  - 3. Interface: 03-xwalk-interface/index.md
+  - 4. Software: 04-xwalk-software/index.md
+  - 5. Node: 05-xwalk-node/index.md
+  - 6. Tools: 06-xwalk-tool/index.md
+  - 7. Trace: 07-xwalk-trace/index.md
+  - 8. Guides: 08-xwalk-guides/index.md
