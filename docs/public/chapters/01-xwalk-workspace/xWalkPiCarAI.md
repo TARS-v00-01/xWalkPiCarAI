@@ -1,0 +1,448 @@
+<!-- xwalk-page-header:start -->
+
+[xWalk documentation](../index.md) / [1. xWalk workspace](index.md) / xWalk Raspberry Pi 5 PiCar-X
+
+**1. xWalk workspace &middot; Module 01**
+
+<!-- xwalk-page-header:end -->
+
+# xWalk Raspberry Pi 5 PiCar-X
+
+See the Git guide for cloning, source-only updates, submodules, and Gerrit reviews.
+
+xWalk is a C++17 control and automation workspace for the SunFounder PiCar-X on Raspberry Pi 5. The repository
+contains the complete product integration, host-safe simulation and tests, deployment configuration, documentation,
+and development tooling.
+
+Normal host builds use simulated or software backends and do not actuate physical hardware.
+The separate [xWalkPiCarApp](https://github.com/TARS-v00-01/xWalkPiCarApp) integration pins the Python and
+Android applications, their shared IW schemas, and tooling with private component gitlinks.
+
+## 1. Hardware integration
+
+`xWalk-rpi5-hw` is an independent integration repository containing Driver, AudioResources, Controller, HAL,
+and Library gitlinks. Hardware component merges first create a hardware review with hardware-only CI.
+After that review is approved and submitted, automation updates the single hardware gitlink here through
+another Gerrit review and the complete product CI gate. Existing build paths remain unchanged.
+
+## 2. Set up the update environment
+
+Use Bash 4.4+ and Python 3.9+; source xwalk_env.sh from this integration root once for
+initial setup:
+
+```bash
+source ./xwalk_env.sh
+```
+
+The script initializes the pinned submodules and restores assets from each initialized component that owns
+`ci/assets.json` and `ci/fetch-assets.sh`. It uses the existing verified asset downloader, `HF_TOKEN` or
+`~/.netrc`, and `XWALK_ASSET_CACHE` (default `~/.cache/xwalk-assets`). It does not store credentials or install
+application/system dependencies. Follow the component setup instructions for build tools and Python packages.
+
+After setup, the everyday update commands in that Bash session are:
+
+```bash
+git pull
+git submodule update
+```
+
+These two commands update initialized components and restore their pinned assets. Save local work before
+updating. If an integration update adds a new component, rerun `source ./xwalk_env.sh` to initialize it.
+The environment setup handles recursive initialization; you do not need that flag for everyday updates.
+The script adds a shell function that delegates to Git and restores pinned assets only after a successful
+pull or submodule update in a registered integration. It also supports `git -C /path/to/checkout ...`.
+Unrelated repositories and other Git commands retain normal behavior. Existing custom hooks are preserved.
+
+Git checkout hooks do not run for unchanged revisions. The shell function covers that case, so rerunning
+`git submodule update` repairs missing assets even when source is already current. A download failure returns
+nonzero and reports that Git succeeded; resolve credentials/network/cache access and rerun the command.
+Source and manifest verification remain separate: an asset failure does not roll back the Git update.
+
+In each new terminal, activate without fetching or downloading:
+
+```bash
+source /path/to/xWalkPiCarAI/xwalk_env.sh --activate
+```
+
+Replace the path with your checkout. To enable this in every interactive Bash terminal, add that line to your
+own `~/.bashrc`. Source both integrations' scripts to register both in one shell. If you already define a `git`
+alias or function, reconcile it first; the script refuses to replace it. It preserves the working directory
+and shell options. Running `bash ./xwalk_env.sh` performs setup, but cannot activate the calling terminal.
+
+For a source-only update in an activated shell:
+
+```bash
+XWALK_SKIP_ASSETS=1 git -c core.hooksPath=/dev/null pull
+XWALK_SKIP_ASSETS=1 git -c core.hooksPath=/dev/null submodule update
+```
+
+This per-command override skips hooks and asset restoration without deleting existing files. Do not use the
+hook override for commits or review uploads. `command git` bypasses the shell function; other shells, IDE Git
+clients, and subprocesses do not inherit it. Their existing checkout hooks only run when Git checks out a
+revision. Keep using the sourced Bash session for automatic restoration on unchanged updates.
+
+The current hardware integration has no Hugging Face `ci/assets.json` manifests. Its tracked resources
+arrive through Git. The script does not download the separate application traffic dataset or run hardware
+fixture-generation scripts.
+
+## 3. Clone from GitHub
+
+The integration repository uses explicit GitHub HTTPS URLs for seven top-level submodules and five nested hardware
+submodules. The component repositories
+are private: your GitHub account must have read access to each one, even though the integration repository is
+public.
+Authenticate Git before cloning. With GitHub CLI:
+
+```bash
+gh auth login --hostname github.com --git-protocol https
+gh auth setup-git
+git clone --recurse-submodules https://github.com/TARS-v00-01/xWalkPiCarAI.git
+```
+
+`xWalk-rpi5-tool` is pinned alongside the other components. Shared IW and tooling submissions each create
+one uplift review in this integration and one in `xWalkPiCarApp`. Each review runs its complete CI gate.
+
+For an existing clone, after fetching and checking out the integration revision containing these URLs, replace
+old local submodule URL overrides and initialize the exact pinned component revisions:
+
+```bash
+git submodule sync --recursive
+git submodule update --init --recursive
+git submodule status --recursive
+```
+
+Each status entry should begin with a space. A leading `-` means uninitialized; `+` means the checkout differs
+from the pinned revision. Do not use `--remote` for a reproducible integration checkout.
+
+Cloning requires no Gerrit connection or Git environment script. Contributors source
+`xWalk-rpi5-tool/shell-agent/env-tool/git.sh` separately to
+configure Gerrit review uploads. GitHub component remotes support fetching; source changes still go through Gerrit.
+## 4. Repository layout
+
+Paths below are relative to this integration checkout. Each pinned component owns its source and README.
+
+```text
+xWalkPiCarAI/
+├── xWalk-rpi5-hw/             Integrated Raspberry Pi 5 product
+│   ├── CMakeLists.txt         Product build entry point
+│   ├── CMakePresets.json      Supported host and Raspberry Pi build presets
+│   ├── xWalkDriver/            Product behavior and feature agents
+│   ├── xWalkAudioResources/   Versioned sound and music resources
+│   ├── xWalkController/       Request scheduling, Boot runtime, and standalone Controller
+│   ├── xWalkHal/              Hardware abstraction and simulation backends
+│   ├── xWalkLibrary/          Shared libraries and external dependencies
+│   └── cmake/                 Shared CMake modules and toolchains
+├── devloper-note/             Developer documentation components
+│   ├── gerrit-note/           Gerrit administration and CI documentation
+│   └── xwalk-rpi5-note/       C++ architecture, build, and deployment documentation
+├── xWalk-rpi5-iw/             Shared Protobuf schemas and signal registries
+├── xWalk-rpi5-node/           MQTT/GPB transport and host/Raspberry Pi application
+├── xWalk-rpi5-tool/           gitlink: CI, Gerrit, deployment, quality, and maintenance tools
+└── xWalk-rpi5-trace/           Shared tracing implementation
+```
+
+## 5. Prerequisites
+
+The supported host workflow requires Linux, CMake 3.25 or newer, Ninja, a C++17 compiler, Python 3, and the
+development libraries used by the complete product.
+
+On Ubuntu or Debian, run the dependency installation script. Run it with sudo to
+update the package index and install each native dependency separately:
+
+```bash
+sudo ./setup.sh
+```
+
+The script requires root privileges and stops if an installation command fails. It detects host or Pi
+and reads the full shared package catalog, including MQTT/TLS, generators, tests, and quality tools.
+Use `sudo ./setup.sh --target host` or `sudo ./setup.sh --target rpi` to select the target explicitly.
+Pi setup requires Raspberry Pi 5 ARM64 and includes CSI camera packages. Initialize the pinned tooling submodule
+first.
+For complete source and Raspberry Pi setup, use install.sh instead.
+
+For a manual installation of the core host subset, run:
+
+```bash
+sudo apt-get update
+sudo apt-get install build-essential
+sudo apt-get install cmake
+sudo apt-get install ninja-build
+sudo apt-get install pkg-config
+sudo apt-get install python3
+sudo apt-get install libasound2-dev
+sudo apt-get install libcurl4-openssl-dev
+sudo apt-get install libprotobuf-dev
+sudo apt-get install libgrpc++-dev
+sudo apt-get install libgtest-dev
+sudo apt-get install libjson-c-dev
+sudo apt-get install libtinyxml2-dev
+sudo apt-get install libyaml-cpp-dev
+```
+
+See the [dependency guide](../08-xwalk-guides/Doc/note/Dependency%20Installer%20Guide.md) for optional
+quality tools, generators, Raspberry Pi packages, and dependency troubleshooting.
+
+## 6. Prepare a fresh Linux machine
+
+install.sh prepares a fresh Linux machine to build the xWalk source. It installs native
+dependencies, initializes the pinned source submodules, and configures CMake. On Raspberry Pi it also prepares
+boot settings and device permissions for the selected Robot HAT.
+
+### Requirements
+
+- Ubuntu 24.04 or newer, or Debian/Raspberry Pi OS 12 or newer, with APT.
+- A normal user account with sudo access. Run the script without `sudo`; it elevates system operations itself.
+- Internet access to package repositories and authenticated read access to every private Git submodule.
+- For native Pi setup: Raspberry Pi 5 with a 64-bit ARM64 operating system and an identified Robot HAT revision.
+
+Install the operating system and configure networking first. The script does not flash an SD card or firmware.
+For Git authentication and recursive cloning, follow [Clone from GitHub](#3-clone-from-github).
+If Git is missing before cloning, install it through your operating system's package manager first.
+
+The commands below run from the directory containing `install.sh`. The script also works when invoked by its
+absolute path from another directory.
+
+### Linux workstation
+
+Install dependencies and configure the host build:
+
+```bash
+./install.sh --target host
+```
+
+To compile as part of setup:
+
+```bash
+./install.sh --target host --build --jobs 2
+```
+
+To build later and run host tests:
+
+```bash
+cmake --build build-host/cmake --parallel 2
+ctest --test-dir build-host/cmake --output-on-failure --no-tests=error
+```
+
+Host setup uses the `host-debug` preset and writes build files under `build-host/cmake`.
+
+### Raspberry Pi 5
+
+Identify the physical HAT revision before selecting its profile. CSI camera dependencies are selected by this
+installer. The runtime account defaults to the account running the script.
+
+#### Robot HAT v4
+
+```bash
+./install.sh --target rpi --profile robot_hat_v4 --build
+```
+
+There is no verified v4 overlay in this repository. This profile enables I2C/SPI and prepares device access,
+but retains the installed audio overlay. Board-specific v4 audio setup remains separate. The Servo HAT+ file
+is not installed as a v4 substitute.
+
+#### Robot HAT v5
+
+```bash
+./install.sh --target rpi --profile robot_hat_v5 --build
+```
+
+The supported v5 UUID must already be visible in the local Device Tree. The installer checks the bundled
+`sunfounder-robothat5.dtbo` checksum before installing it into the boot overlay directory and enabling it.
+If board identification fails, installation stops; selecting v4 is not a workaround for an unidentified v5 board.
+
+#### Select the runtime user and GPIO controller
+
+For an existing account named `xwalk` and a board whose intended GPIO controller is `/dev/gpiochip0`:
+
+```bash
+./install.sh --target rpi --profile robot_hat_v4 --runtime-user xwalk --gpio-device /dev/gpiochip0
+```
+
+Replace these example values with the actual account and device. The script does not create a runtime user.
+The GPIO default comes from the deployment defaults file, currently `/dev/gpiochip4`.
+
+Pi setup uses the `rpi-release` preset and writes build files under `build-rpi/cmake`. To compile later:
+
+```bash
+cmake --build build-rpi/cmake --parallel 2
+```
+
+After setup, review the boot configuration and its backup, then reboot manually to activate boot settings
+and new group memberships. Hardware acceptance is separate. To list hardware tests without running them:
+
+```bash
+ctest --test-dir build-rpi/cmake -N -L hardware
+```
+
+### What setup changes
+
+| Area | Action |
+| --- | --- |
+| Source | Synchronizes submodule URLs and initializes exact pinned revisions recursively. |
+| Packages | Installs catalog-selected build, generator, audio, test, quality, and packaging dependencies. |
+| Build | Configures the selected CMake preset; compiles only with `--build`. |
+| Pi camera | Installs CSI camera dependencies, including GStreamer components. |
+| Pi boot | Enables I2C/SPI in an `[all]` section and arranges for `i2c-dev` to load at boot. |
+| Pi HAT v5 | Installs and selects the checksum-verified Robot HAT v5 overlay. |
+| Pi access | Adds device groups, runtime-user memberships, and rules for the selected device nodes. |
+| Pi configuration | Initializes writable configuration under `/var/lib/xwalk` from repository templates. |
+
+Boot configuration backups use the `.xwalk-backup` suffix alongside `config.txt`. A different existing v5
+blob is also backed up before replacement. Existing backups are preserved on reruns. The setup locates
+`/boot/firmware/config.txt` or the supported legacy `/boot/config.txt` layout.
+
+Setup does not start the robot, automatically reboot, or run hardware tests. Optional Ollama/Piper models,
+provider credentials, and board-specific audio configuration require separate runtime setup.
+
+### Options
+
+| Option | Meaning |
+| --- | --- |
+| `--apply` | Optional compatibility alias; installation is already the default. |
+| `--target auto\|host\|rpi` | Select the target; `auto` detects Raspberry Pi from the local Device Tree. |
+| `--profile robot_hat_v4\|robot_hat_v5` | Explicit physical HAT profile, required for Pi setup. |
+| `--runtime-user USER` | Existing Pi runtime account; defaults to the invoking user. |
+| `--gpio-device /dev/gpiochipN` | Select the Pi GPIO controller used by provisioning and CMake. |
+| `--build` | Compile after successful setup and CMake configuration. |
+| `--jobs N` | Positive build parallelism, default 2 to limit memory use. |
+| `--skip-submodules` | Keep current revisions; skip submodule synchronization and initialization. |
+| `--help` | Display command-line help. |
+
+Running `./install.sh` starts installation immediately and detects the target automatically.
+Pi setup must run on the Raspberry Pi with an explicit HAT profile.
+
+### Troubleshooting
+
+#### Private submodule clone fails
+
+Verify your Git authentication and read access to every component repository. Re-run after access is fixed.
+See the [clone instructions](#3-clone-from-github).
+
+#### Submodule revisions differ from their pins
+
+The installer stops before changing an existing checkout with different revisions. If you deliberately want
+to build those revisions, use `--skip-submodules`. Missing source modules must still be initialized.
+
+#### Missing sudo or root invocation
+
+Use a normal build account with sudo access. The installer rejects execution as root so Git and CMake
+outputs remain owned by the build account.
+
+#### No APT candidate for rpicam-apps
+
+Some Ubuntu repositories do not provide this package. The dependency installer can accept a validated existing
+`rpicam-still`; otherwise it reports the separate user-local camera setup workflow. Read the
+[deployment tooling README](../06-xwalk-tool/xWalk-rpi5-tool/shell-agent/deploy-tool/Deployment%20Tool.md) before using that
+workflow:
+`setup-rpi-local.sh` also installs Ollama and downloads a model. Re-run installation after resolving the camera
+prerequisite. This root installer does not change APT sources automatically.
+
+#### Boot conflict or unidentified HAT
+
+Review the reported disabled interface or overlapping overlay in the actual boot configuration. Verify the
+physical board and Device Tree identity. Correct the configuration for that board before rerunning.
+
+#### Package, provisioning, or CMake failure
+
+The script returns a nonzero status and stops. Earlier completed steps may remain applied; this is not a
+transactional rollback. Resolve the reported error and rerun the same command. Package checks skip installed
+packages, and boot additions preserve backups and avoid duplicating the settings they manage.
+
+## 7. Build the complete repository
+
+Run all commands from the repository root. The `sanity` preset enables the complete Debug host build, tests,
+compile commands, and strict compiler warnings. The preset is loaded from the `xWalk-rpi5-hw` product source tree.
+
+```bash
+cmake --fresh -S xWalk-rpi5-hw --preset sanity
+cmake --build build-host/sanity --parallel
+ctest --test-dir build-host/sanity --output-on-failure --no-tests=error
+```
+
+The generated files are written below `build-host/sanity`.
+
+## 8. VS Code symbol navigation
+
+Open the `xWalkPiCarAI` integration root in VS Code and install the recommended
+CMake Tools and C/C++ extensions. The workspace combines the host product and
+independent server compilation databases, while the fallback symbol browser
+indexes project-owned hardware, simulation, test, interface, tool, trace, and
+server source trees. Ctrl+click, **Go to Definition**, **Go to Declaration**,
+and **Find All References** therefore work across module boundaries.
+
+After changing CMake source lists or moving files, run the VS Code task
+`xWalk: Refresh all C++ navigation`. The task configures hardware, native-provider, and Node navigation.
+To refresh only the ordinary host product compilation database from the terminal:
+
+```bash
+cmake --preset host-debug -S xWalk-rpi5-hw
+```
+
+If VS Code retains stale symbols after a large relocation, run **C/C++: Reset
+IntelliSense Database** once and then execute the refresh task again.
+
+For an optimized host build:
+
+```bash
+cmake --fresh -S xWalk-rpi5-hw --preset host-release
+cmake --build build-host/release --parallel
+ctest --test-dir build-host/release --output-on-failure --no-tests=error
+```
+
+## 9. Controller and Node runtime
+
+The [Controller](../02-xwalk-hardware/xWalk-rpi5-hw/xWalkController/xWalkController.md) schedules service, vehicle, vision, and voice
+requests
+on four workers. Its Boot layer owns the selected HOST simulation or RPI5 hardware dependency graph, along with
+deployment configuration. It also provides the standalone Controller workflow documented in that component.
+
+The [Node](../05-xwalk-node/xWalk-rpi5-node/xWalk-rpi5-node.md) adds MQTT/GPB transport and the complete host or Raspberry Pi
+application.
+Use the Node's documented presets and runtime launcher for application execution. Building a HOST binary on a
+Raspberry Pi still selects simulation; native hardware operation requires the RPI5 configuration.
+
+## 10. Installation
+
+Create and test a staged Release installation without modifying the host system:
+
+```bash
+cmake --fresh -S xWalk-rpi5-hw --preset host-release
+cmake --build build-host/release --parallel
+DESTDIR="$PWD/build-host/deploy" cmake --install build-host/release
+```
+
+The staged filesystem is created under `build-host/deploy`. After reviewing that layout, an administrator may
+install the same build into the configured `/usr` prefix:
+
+```bash
+sudo cmake --install build-host/release
+```
+
+System installation does not authorize hardware tests or actuator operation. Raspberry Pi setup, permissions,
+services, configuration, and rollback are documented in the
+[deployment guide](../08-xwalk-guides/Doc/note/Deployment%20Guide.md).
+
+## 11. Raspberry Pi build
+
+On a compatible Raspberry Pi build host, configure and compile the product with:
+
+```bash
+cmake --fresh -S xWalk-rpi5-hw --preset rpi-release
+cmake --build build-rpi/cmake --parallel
+ctest --test-dir build-rpi/cmake -N -L hardware
+```
+
+The RPi preset uses Robot HAT v4, runtime user `xwalk`, `/dev/gpiochip4`,
+`/dev/i2c-1`, `/dev/spidev0.0`, and a CSI camera unless explicitly overridden
+with the corresponding `XWALK_RPI_*` CMake cache value.
+
+The final command lists hardware tests; it does not execute them. Run hardware-labelled tests only after explicitly
+confirming the Raspberry Pi model, Robot HAT revision, wiring, power, clear movement area, and emergency-stop plan.
+
+## 15. License
+
+See LICENSE for the repository license terms.
+
+---
+
+[Previous page](index.md) · [Chapter index](index.md) · [Next page](../02-xwalk-hardware/index.md)

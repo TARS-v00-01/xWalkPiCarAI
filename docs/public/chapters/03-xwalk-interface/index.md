@@ -1,33 +1,36 @@
-[Documentation](../index.md) / Chapter 3
+[xWalk documentation](../index.md) / Chapter 3
 
 # 3. Interface
 
-## 3.1 Overview
+## 1. Section overview
 
-The shared interface component defines Protocol Buffer schemas and signal registries used by communicating
-parts of the product. Consistent message definitions let producers and consumers agree on their data format.
+Shared messages, transport interfaces, and compatibility contracts.
 
-**Coverage:** message compatibility, generated bindings, and version selection.
+## 2. Coverage
 
-**Prerequisites:** [Workspace](../01-xwalk-workspace/index.md) and basic familiarity with structured messages.
+- 1 module and guide pages, listed below.
+- Source locations, interfaces, build and configuration information, testing, and safety constraints.
 
-**Start here:** use the interface revision pinned by the integration you are building.
+## 3. Prerequisites
 
-## 3.2 Working with messages
+- Read the workspace chapter and understand the producer and consumer of each message.
+- Private component access is needed for source builds; no account is needed to read these notes.
 
-Keep schemas and their consumers compatible. A generated binding is derived from an interface definition;
-editing generated output directly does not update that definition or its other consumers.
+**Start here:** [xWalk-rpi5-iw](xWalk-rpi5-iw/xWalk-rpi5-iw.md).
 
-Use the owning component's generation instructions when changing interfaces. Rebuild affected consumers and
-run their host tests before integration. Exact field definitions, signal identifiers, and generator options
-belong to the version-matched component documentation.
+## 4. Modules and guides
 
-## 3.3 Dependencies and testing
+- [xWalk-rpi5-iw](xWalk-rpi5-iw/xWalk-rpi5-iw.md): `xWalk-rpi5-iw` owns the C++17 Google Protocol Buffers (GPB) interworking contract for xWalk I2C, lifecycle, trace, traffic, and Controller command messages. It defines serialization only: it declares no services or.
 
-Schema generation depends on the required Protocol Buffer tools and the languages supported by each consumer.
-The shared interface is used by the [Node](../05-xwalk-node/index.md) and other application components.
+## 5. Table of contents
 
-Test serialization, input validation, and compatible request/response behavior on the host.
-A well-formed message is not, by itself, permission to operate a physical actuator.
+- [Section overview](#1-section-overview)
+- [Coverage](#2-coverage)
+- [Prerequisites](#3-prerequisites)
+- [Modules and guides](#4-modules-and-guides)
 
-Previous: [2. Hardware](../02-xwalk-hardware/index.md) · Next: [4. Software](../04-xwalk-software/index.md)
+---
+
+[Previous chapter](../02-xwalk-hardware/index.md) · [Next chapter](../04-xwalk-software/index.md)
+
+[Previous page](../02-xwalk-hardware/index.md) · [Chapter index](index.md) · [Next page](xWalk-rpi5-iw/xWalk-rpi5-iw.md)

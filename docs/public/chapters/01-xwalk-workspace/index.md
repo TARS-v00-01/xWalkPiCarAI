@@ -1,49 +1,36 @@
-[Documentation](../index.md) / Chapter 1
+[xWalk documentation](../index.md) / Chapter 1
 
 # 1. Workspace
 
-## 1.1 Overview
+## 1. Section overview
 
-The integration repository ties independently versioned components into one reproducible product.
-Its Git submodules record exact revisions; updating a checkout should preserve those selections.
+Workspace layout, component boundaries, and build entry points.
 
-**Coverage:** source access, prerequisites, and checkout verification.
+## 2. Coverage
 
-**Prerequisites:** Git, a Linux development host, and component access if you intend to build the product.
+- 1 module and guide pages, listed below.
+- Source locations, interfaces, build and configuration information, testing, and safety constraints.
 
-**Start here:** confirm that your account can read the required components before a recursive clone.
+## 3. Prerequisites
 
-## 1.2 Get the workspace
+- Access to the component repositories is required to build the complete product.
+- Private component access is needed for source builds; no account is needed to read these notes.
 
-For contributors who already have component access, clone the integrated workspace:
+**Start here:** [xWalkPiCarAI](xWalkPiCarAI.md).
 
-```bash
-git clone --recurse-submodules https://github.com/TARS-v00-01/xWalkPiCarAI.git
-```
+## 4. Modules and guides
 
-After entering the checkout, inspect its pinned components:
+- [xWalk Raspberry Pi 5 PiCar-X](xWalkPiCarAI.md): See the Git guide for cloning, source-only updates, submodules, and Gerrit reviews.
 
-```bash
-git submodule status --recursive
-```
+## 5. Table of contents
 
-A leading space means the component matches its recorded revision. A leading `-` means it is uninitialized;
-a leading `+` means its checkout differs from the recorded revision. Do not substitute arbitrary branch tips
-when reproducing a product build.
+- [Section overview](#1-section-overview)
+- [Coverage](#2-coverage)
+- [Prerequisites](#3-prerequisites)
+- [Modules and guides](#4-modules-and-guides)
 
-## 1.3 Prerequisites and configuration
+---
 
-The host workflow uses Linux, CMake 3.25 or newer, Ninja, a C++17 compiler, Python 3, and the product's development
-libraries. Dependency installation can change the host system; review the setup command before running it.
+[Previous chapter](../index.md) · [Next chapter](../02-xwalk-hardware/index.md)
 
-Keep passwords, tokens, calibration, and machine-specific overrides outside committed source.
-Preserve local work and configuration before updating a checkout.
-
-## 1.4 Chapter map
-
-The workspace combines [hardware](../02-xwalk-hardware/index.md), [interfaces](../03-xwalk-interface/index.md),
-[desktop software](../04-xwalk-software/index.md), [Node](../05-xwalk-node/index.md),
-[tools](../06-xwalk-tool/index.md), and [tracing](../07-xwalk-trace/index.md).
-The [guides](../08-xwalk-guides/index.md) provide a host build walkthrough.
-
-Previous: [Documentation](../index.md) · Next: [2. Hardware](../02-xwalk-hardware/index.md)
+[Previous page](../index.md) · [Chapter index](index.md) · [Next page](xWalkPiCarAI.md)

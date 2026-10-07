@@ -7,6 +7,9 @@ Only the chapter source directory is passed to MkDocs. Never point the build at 
 
 from pathlib import Path
 import ipaddress
+import hashlib
+import json
+from urllib.parse import urlsplit, unquote
 import re
 import sys
 
@@ -16,8 +19,14 @@ CHAPTERS = (
     "05-xwalk-node", "06-xwalk-tool", "07-xwalk-trace", "08-xwalk-guides",
 )
 PUBLIC_URLS = {
+    "https://github.com/TARS-v00-01/xWalkPiCarApp",
     "https://github.com/TARS-v00-01/xWalkPiCarAI",
     "https://github.com/TARS-v00-01/xWalkPiCarAI.git",
+}
+PUBLIC_HOSTS = {
+    "alphacephei.com", "docs.gtk.org", "docs.hivemq.com", "docs.kernel.org", "docs.opencv.org",
+    "docs.sunfounder.com", "eclipse.dev", "www.destinationhalmstad.se", "api.openai.com",
+    "dashscope-intl.aliyuncs.com", "provider.example", "example.invalid", "127.0.0.1", "localhost", "::1",
 }
 FORBIDDEN = re.compile(
     r"(?:/home/|/Users/|file://|ssh://|\.atlassian\.net|\.internal\b|\.lan\b|"
@@ -37,14 +46,22 @@ def check_text(path: Path, text: str) -> None:
             parsed = ipaddress.ip_address(address)
         except ValueError:
             continue
-        if not parsed.is_global:
+        documentation_address = any(parsed in ipaddress.ip_network(network) for network in
+                                    ("192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24"))
+        if not parsed.is_global and not documentation_address and address not in {
+            "127.0.0.1", "127.0.1.1", "0.0.0.0",
+        }:
             raise ValueError(f"Non-public network address in {path.name}")
 
 
 def verify(root: Path, site: Path | None = None) -> None:
     """Require the reviewed chapter set and check its content and optional rendered output."""
     source = root / "chapters"
-    expected = {"index.md", *(f"{chapter}/index.md" for chapter in CHAPTERS)}
+    manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
+    expected = set(manifest)
+    required = {"index.md", *(f"{chapter}/index.md" for chapter in CHAPTERS)}
+    if not required <= expected:
+        raise ValueError("Public manifest must contain the homepage and all eight chapter indexes")
     entries = list(source.rglob("*"))
     if any(path.is_symlink() for path in entries) or source.is_symlink():
         raise ValueError("Public documentation must not contain symbolic links")
@@ -53,15 +70,33 @@ def verify(root: Path, site: Path | None = None) -> None:
         raise ValueError("Public source manifest changed; review and update the explicit chapter allowlist")
     for name in sorted(expected):
         path = source / name
+        if hashlib.sha256(path.read_bytes()).hexdigest() != manifest[name]:
+            raise ValueError(f"Public content changed without updating its reviewed manifest: {name}")
+        if path.suffix not in {".md", ".png", ".jpg"}:
+            raise ValueError(f"Unsupported public source file: {name}")
+        if path.suffix != ".md":
+            continue
         text = path.read_text(encoding="utf-8")
         check_text(path, text)
-        urls = re.findall(r"https?://[^\s)<>\"']+", text)
-        if set(urls) - PUBLIC_URLS:
-            raise ValueError(f"Unapproved external link in {name}")
-        if re.search(r"<\s*(?:script|iframe|img|object|embed)\b", text, re.IGNORECASE):
+        urls = re.findall(r"https?://[^\s)<>\"'`]+", text)
+        for value in urls:
+            url = urlsplit(value)
+            approved = value in PUBLIC_URLS or url.hostname in PUBLIC_HOSTS
+            approved = approved or (url.hostname == "github.com" and url.path.startswith("/hailo-ai/"))
+            if not approved or url.username or url.password:
+                raise ValueError(f"Unapproved external link in {name}: {url.hostname}")
+        prose = re.sub(r"```.*?```|`[^`]*`", "", text, flags=re.DOTALL)
+        if re.search(r"<\s*(?:script|iframe|img|object|embed)\b", prose, re.IGNORECASE):
             raise ValueError(f"Embedded external content is not allowed in {name}")
     if site is not None:
-        required = [site / name.replace(".md", ".html") for name in sorted(expected)]
+        required = []
+        for name in sorted(expected):
+            if name.endswith("/index.md") or name == "index.md":
+                required.append(site / name.replace(".md", ".html"))
+            elif name.endswith(".md"):
+                required.append(site / name.removesuffix(".md") / "index.html")
+            else:
+                required.append(site / name)
         required.append(site / "search/search_index.json")
         if any(not path.is_file() for path in required):
             raise ValueError("Rendered site is missing a chapter or search index")

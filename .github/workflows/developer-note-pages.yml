@@ -19,6 +19,8 @@ concurrency:
 
 jobs:
   build:
+    # The full developer wiki contains team-only material. Public documentation has its own workflow.
+    if: github.event.repository.private == true
     runs-on: [self-hosted, linux, x64, xwalk-ci]
     steps:
       - uses: actions/checkout@v6

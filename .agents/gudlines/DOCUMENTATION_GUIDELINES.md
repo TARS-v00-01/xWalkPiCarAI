@@ -86,11 +86,21 @@ The public `xWalkPiCarAI` integration may publish the separately reviewed source
 to `https://tars-v00-01.github.io/xWalkPiCarAI/`. This project site does not publish the full developer-note
 artifact. Keep its MkDocs configuration, pinned dependency, explicit chapter allowlist, and privacy check in
 `docs/public`. The integration owns the GitHub Pages workflow and the public source; components remain private.
+The public source may contain reviewed detailed module contracts, build examples, and technical guides.
+Record every published Markdown or image file and its SHA-256 in `docs/public/manifest.json`. New pages and
+content changes require an explicit manifest update after review. Retain public attribution. Exclude photos
+with unreviewed location or author metadata. Loopback defaults and reserved documentation addresses may remain;
+replace deployment-specific endpoint values with clearly labelled examples rather than invented defaults.
 
 Review public prose manually for internal-only details. Reject internal addresses, credentials, personal data,
 private source links, operational settings, and account or administration procedures. Check both the source and
 rendered pages, search index, and sitemap. Pattern checks supplement review; they cannot establish publication
 approval for arbitrary content. Keep generated output below ignored `build-public-docs`.
+
+Do not distribute private component source, the complete internal wiki, or source-bearing analysis artifacts
+through a public repository's Actions artifacts. Keep the full wiki artifact workflow private-only and gate
+such uploads in Host Quality by repository visibility. Each Code Health job fetches exact submitted components
+on its configured self-hosted runner instead of downloading a publicly accessible source archive.
 
 Source publication still requires complete integration CI, authorized review, Gerrit Submit, and synchronization
 of that exact submitted commit to GitHub `master`. The Pages workflow checks out only public documentation and

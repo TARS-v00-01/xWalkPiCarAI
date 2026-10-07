@@ -3,7 +3,7 @@
 xWalk is a C++17 control and automation workspace for the SunFounder PiCar-X on Raspberry Pi 5.
 It brings together hardware abstractions, robot control, desktop software, messaging, and development tools.
 
-This public edition introduces the project in eight chapters. Start with the workspace and use a Linux host
+This public edition contains detailed module notes and guides organized into eight chapters. Start with the workspace and use a Linux host
 for ordinary development and testing. Physical robot operation requires separate setup and safety checks.
 
 ## Read the chapters
@@ -25,8 +25,9 @@ The [public integration repository](https://github.com/TARS-v00-01/xWalkPiCarAI)
 and selected component revisions. Building the complete product requires access to its private components.
 Reading this website does not require an account.
 
-Detailed component contracts and team administration procedures remain in the developer documentation
-available to authorized contributors. This public edition contains no device-specific configuration,
-internal service addresses, account instructions, or private source downloads.
+The module notes describe source layout, public interfaces, build options, configuration, testing,
+dependencies, and safety constraints. Team administration, account setup, private source downloads,
+and deployment-specific values are excluded. Loopback addresses and documentation-only addresses in
+examples are not published robot endpoints. Use the checked-out component headers for exact API contracts.
 
 **Start here:** [1. Workspace](01-xwalk-workspace/index.md).
