@@ -10,6 +10,7 @@ theme:
   features:
   - content.code.copy
   - navigation.sections
+  - navigation.indexes
   - navigation.footer
   - search.highlight
 plugins:
