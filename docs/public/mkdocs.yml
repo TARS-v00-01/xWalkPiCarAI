@@ -16,6 +16,11 @@ theme:
 plugins:
 - search
 markdown_extensions:
+- pymdownx.superfences:
+    custom_fences:
+    - name: mermaid
+      class: mermaid
+      format: !!python/name:pymdownx.superfences.fence_code_format
 - admonition
 - tables
 - toc:
@@ -431,17 +436,17 @@ nav:
   - 8. xWalk guides: 08-xwalk-guides/index.md
   - Doc:
     - note:
-      - '`XWalkAdc`': 08-xwalk-guides/Doc/note/API ADC.md
-      - '`XWalkTrace`': 08-xwalk-guides/Doc/note/API Basic Class.md
-      - '`XWalkConfigStore` and `XWalkConfig`': 08-xwalk-guides/Doc/note/API Filedb.md
-      - '`XWalkI2c`': 08-xwalk-guides/Doc/note/API I2C.md
+      - 'XWalkAdc': 08-xwalk-guides/Doc/note/API ADC.md
+      - 'XWalkTrace': 08-xwalk-guides/Doc/note/API Basic Class.md
+      - 'XWalkConfigStore and XWalkConfig': 08-xwalk-guides/Doc/note/API Filedb.md
+      - 'XWalkI2c': 08-xwalk-guides/Doc/note/API I2C.md
       - Sensors and actuators: 08-xwalk-guides/Doc/note/API Modules.md
-      - '`XWalkMotor` and `XWalkMotors`': 08-xwalk-guides/Doc/note/API Motor.md
-      - '`XWalkMusic`': 08-xwalk-guides/Doc/note/API Music.md
-      - '`XWalkPwm` and `XWalkPwmTimerState`': 08-xwalk-guides/Doc/note/API PWM.md
-      - '`XWalkGpio`': 08-xwalk-guides/Doc/note/API Pin.md
-      - '`XWalkRobot`': 08-xwalk-guides/Doc/note/API Robot.md
-      - '`XWalkServo`': 08-xwalk-guides/Doc/note/API Servo.md
+      - 'XWalkMotor and XWalkMotors': 08-xwalk-guides/Doc/note/API Motor.md
+      - 'XWalkMusic': 08-xwalk-guides/Doc/note/API Music.md
+      - 'XWalkPwm and XWalkPwmTimerState': 08-xwalk-guides/Doc/note/API PWM.md
+      - 'XWalkGpio': 08-xwalk-guides/Doc/note/API Pin.md
+      - 'XWalkRobot': 08-xwalk-guides/Doc/note/API Robot.md
+      - 'XWalkServo': 08-xwalk-guides/Doc/note/API Servo.md
       - C++ speech interfaces: 08-xwalk-guides/Doc/note/API TTS.md
       - C++ utility interfaces: 08-xwalk-guides/Doc/note/API Utils.md
       - C++ API reference: 08-xwalk-guides/Doc/note/API.md

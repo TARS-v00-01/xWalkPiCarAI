@@ -19,7 +19,10 @@ personalized text, internal links, and credential values are not. Exclude photos
 The current technical snapshot derives from submitted developer-note change 1421. It retains module contracts,
 build and test examples, configuration schemas, safety constraints, and guide attribution. Administration,
 account and licence provisioning, internal readiness reports, and operational infrastructure pages are omitted.
-Source locations are plain text for authorized contributors; they are not links to private source downloads.
+The ten core API guides were expanded in developer-note change 1441 with implementation-checked contracts,
+dated official references, and Mermaid diagrams. The public edition retains those guide bodies and uses
+plain sidebar labels and matching previous/next links. Source locations are plain text for authorized
+contributors; they are not links to private source downloads.
 
 From the integration root, use an isolated environment:
 
